@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="KMS Use Cases - Real-world scenarios showing how organizations use Key Management Systems">
+    <title>KMS Use Cases | PAM & KMS Guide</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="scroll-progress" id="scroll-progress"></div>
+
+    <header class="header">
+        <div class="header-content">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                PAM & KMS Guide
+            </a>
+            
+            <nav class="header-nav">
+                <a href="pam-fundamentals.html">PAM</a>
+                <a href="kms-fundamentals.html" class="active">KMS</a>
+                <a href="vendors.html">Vendors</a>
+                <a href="implementation.html">Implementation</a>
+            </nav>
+            
+            <div class="header-actions">
+                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-title">Getting Started</div>
+            <ul class="sidebar-nav">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="introduction.html">Introduction</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">KMS Topics</div>
+            <ul class="sidebar-nav">
+                <li><a href="kms-fundamentals.html">KMS Fundamentals</a></li>
+                <li><a href="kms-use-cases.html" class="active">KMS Use Cases</a></li>
+                <li><a href="encryption-explained.html">Encryption Explained</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <main class="main-wrapper">
+        <div class="main-content">
+            <nav class="breadcrumb">
+                <a href="../index.html">Home</a>
+                <span class="breadcrumb-separator">/</span>
+                <a href="kms-fundamentals.html">KMS</a>
+                <span class="breadcrumb-separator">/</span>
+                <span>KMS Use Cases</span>
+            </nav>
+
+            <div class="page-header">
+                <h1>KMS Use Cases</h1>
+                <p class="page-description">
+                    Real-world scenarios showing how organizations use Key Management Systems. Each use case explains the data protection need, how KMS solves it, and practical implementation considerations.
+                </p>
+            </div>
+
+            <div class="toc">
+                <div class="toc-title">On This Page</div>
+                <ul class="toc-list">
+                    <li><a href="#database-encryption"><span class="toc-number">1.</span> Database Encryption (TDE)</a></li>
+                    <li><a href="#application-encryption"><span class="toc-number">2.</span> Application-Level Encryption</a></li>
+                    <li><a href="#file-storage"><span class="toc-number">3.</span> File and Object Storage</a></li>
+                    <li><a href="#code-signing"><span class="toc-number">4.</span> Code Signing</a></li>
+                    <li><a href="#backup-encryption"><span class="toc-number">5.</span> Backup Encryption</a></li>
+                    <li><a href="#tokenization"><span class="toc-number">6.</span> Tokenization</a></li>
+                    <li><a href="#certificate-management"><span class="toc-number">7.</span> Certificate Management</a></li>
+                    <li><a href="#multi-cloud"><span class="toc-number">8.</span> Multi-Cloud Key Management</a></li>
+                </ul>
+            </div>
+
+            <section id="database-encryption">
+                <h2>Use Case 1: Database Encryption (TDE)</h2>
+                
+                <h3>The Scenario</h3>
+                <p>
+                    Your organization stores customer PII (personal identifiable information), credit card numbers, and health records in SQL Server and Oracle databases. Compliance requires encryption at rest. You need to encrypt the databases without changing applications.
+                </p>
+
+                <h3>The Challenge</h3>
+                <ul>
+                    <li>Data must be encrypted on disk (at rest)</li>
+                    <li>Applications shouldn't need modification</li>
+                    <li>Database performance impact must be minimal</li>
+                    <li>Keys must be protected and rotatable</li>
+                    <li>Need to prove to auditors that encryption is properly managed</li>
+                </ul>
+
+                <h3>KMS Solution: Transparent Data Encryption (TDE)</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Master Key in KMS</h4>
+                            <p>The TDE master key (also called KEK - Key Encryption Key) is stored in your KMS, backed by HSM. This key protects all the database encryption keys.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Database Encryption Key (DEK)</h4>
+                            <p>Each database has its own DEK. The DEK is stored in the database, encrypted by the master key from KMS. The DEK actually encrypts the data.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Transparent Operation</h4>
+                            <p>When database starts, it retrieves master key from KMS to decrypt the DEK. All encryption/decryption happens automatically. Applications see plaintext; disk contains ciphertext.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Key Rotation</h4>
+                            <p>Master key rotation: Generate new key in KMS, re-encrypt DEKs with new master key. No data re-encryption needed—only DEKs are re-encrypted.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>How TDE Encryption Works</h3>
+
+                <div class="diagram-container">
+                    <div class="diagram-title">TDE Key Hierarchy</div>
+                    <div class="architecture-flow">
+                        <div class="arch-row">
+                            <div class="arch-box danger">
+                                <div class="arch-box-title">Master Key (KEK)</div>
+                                <div class="arch-box-subtitle">In KMS/HSM - Never exported</div>
+                            </div>
+                        </div>
+                        <div style="text-align: center; color: var(--text-secondary); margin: var(--space-2) 0;">↓ Protects ↓</div>
+                        <div class="arch-row">
+                            <div class="arch-box primary">
+                                <div class="arch-box-title">Database Encryption Key (DEK)</div>
+                                <div class="arch-box-subtitle">Stored in DB, encrypted by KEK</div>
+                            </div>
+                        </div>
+                        <div style="text-align: center; color: var(--text-secondary); margin: var(--space-2) 0;">↓ Encrypts ↓</div>
+                        <div class="arch-row">
+                            <div class="arch-box secondary">
+                                <div class="arch-box-title">Data Files</div>
+                                <div class="arch-box-subtitle">Encrypted on disk</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Results</h3>
+                <ul>
+                    <li><strong>Data encrypted at rest:</strong> Stolen disk/backup files are unreadable</li>
+                    <li><strong>No application changes:</strong> TDE is transparent to apps</li>
+                    <li><strong>Key separation:</strong> DBA can't access master key; KMS admin can't access data</li>
+                    <li><strong>Compliance ready:</strong> Audit trail shows key usage, access control</li>
+                    <li><strong>Performance:</strong> Modern CPUs have AES acceleration; impact is typically 2-5%</li>
+                </ul>
+
+                <div class="info-box warning">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>TDE Limitation</h4>
+                        <p>TDE protects data at rest (on disk). It does NOT protect data in transit (network) or data in use (memory). A user who can query the database still sees plaintext. For column-level protection from authorized users, you need application-level encryption or tokenization.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="application-encryption">
+                <h2>Use Case 2: Application-Level Encryption</h2>
+                
+                <h3>The Scenario</h3>
+                <p>
+                    Your application stores credit card numbers and social security numbers. TDE isn't enough—you need to ensure that even database administrators can't see the sensitive data. The application should be the only thing that can decrypt these specific fields.
+                </p>
+
+                <h3>The Challenge</h3>
+                <ul>
+                    <li>Specific columns need encryption, not the whole database</li>
+                    <li>DBAs should NOT be able to decrypt sensitive columns</li>
+                    <li>Application must encrypt before writing, decrypt after reading</li>
+                    <li>Keys must be managed securely, separate from application code</li>
+                    <li>Need to search encrypted data (sometimes)</li>
+                </ul>
+
+                <h3>KMS Solution: Application-Level Encryption</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Application Gets Key from KMS</h4>
+                            <p>Application authenticates to KMS (using service account, IAM role, certificate). KMS returns the encryption key for this data type.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Application Encrypts Data</h4>
+                            <p>Before storing: <code>encrypted_ssn = encrypt(ssn, key)</code>. The ciphertext is what gets written to the database.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Database Stores Ciphertext</h4>
+                            <p>Database column contains encrypted blob. DBA runs <code>SELECT ssn FROM customers</code> and sees <code>x9Kp2mNv...</code> — meaningless without the key.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Application Decrypts on Read</h4>
+                            <p>Application reads ciphertext, retrieves key from KMS, decrypts. Only the application sees plaintext.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Envelope Encryption Pattern</h3>
+                <p>For better performance, use envelope encryption:</p>
+                <ol>
+                    <li>Generate a unique Data Encryption Key (DEK) for each record (or batch)</li>
+                    <li>Encrypt the data with the DEK (fast symmetric encryption)</li>
+                    <li>Encrypt the DEK with KMS master key</li>
+                    <li>Store encrypted data + encrypted DEK together</li>
+                </ol>
+
+                <p>This way, KMS only handles small keys, not bulk data. Performance is much better.</p>
+
+                <h3>Example: Encrypting Credit Card Numbers</h3>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto;">
+// Encryption (before save)
+String creditCard = "4111-1111-1111-1111";
+byte[] dek = generateRandomKey();  // New key for this record
+byte[] encryptedCard = aesEncrypt(creditCard, dek);
+byte[] encryptedDek = kms.encrypt(dek, masterKeyId);
+// Store: encryptedCard + encryptedDek in database
+
+// Decryption (on read)
+byte[] dek = kms.decrypt(encryptedDek, masterKeyId);
+String creditCard = aesDecrypt(encryptedCard, dek);
+                </pre>
+
+                <h3>Results</h3>
+                <ul>
+                    <li><strong>Column-level protection:</strong> Only specific sensitive fields encrypted</li>
+                    <li><strong>DBA can't decrypt:</strong> No access to KMS keys</li>
+                    <li><strong>Application controls access:</strong> Only authorized code paths can decrypt</li>
+                    <li><strong>Key separation:</strong> Master key in KMS; encrypted data in database</li>
+                </ul>
+            </section>
+
+            <section id="file-storage">
+                <h2>Use Case 3: File and Object Storage</h2>
+                
+                <h3>The Scenario</h3>
+                <p>
+                    Your company stores sensitive documents in cloud object storage (S3, Azure Blob, GCS): contracts, HR records, financial reports, customer uploads. You need to ensure files are encrypted and that you control the keys (not just trust the cloud provider).
+                </p>
+
+                <h3>Encryption Options</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Option</th>
+                                <th>Key Management</th>
+                                <th>Who Holds Keys</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>SSE-S3 / Service-Managed</strong></td>
+                                <td>Cloud provider manages everything</td>
+                                <td>Cloud provider</td>
+                            </tr>
+                            <tr>
+                                <td><strong>SSE-KMS / Customer-Managed</strong></td>
+                                <td>You create key in cloud KMS, cloud encrypts</td>
+                                <td>You (via cloud KMS)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>SSE-C / Customer-Provided</strong></td>
+                                <td>You provide key with each request</td>
+                                <td>You (external KMS)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Client-Side</strong></td>
+                                <td>You encrypt before upload</td>
+                                <td>You (full control)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>KMS Solution: Customer-Managed Keys</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Create Key in Cloud KMS</h4>
+                            <p>Create a Customer Managed Key (CMK) in AWS KMS / Azure Key Vault / GCP Cloud KMS. You control the key policy—who can use it, for what.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Configure Bucket/Container</h4>
+                            <p>Set the storage bucket to use your CMK for encryption. All objects uploaded are automatically encrypted with your key.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Access Controls</h4>
+                            <p>Even if someone has bucket access, they need KMS permissions to decrypt. Separate storage permissions from encryption permissions.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Key Rotation</h4>
+                            <p>Enable automatic key rotation (annual). New objects use new key version. Old objects remain readable (KMS keeps old versions).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>AWS S3 with KMS Example</h3>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto;">
+# Create KMS key
+aws kms create-key --description "S3 encryption key"
+
+# Configure bucket default encryption
+aws s3api put-bucket-encryption --bucket my-bucket \
+  --server-side-encryption-configuration '{
+    "Rules": [{
+      "ApplyServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "aws:kms",
+        "KMSMasterKeyID": "arn:aws:kms:us-east-1:123456789:key/abc123"
+      }
+    }]
+  }'
+                </pre>
+
+                <h3>Results</h3>
+                <ul>
+                    <li><strong>All files encrypted:</strong> Automatic encryption on upload</li>
+                    <li><strong>You control keys:</strong> Can revoke access by removing KMS permissions</li>
+                    <li><strong>Separation of duties:</strong> Storage access ≠ decryption ability</li>
+                    <li><strong>Audit trail:</strong> KMS logs every encrypt/decrypt operation</li>
+                </ul>
+            </section>
+
+            <section id="code-signing">
+                <h2>Use Case 4: Code Signing</h2>
+                
+                <h3>The Scenario</h3>
+                <p>
+                    Your company releases software to customers. You need to prove the software came from you and hasn't been tampered with. Attackers could modify your installer to include malware—customers need a way to verify authenticity.
+                </p>
+
+                <h3>The Challenge</h3>
+                <ul>
+                    <li>Sign all releases with a trusted key</li>
+                    <li>Protect the signing key (if stolen, attackers can sign malware as "you")</li>
+                    <li>Control who can sign releases</li>
+                    <li>Audit trail of what was signed, when, by whom</li>
+                </ul>
+
+                <h3>KMS Solution: Code Signing with HSM-Protected Keys</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Generate Signing Key in HSM</h4>
+                            <p>Create asymmetric key pair in KMS/HSM. The private key NEVER leaves the HSM—even you can't extract it. Only the public key is exported (for verification).</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Obtain Code Signing Certificate</h4>
+                            <p>Get a code signing certificate from a trusted CA (DigiCert, Sectigo). The certificate binds your identity to the public key. CSR generated by KMS.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Sign Through KMS API</h4>
+                            <p>CI/CD pipeline calls KMS to sign the release. Build server never has the private key—it sends a hash to KMS, gets back the signature.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Access Control</h4>
+                            <p>Only the release pipeline (specific IAM role/service account) can request signatures. Developers can't sign things from their laptops.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>The Signing Process</h3>
+
+                <div class="diagram-container">
+                    <div class="diagram-title">Code Signing Flow</div>
+                    <div class="architecture-flow">
+                        <div class="arch-row">
+                            <div class="arch-box">
+                                <div class="arch-box-title">CI/CD Pipeline</div>
+                                <div class="arch-box-subtitle">1. Hash the binary</div>
+                            </div>
+                            <div class="arch-arrow">Hash →</div>
+                            <div class="arch-box primary">
+                                <div class="arch-box-title">KMS / HSM</div>
+                                <div class="arch-box-subtitle">2. Sign with private key</div>
+                            </div>
+                            <div class="arch-arrow">← Signature</div>
+                            <div class="arch-box secondary">
+                                <div class="arch-box-title">Signed Release</div>
+                                <div class="arch-box-subtitle">3. Binary + Signature</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>What Gets Signed</h3>
+                <ul>
+                    <li><strong>Executables:</strong> .exe, .dll (Windows Authenticode)</li>
+                    <li><strong>Installers:</strong> .msi, .pkg</li>
+                    <li><strong>Scripts:</strong> PowerShell, Python packages</li>
+                    <li><strong>Containers:</strong> Docker images (Notary, cosign)</li>
+                    <li><strong>Mobile apps:</strong> iOS/Android app signing</li>
+                </ul>
+
+                <h3>Results</h3>
+                <ul>
+                    <li><strong>Authenticity:</strong> Customers can verify software came from you</li>
+                    <li><strong>Integrity:</strong> Tampering is detectable (signature won't verify)</li>
+                    <li><strong>Key protection:</strong> Private key can't be stolen (never leaves HSM)</li>
+                    <li><strong>Accountability:</strong> Know exactly what was signed, when</li>
+                </ul>
+            </section>
+
+            <section id="backup-encryption">
+                <h2>Use Case 5: Backup Encryption</h2>
+                
+                <h3>The Scenario</h3>
+                <p>
+                    Your backup system creates daily copies of databases, file servers, and VMs. Backups are stored on tape, shipped offsite, and replicated to the cloud. You need to ensure that stolen or lost backup media doesn't result in a data breach.
+                </p>
+
+                <h3>The Challenge</h3>
+                <ul>
+                    <li>Backups contain copies of all your sensitive data</li>
+                    <li>Physical tapes can be lost or stolen during transport</li>
+                    <li>Cloud backup storage is another attack surface</li>
+                    <li>Need to restore backups months or years later</li>
+                    <li>Key management for long-term retention is complex</li>
+                </ul>
+
+                <h3>KMS Solution: Backup Encryption with Key Archival</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Integrate Backup Software with KMS</h4>
+                            <p>Enterprise backup tools (Veeam, Commvault, NetBackup) integrate with KMS. Backup encryption keys are managed centrally.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Encrypt Backups</h4>
+                            <p>Each backup job encrypts data with a DEK. The DEK is encrypted by the KMS master key. Both encrypted data and encrypted DEK are stored in the backup.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Key Archival</h4>
+                            <p>Master keys must be retained as long as backups exist. If you have 7-year retention, keys must be available for 7+ years. KMS provides key archival with proper lifecycle.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Restore Process</h4>
+                            <p>To restore: Retrieve backup → Get encrypted DEK from backup → Decrypt DEK using archived master key → Decrypt backup data.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Key Retention Considerations</h3>
+
+                <div class="info-box warning">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Critical: Don't Lose Your Keys</h4>
+                        <p>If you lose encryption keys, your backups are permanently unrecoverable. This is worse than not encrypting at all—you have backups but can't use them. Implement: multiple key copies, escrow, offline backup of keys, regular recovery testing.</p>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Backup Retention</th>
+                                <th>Key Retention Needed</th>
+                                <th>Considerations</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>30 days</td>
+                                <td>30 days + buffer</td>
+                                <td>Standard operational backups</td>
+                            </tr>
+                            <tr>
+                                <td>1 year</td>
+                                <td>1 year + buffer</td>
+                                <td>Monthly archives</td>
+                            </tr>
+                            <tr>
+                                <td>7 years</td>
+                                <td>7+ years</td>
+                                <td>Compliance archives (SOX, HIPAA)</td>
+                            </tr>
+                            <tr>
+                                <td>Indefinite</td>
+                                <td>Indefinite</td>
+                                <td>Legal hold, historical data</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Results</h3>
+                <ul>
+                    <li><strong>Stolen tapes useless:</strong> No key = no data</li>
+                    <li><strong>Cloud backups protected:</strong> Even cloud provider can't read backups</li>
+                    <li><strong>Long-term restorability:</strong> Keys archived with proper lifecycle</li>
+                    <li><strong>Tested recovery:</strong> Regular drills prove you can restore</li>
+                </ul>
+            </section>
+
+            <section id="tokenization">
+                <h2>Use Case 6: Tokenization</h2>
+                
+                <h3>The Scenario</h3>
+                <p>
+                    Your e-commerce platform processes credit card payments. PCI DSS compliance requires protecting card data. You want to minimize where actual card numbers exist—reducing your compliance scope and risk.
+                </p>
+
+                <h3>Tokenization vs Encryption</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Aspect</th>
+                                <th>Encryption</th>
+                                <th>Tokenization</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Output</strong></td>
+                                <td>Ciphertext (mathematically related to plaintext)</td>
+                                <td>Token (random value, no mathematical relationship)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Reversibility</strong></td>
+                                <td>Anyone with key can decrypt</td>
+                                <td>Only token vault can de-tokenize</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Format</strong></td>
+                                <td>Different length/format than original</td>
+                                <td>Can preserve format (same length, Luhn-valid)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Use case</strong></td>
+                                <td>Protect data anywhere</td>
+                                <td>Replace sensitive data in non-sensitive systems</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>KMS Solution: Tokenization Service</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Tokenize at Entry Point</h4>
+                            <p>When customer enters credit card, immediately tokenize. Original card number goes to secure token vault. Token (e.g., "tok_abc123") is returned.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Store and Process Tokens</h4>
+                            <p>Your order system, CRM, analytics—all store and use the token. They never see the actual card number. PCI scope is drastically reduced.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>De-tokenize for Payment</h4>
+                            <p>When you need to charge the card, payment processor de-tokenizes (or you send token directly to processor). Only the vault and processor handle real card numbers.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Token Vault Security</h4>
+                            <p>Token vault is heavily secured (HSM-backed encryption, strict access controls). It's the only place mapping tokens to real values exists.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Format-Preserving Tokenization</h3>
+                <p>Tokens can be generated to match the original format:</p>
+                <ul>
+                    <li>Credit card: 4111-1111-1111-1111 → 4532-8721-3456-7890 (Luhn-valid)</li>
+                    <li>SSN: 123-45-6789 → 987-65-4321 (same format)</li>
+                    <li>Phone: (555) 123-4567 → (555) 987-6543 (same format)</li>
+                </ul>
+
+                <p>This means applications don't need modification—they store what looks like a real value but isn't.</p>
+
+                <h3>Results</h3>
+                <ul>
+                    <li><strong>Reduced PCI scope:</strong> Most systems never touch real card data</li>
+                    <li><strong>Breach impact limited:</strong> Stolen tokens are worthless without vault</li>
+                    <li><strong>Application unchanged:</strong> Format-preserving tokens work in existing fields</li>
+                    <li><strong>Centralized control:</strong> All sensitive data flows through token vault</li>
+                </ul>
+            </section>
+
+            <section id="certificate-management">
+                <h2>Use Case 7: Certificate Management</h2>
+                
+                <h3>The Scenario</h3>
+                <p>
+                    Your organization has hundreds of TLS certificates for websites, APIs, and internal services. Certificates expire, need renewal, and their private keys need protection. You've had outages when certificates expired unexpectedly.
+                </p>
+
+                <h3>The Challenge</h3>
+                <ul>
+                    <li>Tracking certificate expiration across hundreds of certs</li>
+                    <li>Protecting private keys (if stolen, attacker can impersonate your services)</li>
+                    <li>Automating renewal to prevent outages</li>
+                    <li>Managing internal CA for private certificates</li>
+                </ul>
+
+                <h3>KMS Solution: Certificate Lifecycle Management</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Centralized Certificate Inventory</h4>
+                            <p>All certificates tracked in central system. Know what exists, where it's deployed, when it expires. Alerts before expiration.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Private Keys in HSM</h4>
+                            <p>Generate certificate private keys in HSM. Keys never leave HSM in plaintext. Even if certificate database is stolen, private keys are safe.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Automated Renewal</h4>
+                            <p>Integration with CAs (Let's Encrypt, DigiCert) for automatic renewal. Certificate renewed before expiration, deployed automatically.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Private CA for Internal Services</h4>
+                            <p>Run your own CA (backed by HSM) for internal service-to-service TLS. Issue short-lived certificates automatically. No manual certificate management.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Certificate Types and Uses</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Certificate Type</th>
+                                <th>Use</th>
+                                <th>Management Approach</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Public TLS</strong></td>
+                                <td>Public websites, APIs</td>
+                                <td>Public CA, automated renewal (ACME)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Internal TLS</strong></td>
+                                <td>Service-to-service, internal apps</td>
+                                <td>Private CA, short-lived (hours/days)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Code Signing</strong></td>
+                                <td>Software releases</td>
+                                <td>Public CA, HSM-protected key</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Client Certificates</strong></td>
+                                <td>Mutual TLS authentication</td>
+                                <td>Private CA, per-device/user</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Results</h3>
+                <ul>
+                    <li><strong>No expiration surprises:</strong> Alerts and automation prevent outages</li>
+                    <li><strong>Keys protected:</strong> HSM ensures private keys can't be stolen</li>
+                    <li><strong>Automated operations:</strong> Renewal and deployment without manual work</li>
+                    <li><strong>Internal PKI:</strong> Easy, secure certificates for internal services</li>
+                </ul>
+            </section>
+
+            <section id="multi-cloud">
+                <h2>Use Case 8: Multi-Cloud Key Management</h2>
+                
+                <h3>The Scenario</h3>
+                <p>
+                    Your organization uses AWS, Azure, and GCP. Each cloud has its own KMS. You want consistent key management, cross-cloud encryption, and the ability to maintain control even if you leave a cloud provider.
+                </p>
+
+                <h3>The Challenge</h3>
+                <ul>
+                    <li>Three different KMS systems with different APIs</li>
+                    <li>Keys are locked into each cloud provider</li>
+                    <li>No unified policy or audit across clouds</li>
+                    <li>Data encrypted in one cloud can't be read in another</li>
+                    <li>Vendor lock-in concerns</li>
+                </ul>
+
+                <h3>KMS Solution: External Key Manager</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Deploy External KMS</h4>
+                            <p>Use an external key manager (Thales CipherTrust, Fortanix, HashiCorp Vault Enterprise) that works across clouds. This becomes your single source of truth for keys.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Integrate with Cloud KMS</h4>
+                            <p>Use BYOK (Bring Your Own Key) or External Key Store features. Your external KMS provides master keys to each cloud's KMS.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Unified Policies</h4>
+                            <p>Define encryption policies once, apply everywhere. Same key rotation schedule, same access controls, regardless of cloud.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Centralized Audit</h4>
+                            <p>All key operations across all clouds flow through your external KMS. Single audit log shows all key usage everywhere.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Multi-Cloud Approaches</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Approach</th>
+                                <th>How It Works</th>
+                                <th>Trade-offs</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Cloud-Native per Cloud</strong></td>
+                                <td>Use AWS KMS in AWS, Azure Key Vault in Azure, etc.</td>
+                                <td>Best integration, but separate management</td>
+                            </tr>
+                            <tr>
+                                <td><strong>External KMS + BYOK</strong></td>
+                                <td>External KMS provides keys to each cloud</td>
+                                <td>Unified control, some integration complexity</td>
+                            </tr>
+                            <tr>
+                                <td><strong>External KMS + EKM</strong></td>
+                                <td>Keys never enter cloud (GCP Cloud EKM)</td>
+                                <td>Maximum control, potential latency</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Client-Side Encryption</strong></td>
+                                <td>Encrypt before sending to any cloud</td>
+                                <td>Full control, most application changes</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Results</h3>
+                <ul>
+                    <li><strong>Unified management:</strong> One place to manage all encryption keys</li>
+                    <li><strong>Consistent policy:</strong> Same security standards across clouds</li>
+                    <li><strong>Portability:</strong> Not locked into any single cloud's key system</li>
+                    <li><strong>Complete audit:</strong> Single view of all key operations</li>
+                </ul>
+            </section>
+
+            <div class="info-box success">
+                <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <div class="info-box-content">
+                    <h4>Summary</h4>
+                    <p>KMS protects data across your entire infrastructure: database encryption (TDE), application-level encryption for specific fields, file storage, code signing, backups, tokenization for PCI compliance, certificate management, and multi-cloud scenarios. The common thread is <strong>centralized key management with proper lifecycle, access control, and audit</strong>. Choose your approach based on compliance requirements, performance needs, and control preferences.</p>
+                </div>
+            </div>
+
+            <nav class="page-nav">
+                <a href="kms-fundamentals.html" class="page-nav-link prev">
+                    <span class="page-nav-label">Previous</span>
+                    <span class="page-nav-title">← KMS Fundamentals</span>
+                </a>
+                <a href="encryption-explained.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next</span>
+                    <span class="page-nav-title">Encryption Explained →</span>
+                </a>
+            </nav>
+        </div>
+
+        <footer class="footer">
+            <p>PAM & KMS Ultimate Guide — A comprehensive enterprise security documentation resource</p>
+        </footer>
+    </main>
+
+    <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+    </button>
+
+    <script src="../js/main.js"></script>
+</body>
+</html>

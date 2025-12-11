@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PAM Business Case - ROI analysis, compliance drivers, risk reduction, and strategic value of Privileged Access Management">
+    <title>PAM Business Case | PAM & KMS Guide</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="scroll-progress" id="scroll-progress"></div>
+
+    <header class="header">
+        <div class="header-content">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                PAM & KMS Guide
+            </a>
+            
+            <nav class="header-nav">
+                <a href="pam-fundamentals.html" class="active">PAM</a>
+                <a href="kms-fundamentals.html">KMS</a>
+                <a href="vendors.html">Vendors</a>
+                <a href="implementation.html">Implementation</a>
+            </nav>
+            
+            <div class="header-actions">
+                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-title">Getting Started</div>
+            <ul class="sidebar-nav">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="introduction.html">Introduction</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">PAM Fundamentals</div>
+            <ul class="sidebar-nav">
+                <li><a href="pam-fundamentals.html">What is PAM?</a></li>
+                <li><a href="pam-business-case.html" class="active">Business Case</a></li>
+                <li><a href="privileged-accounts.html">Privileged Accounts</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">PAM Architecture</div>
+            <ul class="sidebar-nav">
+                <li><a href="pam-components.html">Core Components</a></li>
+                <li><a href="pam-architecture.html">Architecture Patterns</a></li>
+                <li><a href="pam-data-flows.html">Data Flows</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">PAM Workflows</div>
+            <ul class="sidebar-nav">
+                <li><a href="user-access-workflow.html">User Access Workflow</a></li>
+                <li><a href="session-management.html">Session Management</a></li>
+                <li><a href="jit-access.html">Just-In-Time Access</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">KMS Fundamentals</div>
+            <ul class="sidebar-nav">
+                <li><a href="kms-fundamentals.html">What is KMS?</a></li>
+                <li><a href="cryptographic-basics.html">Cryptographic Basics</a></li>
+                <li><a href="key-lifecycle.html">Key Lifecycle</a></li>
+                <li><a href="hsm.html">HSM Deep Dive</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">KMS Platforms</div>
+            <ul class="sidebar-nav">
+                <li><a href="cloud-kms.html">Cloud KMS</a></li>
+                <li><a href="enterprise-kms.html">Enterprise KMS</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">Advanced Topics</div>
+            <ul class="sidebar-nav">
+                <li><a href="zero-trust.html">Zero Trust & PAM</a></li>
+                <li><a href="secrets-management.html">Secrets Management</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">Resources</div>
+            <ul class="sidebar-nav">
+                <li><a href="vendors.html">Vendor Overview</a></li>
+                <li><a href="implementation.html">Implementation Guide</a></li>
+                <li><a href="interview-prep.html">Interview Prep</a></li>
+                <li><a href="glossary.html">Glossary</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <main class="main-wrapper">
+        <div class="main-content">
+            <nav class="breadcrumb">
+                <a href="../index.html">Home</a>
+                <span class="breadcrumb-separator">/</span>
+                <a href="pam-fundamentals.html">PAM Fundamentals</a>
+                <span class="breadcrumb-separator">/</span>
+                <span>Business Case</span>
+            </nav>
+
+            <div class="page-header">
+                <h1>PAM Business Case</h1>
+                <p class="page-description">
+                    Building a compelling business case for PAM requires understanding the strategic value, risk reduction, compliance requirements, and return on investment. This guide provides the framework for justifying PAM investment to stakeholders.
+                </p>
+            </div>
+
+            <div class="toc">
+                <div class="toc-title">On This Page</div>
+                <ul class="toc-list">
+                    <li><a href="#why-pam"><span class="toc-number">1.</span> Why Organizations Need PAM</a></li>
+                    <li><a href="#compliance"><span class="toc-number">2.</span> Compliance & Regulatory Drivers</a></li>
+                    <li><a href="#risk-reduction"><span class="toc-number">3.</span> Risk Reduction & Security Value</a></li>
+                    <li><a href="#roi"><span class="toc-number">4.</span> ROI Analysis Framework</a></li>
+                    <li><a href="#cost-benefit"><span class="toc-number">5.</span> Cost-Benefit Analysis</a></li>
+                    <li><a href="#stakeholders"><span class="toc-number">6.</span> Presenting to Stakeholders</a></li>
+                </ul>
+            </div>
+
+            <section id="why-pam">
+                <h2>Why Organizations Need PAM</h2>
+                
+                <p>
+                    Privileged accounts represent the "keys to the kingdom" in any organization. They provide elevated access that, if compromised, can lead to catastrophic security incidents, data breaches, and regulatory penalties. PAM addresses this critical risk area through comprehensive privileged access controls.
+                </p>
+
+                <h3>The Privileged Access Challenge</h3>
+
+                <p>
+                    Without PAM, organizations face significant challenges managing privileged access:
+                </p>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
+                        </div>
+                        <div class="feature-title">Credential Sprawl</div>
+                        <p class="feature-description">Shared passwords, embedded credentials in scripts, passwords stored in spreadsheets or documents.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                        </div>
+                        <div class="feature-title">No Visibility</div>
+                        <p class="feature-description">Unknown privileged accounts, no tracking of who accessed what, no audit trail of privileged activities.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="9" y1="12" x2="15" y2="12"></line></svg>
+                        </div>
+                        <div class="feature-title">Standing Privilege</div>
+                        <p class="feature-description">Users have permanent access to privileged accounts even when they don't need it, violating least privilege.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        </div>
+                        <div class="feature-title">Weak Credentials</div>
+                        <p class="feature-description">Passwords rarely changed, default passwords in use, same password across multiple systems.</p>
+                    </div>
+                </div>
+
+                <h3>Breach Statistics & Privileged Access</h3>
+
+                <p>
+                    Industry data consistently shows that privileged access is a primary attack vector:
+                </p>
+
+                <div class="info-box warning">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Key Breach Statistics</h4>
+                        <p><strong>80%</strong> of data breaches involve compromised privileged credentials (Forrester Research).<br>
+                        <strong>74%</strong> of breaches involve privilege misuse or abuse (Verizon DBIR).<br>
+                        <strong>Average cost</strong> of a breach involving privileged credentials: <strong>$4.35M+</strong> (IBM/Ponemon).<br>
+                        <strong>Average time</strong> to identify a breach: <strong>197 days</strong> – privileged access accelerates attack progression.</p>
+                    </div>
+                </div>
+
+                <h3>Strategic Business Drivers</h3>
+
+                <p>
+                    Beyond security, several strategic business drivers make PAM essential:
+                </p>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Driver</th>
+                                <th>Business Impact</th>
+                                <th>How PAM Helps</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Digital Transformation</strong></td>
+                                <td>Cloud adoption, DevOps, automation increase privileged access surface</td>
+                                <td>Extends controls to cloud, containers, secrets, API keys</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Remote/Hybrid Work</strong></td>
+                                <td>Administrators access systems from anywhere, increased attack surface</td>
+                                <td>Secure remote privileged access without VPN dependency</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Third-Party Access</strong></td>
+                                <td>Vendors, contractors, MSPs require privileged access to systems</td>
+                                <td>Controlled, audited vendor access with time limits</td>
+                            </tr>
+                            <tr>
+                                <td><strong>M&A Activity</strong></td>
+                                <td>Acquisitions bring unknown privileged accounts and access patterns</td>
+                                <td>Discovery, consolidation, standardization of privileged access</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Cyber Insurance</strong></td>
+                                <td>Insurers requiring PAM controls as condition of coverage</td>
+                                <td>Demonstrates security maturity, may reduce premiums</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="compliance">
+                <h2>Compliance & Regulatory Drivers</h2>
+
+                <p>
+                    Regulatory compliance is often the primary driver for PAM investment. Nearly every major regulatory framework requires controls over privileged access, making PAM essential for compliance.
+                </p>
+
+                <h3>Regulatory Requirements by Framework</h3>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Regulation</th>
+                                <th>Scope</th>
+                                <th>PAM-Related Requirements</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>PCI-DSS 4.0</strong></td>
+                                <td>Payment card data</td>
+                                <td>Requirement 7: Restrict access; Requirement 8: Identify and authenticate; Requirement 10: Track and monitor access. Requires MFA for all admin access, unique IDs, password complexity, access reviews.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>SOX</strong></td>
+                                <td>Financial reporting</td>
+                                <td>Section 404: Internal controls over financial reporting. Requires segregation of duties, access controls to financial systems, audit trails for privileged actions.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>HIPAA</strong></td>
+                                <td>Healthcare data</td>
+                                <td>Access controls (§164.312(a)), Audit controls (§164.312(b)), Person/entity authentication (§164.312(d)). Requires minimum necessary access, unique user IDs, audit logs.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>GDPR</strong></td>
+                                <td>EU personal data</td>
+                                <td>Article 32: Security of processing. Requires access controls, ability to demonstrate compliance, breach notification capabilities.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>SOC 2</strong></td>
+                                <td>Service organizations</td>
+                                <td>Trust Services Criteria: CC6.1-CC6.8 (Logical and Physical Access Controls). Requires privileged access controls, monitoring, and review.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>NIST 800-53</strong></td>
+                                <td>Federal systems</td>
+                                <td>AC (Access Control), AU (Audit), IA (Identification and Authentication) control families. Extensive privileged access requirements.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>NERC CIP</strong></td>
+                                <td>Critical infrastructure</td>
+                                <td>CIP-004, CIP-005, CIP-007: Access control, logging, password management for critical cyber assets.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>ISO 27001</strong></td>
+                                <td>Information security</td>
+                                <td>Annex A.9: Access control. Requires privileged access management, access reviews, password management.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>PAM Controls Mapped to Common Requirements</h3>
+
+                <div class="diagram-container">
+                    <div class="diagram-title">PAM Controls → Compliance Requirements</div>
+                    <div class="diagram-content">
+                        <pre style="font-family: monospace; font-size: 13px; line-height: 1.6;">
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                         PAM CAPABILITIES → COMPLIANCE MAPPING                    │
+├──────────────────────────┬──────────────────────────────────────────────────────┤
+│                          │                                                       │
+│  CREDENTIAL VAULTING     │  → Unique User IDs (PCI 8.1, HIPAA §164.312)         │
+│  • Secure storage        │  → Password Management (PCI 8.2, SOX, ISO A.9)       │
+│  • Encryption at rest    │  → Encryption Controls (GDPR Art. 32)                │
+│                          │                                                       │
+├──────────────────────────┼──────────────────────────────────────────────────────┤
+│                          │                                                       │
+│  PASSWORD ROTATION       │  → Password Complexity (PCI 8.2.3-8.2.6)             │
+│  • Automated changes     │  → Periodic Changes (SOX, ISO A.9.4.3)               │
+│  • Policy enforcement    │  → System Hardening (NIST AC-2, CIS Controls)        │
+│                          │                                                       │
+├──────────────────────────┼──────────────────────────────────────────────────────┤
+│                          │                                                       │
+│  SESSION MANAGEMENT      │  → Monitor Privileged Access (PCI 10.2.2)            │
+│  • Recording             │  → Audit Trail (HIPAA §164.312(b), SOX)              │
+│  • Monitoring            │  → Incident Investigation (GDPR Art. 33)             │
+│                          │                                                       │
+├──────────────────────────┼──────────────────────────────────────────────────────┤
+│                          │                                                       │
+│  ACCESS CONTROLS         │  → Least Privilege (PCI 7.1, NIST AC-6)              │
+│  • Role-based access     │  → Segregation of Duties (SOX, ISO A.6.1.2)          │
+│  • MFA enforcement       │  → Multi-Factor Authentication (PCI 8.3)             │
+│                          │                                                       │
+├──────────────────────────┼──────────────────────────────────────────────────────┤
+│                          │                                                       │
+│  AUDIT & REPORTING       │  → Access Reviews (SOX, SOC 2 CC6.2)                 │
+│  • Comprehensive logs    │  → Compliance Reporting (All frameworks)             │
+│  • Built-in reports      │  → Evidence for Auditors (ISO, SOC 2)                │
+│                          │                                                       │
+└──────────────────────────┴──────────────────────────────────────────────────────┘
+                        </pre>
+                    </div>
+                </div>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Compliance Cost Savings</h4>
+                        <p>Organizations report <strong>40-60% reduction</strong> in audit preparation time after PAM implementation. Automated compliance reports replace manual evidence collection, and auditors gain confidence from comprehensive session recordings and access logs.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="risk-reduction">
+                <h2>Risk Reduction & Security Value</h2>
+
+                <p>
+                    PAM provides tangible security value by reducing risk across multiple dimensions. Understanding these risk reduction mechanisms helps quantify the security value of PAM investment.
+                </p>
+
+                <h3>Risk Categories Addressed by PAM</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Credential Theft Risk</h4>
+                            <p><strong>Without PAM:</strong> Attackers who steal a password gain persistent access. Passwords are reused, shared, and rarely changed.</p>
+                            <p><strong>With PAM:</strong> Passwords are unique, complex, rotated automatically, and never known by users. Stolen credentials are useless within hours or minutes.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Insider Threat Risk</h4>
+                            <p><strong>Without PAM:</strong> Malicious insiders can abuse standing access, cover tracks, and exfiltrate data undetected.</p>
+                            <p><strong>With PAM:</strong> All privileged sessions are recorded, monitored in real-time, and suspicious behavior triggers alerts. Just-in-time access limits window of opportunity.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Lateral Movement Risk</h4>
+                            <p><strong>Without PAM:</strong> Once attackers gain initial access, they use credential harvesting to move laterally across the network.</p>
+                            <p><strong>With PAM:</strong> Credentials aren't on endpoints (injected directly to targets), each system has unique credentials, and session isolation prevents credential theft.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Vendor/Third-Party Risk</h4>
+                            <p><strong>Without PAM:</strong> Vendors have VPN access with standing credentials, minimal monitoring, and unclear access boundaries.</p>
+                            <p><strong>With PAM:</strong> Time-limited access, full session recording, granular permissions, and automatic credential rotation after vendor work completes.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Ransomware & Malware Risk</h4>
+                            <p><strong>Without PAM:</strong> Ransomware uses harvested credentials to spread across network, encrypt backups, and maximize damage.</p>
+                            <p><strong>With PAM:</strong> Session isolation prevents credential theft, unique passwords limit spread, and application-to-application credentials are secured.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Security Value Metrics</h3>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Metric</th>
+                                <th>Without PAM</th>
+                                <th>With PAM</th>
+                                <th>Improvement</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Credential Exposure Window</strong></td>
+                                <td>90-365 days (manual rotation)</td>
+                                <td>Hours to days (automated rotation)</td>
+                                <td>90-99% reduction</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Time to Detect Misuse</strong></td>
+                                <td>197 days average</td>
+                                <td>Real-time alerts</td>
+                                <td>~99% reduction</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Incident Investigation Time</strong></td>
+                                <td>Days to weeks (manual log analysis)</td>
+                                <td>Minutes to hours (session playback)</td>
+                                <td>70-90% reduction</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Standing Privileged Access</strong></td>
+                                <td>100% (always-on access)</td>
+                                <td>Minimal (JIT access)</td>
+                                <td>80-95% reduction</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Shared Account Usage</strong></td>
+                                <td>Common (team shares admin accounts)</td>
+                                <td>Eliminated (individual accountability)</td>
+                                <td>100% improvement</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Attack Chain Disruption</h3>
+
+                <p>
+                    PAM breaks the typical attack chain at multiple points:
+                </p>
+
+                <div class="diagram-container">
+                    <div class="diagram-title">How PAM Disrupts the Cyber Kill Chain</div>
+                    <div class="diagram-content">
+                        <pre style="font-family: monospace; font-size: 13px; line-height: 1.6;">
+                    ATTACK PHASE                 PAM DISRUPTION POINT
+                    ────────────────────────────────────────────────────────
+
+                    Initial Compromise           │
+                    ├─ Phishing                  │
+                    ├─ Exploit                   │
+                    └─ Supply Chain              │
+                            │                    │
+                            ▼                    │
+                    Credential Harvesting  ──────┼──── ✗ BLOCKED: No credentials
+                    ├─ Mimikatz                  │      on endpoints to harvest
+                    ├─ Keylogging                │      (passwords not typed)
+                    └─ Memory scraping           │
+                            │                    │
+                            ▼                    │
+                    Privilege Escalation   ──────┼──── ✗ BLOCKED: Local admin
+                    ├─ Local admin abuse         │      passwords unique per system
+                    └─ Service account theft     │      and rotated frequently
+                            │                    │
+                            ▼                    │
+                    Lateral Movement       ──────┼──── ✗ BLOCKED: Each system has
+                    ├─ Pass-the-hash             │      unique credentials; session
+                    ├─ Remote execution          │      isolation prevents theft
+                    └─ RDP/SSH jumping           │
+                            │                    │
+                            ▼                    │
+                    Domain Compromise      ──────┼──── ✗ BLOCKED: Domain admin
+                    ├─ Domain admin theft        │      credentials vaulted; MFA
+                    └─ DC attack                 │      required; sessions monitored
+                            │                    │
+                            ▼                    │
+                    Data Exfiltration      ──────┼──── ⚠ DETECTED: Anomalous access
+                    └─ Database access           │      patterns trigger alerts
+                                                 │
+                    ═══════════════════════════════════════════════════════
+                    Result: Attack chain broken at multiple points;
+                           even partial compromise detected quickly
+                        </pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="roi">
+                <h2>ROI Analysis Framework</h2>
+
+                <p>
+                    Calculating ROI for PAM requires quantifying both tangible and intangible benefits against total cost of ownership. This framework helps build a comprehensive financial justification.
+                </p>
+
+                <h3>ROI Formula</h3>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Basic ROI Calculation</h4>
+                        <p><strong>ROI = (Annual Benefits - Annual Costs) / Total Investment × 100</strong></p>
+                        <p>Or, for multi-year analysis:</p>
+                        <p><strong>NPV = Σ (Benefits - Costs) / (1 + discount rate)^year</strong></p>
+                    </div>
+                </div>
+
+                <h3>Quantifiable Benefits</h3>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Benefit Category</th>
+                                <th>How to Quantify</th>
+                                <th>Typical Range</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Breach Cost Avoidance</strong></td>
+                                <td>Probability of breach × Average breach cost × Risk reduction %</td>
+                                <td>$500K - $5M+ annually</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Compliance Cost Reduction</strong></td>
+                                <td>Audit preparation hours saved × Hourly rate + Penalty avoidance</td>
+                                <td>$50K - $500K annually</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Operational Efficiency</strong></td>
+                                <td>Hours saved on password resets, access provisioning × Hourly rate</td>
+                                <td>$25K - $200K annually</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Reduced Insurance Premiums</strong></td>
+                                <td>Premium reduction (5-15%) after PAM implementation</td>
+                                <td>$10K - $100K annually</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Faster Incident Response</strong></td>
+                                <td>Reduced MTTR × Hourly downtime cost</td>
+                                <td>$20K - $300K annually</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Breach Cost Avoidance Calculation</h3>
+
+                <p>
+                    The most significant ROI component is typically breach cost avoidance. Here's a detailed calculation methodology:
+                </p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>Breach Cost Avoidance Calculation Example</span>
+                    </div>
+                    <pre><code># Annual Breach Probability Assessment
+Industry Average Breach Rate: 27.4% (for 2-year period)
+→ Annual probability: ~14%
+
+# Average Breach Cost (adjust for your organization size/industry)
+Base breach cost: $4.35M (IBM/Ponemon 2023)
+Privileged credential involvement multiplier: 1.3x
+→ Breach cost with privileged compromise: $5.66M
+
+# PAM Risk Reduction Factor
+Conservative estimate: 60% reduction in privileged access breaches
+Aggressive estimate: 80% reduction
+
+# Annual Breach Cost Avoidance Calculation
+Conservative: 14% × $5.66M × 60% = $475K/year
+Mid-range:    14% × $5.66M × 70% = $555K/year
+Aggressive:   14% × $5.66M × 80% = $634K/year
+
+# For organizations with higher risk profiles (financial, healthcare):
+Base breach cost: $9.5M (healthcare industry average)
+Annual probability: 20% (higher due to targeting)
+PAM risk reduction: 70%
+Annual avoidance: 20% × $9.5M × 70% = $1.33M/year</code></pre>
+                </div>
+
+                <h3>Operational Efficiency Gains</h3>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>Operational Savings Calculation</span>
+                    </div>
+                    <pre><code># Password Reset Savings
+Privileged password resets per month (manual): 200
+Time per reset (coordinate, change, test, document): 30 minutes
+IT staff hourly rate: $75
+Monthly cost: 200 × 0.5 hours × $75 = $7,500
+Annual cost without PAM: $90,000
+
+With PAM (automated rotation):
+Manual intervention needed: 10% of accounts (exceptions)
+Annual cost with PAM: $9,000
+Annual savings: $81,000
+
+# Access Provisioning Savings
+Privileged access requests per month: 150
+Time per request (manual): 45 minutes (tickets, approvals, implementation)
+Time per request (PAM workflow): 10 minutes (automated provisioning)
+Time savings per request: 35 minutes
+Monthly savings: 150 × 0.58 hours × $75 = $6,525
+Annual savings: $78,300
+
+# Audit Preparation Savings
+Hours spent on privileged access audit evidence (annual): 800
+Hourly rate (senior staff): $100
+Annual cost without PAM: $80,000
+
+With PAM (automated reporting):
+Hours needed: 200
+Annual cost with PAM: $20,000
+Annual savings: $60,000
+
+# Total Annual Operational Savings: $219,300</code></pre>
+                </div>
+
+                <h3>Total Cost of Ownership (TCO)</h3>
+
+                <p>
+                    When calculating costs, include all components:
+                </p>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Cost Category</th>
+                                <th>Year 1</th>
+                                <th>Years 2-5</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Software Licensing</strong></td>
+                                <td>$150K - $500K</td>
+                                <td>$150K - $500K/year</td>
+                                <td>Based on user count, features</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Infrastructure</strong></td>
+                                <td>$30K - $100K</td>
+                                <td>$10K - $30K/year</td>
+                                <td>Servers, HSMs, storage</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Implementation Services</strong></td>
+                                <td>$100K - $300K</td>
+                                <td>$0</td>
+                                <td>Vendor PS or SI partner</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Internal Project Team</strong></td>
+                                <td>$150K - $400K</td>
+                                <td>$50K - $100K/year</td>
+                                <td>FTEs dedicated to project</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Training</strong></td>
+                                <td>$20K - $50K</td>
+                                <td>$5K - $15K/year</td>
+                                <td>Admin and end-user training</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Ongoing Operations</strong></td>
+                                <td>Included above</td>
+                                <td>$75K - $200K/year</td>
+                                <td>FTEs for administration</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Support & Maintenance</strong></td>
+                                <td>Included in license</td>
+                                <td>18-22% of license</td>
+                                <td>Annual support fees</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="cost-benefit">
+                <h2>Cost-Benefit Analysis</h2>
+
+                <p>
+                    Let's walk through a complete cost-benefit analysis for a mid-sized organization (5,000 employees, 500 privileged users, 2,000 target systems).
+                </p>
+
+                <h3>Sample 5-Year Financial Model</h3>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Year 1</th>
+                                <th>Year 2</th>
+                                <th>Year 3</th>
+                                <th>Year 4</th>
+                                <th>Year 5</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="6"><strong>COSTS</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Software Licensing</td>
+                                <td>$350,000</td>
+                                <td>$350,000</td>
+                                <td>$367,500</td>
+                                <td>$385,875</td>
+                                <td>$405,169</td>
+                            </tr>
+                            <tr>
+                                <td>Infrastructure</td>
+                                <td>$75,000</td>
+                                <td>$20,000</td>
+                                <td>$20,000</td>
+                                <td>$20,000</td>
+                                <td>$20,000</td>
+                            </tr>
+                            <tr>
+                                <td>Implementation</td>
+                                <td>$200,000</td>
+                                <td>$0</td>
+                                <td>$0</td>
+                                <td>$0</td>
+                                <td>$0</td>
+                            </tr>
+                            <tr>
+                                <td>Internal Resources</td>
+                                <td>$250,000</td>
+                                <td>$100,000</td>
+                                <td>$100,000</td>
+                                <td>$100,000</td>
+                                <td>$100,000</td>
+                            </tr>
+                            <tr>
+                                <td>Training</td>
+                                <td>$40,000</td>
+                                <td>$10,000</td>
+                                <td>$10,000</td>
+                                <td>$10,000</td>
+                                <td>$10,000</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Total Costs</strong></td>
+                                <td><strong>$915,000</strong></td>
+                                <td><strong>$480,000</strong></td>
+                                <td><strong>$497,500</strong></td>
+                                <td><strong>$515,875</strong></td>
+                                <td><strong>$535,169</strong></td>
+                            </tr>
+                            <tr>
+                                <td colspan="6"><strong>BENEFITS</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Breach Cost Avoidance</td>
+                                <td>$200,000</td>
+                                <td>$555,000</td>
+                                <td>$555,000</td>
+                                <td>$555,000</td>
+                                <td>$555,000</td>
+                            </tr>
+                            <tr>
+                                <td>Compliance Savings</td>
+                                <td>$50,000</td>
+                                <td>$150,000</td>
+                                <td>$150,000</td>
+                                <td>$150,000</td>
+                                <td>$150,000</td>
+                            </tr>
+                            <tr>
+                                <td>Operational Efficiency</td>
+                                <td>$75,000</td>
+                                <td>$220,000</td>
+                                <td>$220,000</td>
+                                <td>$220,000</td>
+                                <td>$220,000</td>
+                            </tr>
+                            <tr>
+                                <td>Insurance Premium Reduction</td>
+                                <td>$0</td>
+                                <td>$50,000</td>
+                                <td>$50,000</td>
+                                <td>$50,000</td>
+                                <td>$50,000</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Total Benefits</strong></td>
+                                <td><strong>$325,000</strong></td>
+                                <td><strong>$975,000</strong></td>
+                                <td><strong>$975,000</strong></td>
+                                <td><strong>$975,000</strong></td>
+                                <td><strong>$975,000</strong></td>
+                            </tr>
+                            <tr>
+                                <td colspan="6"><strong>SUMMARY</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Net Benefit</td>
+                                <td>($590,000)</td>
+                                <td>$495,000</td>
+                                <td>$477,500</td>
+                                <td>$459,125</td>
+                                <td>$439,831</td>
+                            </tr>
+                            <tr>
+                                <td>Cumulative Net Benefit</td>
+                                <td>($590,000)</td>
+                                <td>($95,000)</td>
+                                <td>$382,500</td>
+                                <td>$841,625</td>
+                                <td>$1,281,456</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="info-box success">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    <div class="info-box-content">
+                        <h4>Sample Results Summary</h4>
+                        <p><strong>5-Year TCO:</strong> $2,943,544<br>
+                        <strong>5-Year Total Benefits:</strong> $4,225,000<br>
+                        <strong>5-Year Net Benefit:</strong> $1,281,456<br>
+                        <strong>ROI:</strong> 44%<br>
+                        <strong>Payback Period:</strong> 25 months</p>
+                    </div>
+                </div>
+
+                <h3>Sensitivity Analysis</h3>
+
+                <p>
+                    Business cases should include sensitivity analysis showing how ROI changes under different assumptions:
+                </p>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Scenario</th>
+                                <th>Key Variable</th>
+                                <th>5-Year ROI</th>
+                                <th>Payback Period</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Conservative</strong></td>
+                                <td>50% of estimated breach avoidance</td>
+                                <td>18%</td>
+                                <td>36 months</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Base Case</strong></td>
+                                <td>As calculated above</td>
+                                <td>44%</td>
+                                <td>25 months</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Optimistic</strong></td>
+                                <td>1 breach avoided in year 3</td>
+                                <td>187%</td>
+                                <td>14 months</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Breach Scenario</strong></td>
+                                <td>Breach occurs without PAM</td>
+                                <td>250%+</td>
+                                <td>Immediate</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="stakeholders">
+                <h2>Presenting to Stakeholders</h2>
+
+                <p>
+                    Different stakeholders care about different aspects of the PAM business case. Tailor your presentation to your audience.
+                </p>
+
+                <h3>Stakeholder-Specific Messaging</h3>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        </div>
+                        <div class="feature-title">CEO / Executive Team</div>
+                        <p class="feature-description"><strong>Focus:</strong> Business risk, competitive advantage, board-level security<br><strong>Key Messages:</strong> Privileged access is the #1 attack vector; PAM protects the organization's most critical assets; Board and cyber insurance increasingly require PAM.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                        </div>
+                        <div class="feature-title">CFO / Finance</div>
+                        <p class="feature-description"><strong>Focus:</strong> ROI, TCO, risk quantification<br><strong>Key Messages:</strong> Positive ROI within 24-36 months; Quantifiable risk reduction in financial terms; Compliance cost savings offset operational costs.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                        </div>
+                        <div class="feature-title">CISO / Security</div>
+                        <p class="feature-description"><strong>Focus:</strong> Risk reduction, security capabilities, integration<br><strong>Key Messages:</strong> Eliminates credential theft risk; Provides complete visibility and control; Integrates with SIEM, SOAR, Zero Trust strategy.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                        </div>
+                        <div class="feature-title">CIO / IT Leadership</div>
+                        <p class="feature-description"><strong>Focus:</strong> Operations, integration, user impact<br><strong>Key Messages:</strong> Operational efficiency gains; Integrates with existing infrastructure; Minimal user friction with proper implementation.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                        </div>
+                        <div class="feature-title">Audit / Compliance</div>
+                        <p class="feature-description"><strong>Focus:</strong> Regulatory requirements, audit evidence<br><strong>Key Messages:</strong> Direct control mapping to PCI, SOX, HIPAA; Automated compliance reporting; Complete audit trail for every privileged action.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        </div>
+                        <div class="feature-title">Board of Directors</div>
+                        <p class="feature-description"><strong>Focus:</strong> Governance, fiduciary duty, reputation<br><strong>Key Messages:</strong> Demonstrates security due diligence; Reduces personal liability exposure; Protects organizational reputation.</p>
+                    </div>
+                </div>
+
+                <h3>Executive Summary Template</h3>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>One-Page Executive Summary Structure</h4>
+                        <p><strong>The Problem:</strong> 2-3 sentences on the risk of unmanaged privileged access and recent industry breaches.<br><br>
+                        <strong>The Solution:</strong> 2-3 sentences on what PAM provides and how it addresses the problem.<br><br>
+                        <strong>Financial Summary:</strong> Table showing 5-year TCO, benefits, ROI, and payback period.<br><br>
+                        <strong>Risk Summary:</strong> Before/after comparison of key risk metrics.<br><br>
+                        <strong>Recommendation:</strong> Clear ask with timeline and next steps.<br><br>
+                        <strong>Alternative Analysis:</strong> Brief comparison of doing nothing, partial implementation, or full implementation.</p>
+                    </div>
+                </div>
+
+                <h3>Common Objections & Responses</h3>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Objection</th>
+                                <th>Response</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>"It's too expensive"</td>
+                                <td>The cost of a single breach ($4-10M) exceeds multiple years of PAM investment. Cyber insurance premiums alone may offset 10-20% of costs.</td>
+                            </tr>
+                            <tr>
+                                <td>"We haven't had a breach"</td>
+                                <td>That you know of. Average dwell time is 197 days. Also, 27% of organizations experience a breach within 2 years – it's a matter of when, not if.</td>
+                            </tr>
+                            <tr>
+                                <td>"It will slow down IT operations"</td>
+                                <td>Modern PAM solutions are designed for minimal friction. Transparent credential injection and automated workflows often increase operational efficiency.</td>
+                            </tr>
+                            <tr>
+                                <td>"We have other security priorities"</td>
+                                <td>Privileged access is involved in 80% of breaches. No other single control addresses as much risk. PAM should be foundational, not optional.</td>
+                            </tr>
+                            <tr>
+                                <td>"Can't we just use MFA?"</td>
+                                <td>MFA is necessary but not sufficient. MFA protects initial access; PAM provides complete lifecycle management, monitoring, and credential security.</td>
+                            </tr>
+                            <tr>
+                                <td>"Our compliance auditors haven't required it"</td>
+                                <td>They will. All major frameworks are tightening privileged access requirements. Proactive implementation is easier than reactive scrambling.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Building Internal Support</h3>
+
+                <p>
+                    Successful PAM initiatives require broad organizational support. Strategies for building that support:
+                </p>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Identify Champions</h4>
+                            <p>Find allies in IT operations, compliance, and business units who understand the risk and will advocate for the project.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Document Current State Pain</h4>
+                            <p>Gather specific examples: password reset tickets, audit findings, vendor access incidents, compliance gaps. Concrete examples are more compelling than statistics.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Start Small, Show Value</h4>
+                            <p>Propose a pilot covering a specific high-risk area. Demonstrated success in the pilot builds momentum for broader deployment.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Leverage External Events</h4>
+                            <p>Use recent breaches in your industry, new regulatory requirements, or cyber insurance renewal as catalysts for action.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Address User Concerns Early</h4>
+                            <p>Engage with end users who will be affected. Address concerns about workflow changes and emphasize benefits like not having to remember passwords.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="page-navigation">
+                <a href="pam-fundamentals.html" class="prev-page">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    <span>What is PAM?</span>
+                </a>
+                <a href="privileged-accounts.html" class="next-page">
+                    <span>Privileged Accounts</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"></polyline></svg>
+    </button>
+
+    <script src="../js/main.js"></script>
+</body>
+</html>

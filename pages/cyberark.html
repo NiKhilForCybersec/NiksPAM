@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CyberArk Deep Dive - Architecture, components, deployment, and best practices for the market-leading PAM solution">
+    <title>CyberArk Deep Dive | PAM & KMS Guide</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="scroll-progress" id="scroll-progress"></div>
+
+    <header class="header">
+        <div class="header-content">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                PAM & KMS Guide
+            </a>
+            
+            <nav class="header-nav">
+                <a href="pam-fundamentals.html">PAM</a>
+                <a href="kms-fundamentals.html">KMS</a>
+                <a href="vendors.html" class="active">Vendors</a>
+                <a href="implementation.html">Implementation</a>
+            </nav>
+            
+            <div class="header-actions">
+                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-title">Vendors</div>
+            <ul class="sidebar-nav">
+                <li><a href="vendors.html">Vendor Overview</a></li>
+                <li><a href="cyberark.html" class="active">CyberArk</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <main class="main-wrapper">
+        <div class="main-content">
+            <nav class="breadcrumb">
+                <a href="../index.html">Home</a>
+                <span class="breadcrumb-separator">/</span>
+                <a href="vendors.html">Vendors</a>
+                <span class="breadcrumb-separator">/</span>
+                <span>CyberArk</span>
+            </nav>
+
+            <div class="page-header">
+                <h1>CyberArk Deep Dive</h1>
+                <p class="page-description">
+                    CyberArk is the market leader in Privileged Access Management, consistently ranked #1 by Gartner and Forrester. This guide covers their architecture, components, deployment options, and operational best practices.
+                </p>
+            </div>
+
+            <div class="toc">
+                <div class="toc-title">On This Page</div>
+                <ul class="toc-list">
+                    <li><a href="#overview"><span class="toc-number">1.</span> Company & Product Overview</a></li>
+                    <li><a href="#architecture"><span class="toc-number">2.</span> Architecture</a></li>
+                    <li><a href="#components"><span class="toc-number">3.</span> Core Components</a></li>
+                    <li><a href="#deployment"><span class="toc-number">4.</span> Deployment Models</a></li>
+                    <li><a href="#safes"><span class="toc-number">5.</span> Safes & Policies</a></li>
+                    <li><a href="#platforms"><span class="toc-number">6.</span> Platform Management</a></li>
+                    <li><a href="#integrations"><span class="toc-number">7.</span> Key Integrations</a></li>
+                    <li><a href="#certification"><span class="toc-number">8.</span> Certification Path</a></li>
+                </ul>
+            </div>
+
+            <section id="overview">
+                <h2>Company & Product Overview</h2>
+                
+                <p>
+                    CyberArk Software Ltd. was founded in 1999 in Israel and has grown to become the dominant PAM vendor globally. They pioneered the concept of the "Digital Vault" for securing privileged credentials.
+                </p>
+
+                <h3>Market Position</h3>
+                <ul>
+                    <li><strong>Gartner Magic Quadrant:</strong> Leader for 7+ consecutive years</li>
+                    <li><strong>Forrester Wave:</strong> Leader in PAM</li>
+                    <li><strong>Market share:</strong> Largest PAM vendor by revenue</li>
+                    <li><strong>Customer base:</strong> Over 8,000 organizations including 50%+ of Fortune 500</li>
+                </ul>
+
+                <h3>Product Portfolio</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Function</th>
+                                <th>Deployment</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Privileged Access Manager</strong> (PAM)</td>
+                                <td>Core PAM - vault, session management, password rotation</td>
+                                <td>Self-hosted or Privilege Cloud</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Privilege Cloud</strong></td>
+                                <td>SaaS PAM offering</td>
+                                <td>Cloud (SaaS)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Endpoint Privilege Manager</strong> (EPM)</td>
+                                <td>Least privilege on endpoints, application control</td>
+                                <td>Agent-based</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Secrets Manager</strong> (Conjur)</td>
+                                <td>Secrets management for DevOps/applications</td>
+                                <td>Self-hosted or cloud</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Identity</strong></td>
+                                <td>SSO, MFA, lifecycle management (Idaptive acquisition)</td>
+                                <td>Cloud</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Vendor Privileged Access Manager</strong></td>
+                                <td>Secure third-party/vendor access</td>
+                                <td>Cloud</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Cloud Entitlements Manager</strong></td>
+                                <td>CIEM - cloud permissions management</td>
+                                <td>Cloud</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Self-Hosted vs. Privilege Cloud</h4>
+                        <p>Traditional CyberArk is self-hosted (you run the infrastructure). Privilege Cloud is the SaaS version where CyberArk manages the vault and components. Many organizations start self-hosted and migrate to cloud, or use hybrid models with cloud vault and on-prem connectors.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="architecture">
+                <h2>Architecture</h2>
+
+                <p>
+                    CyberArk uses a layered architecture with the Digital Vault at the center:
+                </p>
+
+                <h3>High-Level Architecture</h3>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+┌─────────────────────────────────────────────────────────────────┐
+│                         USER ACCESS LAYER                        │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────────┐  │
+│  │   PVWA      │  │  PSM for    │  │  REST API / SDK         │  │
+│  │  (Web UI)   │  │  Web/SSH    │  │  (Application Access)   │  │
+│  └──────┬──────┘  └──────┬──────┘  └────────────┬────────────┘  │
+└─────────┼────────────────┼──────────────────────┼───────────────┘
+          │                │                      │
+          ▼                ▼                      ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                      MANAGEMENT LAYER                            │
+│  ┌─────────────────────────────────────────────────────────────┐│
+│  │                    Central Policy Manager (CPM)              ││
+│  │         Password rotation, verification, reconciliation      ││
+│  └─────────────────────────────────────────────────────────────┘│
+│  ┌─────────────────────────────────────────────────────────────┐│
+│  │               Privileged Session Manager (PSM)               ││
+│  │           Session proxy, recording, live monitoring          ││
+│  └─────────────────────────────────────────────────────────────┘│
+│  ┌─────────────────────────────────────────────────────────────┐│
+│  │              Privileged Threat Analytics (PTA)               ││
+│  │         Behavioral analytics, anomaly detection              ││
+│  └─────────────────────────────────────────────────────────────┘│
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                        VAULT LAYER                               │
+│  ┌─────────────────────────────────────────────────────────────┐│
+│  │                    DIGITAL VAULT                             ││
+│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  ││
+│  │  │   Safes     │  │  Server Key │  │   Audit Logs        │  ││
+│  │  │ (Encrypted) │  │  (HSM opt)  │  │   (Tamper-proof)    │  ││
+│  │  └─────────────┘  └─────────────┘  └─────────────────────┘  ││
+│  └─────────────────────────────────────────────────────────────┘│
+└─────────────────────────────────────────────────────────────────┘
+                </pre>
+
+                <h3>Network Architecture Considerations</h3>
+
+                <ul>
+                    <li><strong>Vault server:</strong> Place in most secure network zone (internal/restricted)</li>
+                    <li><strong>PVWA:</strong> Can be in DMZ or internal, depending on access requirements</li>
+                    <li><strong>PSM:</strong> Needs network access to target systems</li>
+                    <li><strong>CPM:</strong> Needs network access to target systems for password changes</li>
+                    <li><strong>Connectors:</strong> Bridge between components and target systems</li>
+                </ul>
+
+                <h3>Port Requirements</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Source</th>
+                                <th>Destination</th>
+                                <th>Port</th>
+                                <th>Purpose</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>PVWA</td>
+                                <td>Vault</td>
+                                <td>1858</td>
+                                <td>Vault protocol</td>
+                            </tr>
+                            <tr>
+                                <td>CPM</td>
+                                <td>Vault</td>
+                                <td>1858</td>
+                                <td>Vault protocol</td>
+                            </tr>
+                            <tr>
+                                <td>PSM</td>
+                                <td>Vault</td>
+                                <td>1858</td>
+                                <td>Vault protocol</td>
+                            </tr>
+                            <tr>
+                                <td>Users</td>
+                                <td>PVWA</td>
+                                <td>443</td>
+                                <td>Web interface</td>
+                            </tr>
+                            <tr>
+                                <td>Users</td>
+                                <td>PSM</td>
+                                <td>3389</td>
+                                <td>RDP proxy</td>
+                            </tr>
+                            <tr>
+                                <td>PSM</td>
+                                <td>Targets</td>
+                                <td>3389/22/etc.</td>
+                                <td>Target connections</td>
+                            </tr>
+                            <tr>
+                                <td>CPM</td>
+                                <td>Targets</td>
+                                <td>Various</td>
+                                <td>Password management</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="components">
+                <h2>Core Components</h2>
+
+                <h3>Digital Vault</h3>
+                <p>
+                    The heart of CyberArk. A hardened server that stores all credentials encrypted.
+                </p>
+
+                <ul>
+                    <li><strong>Purpose:</strong> Secure storage of credentials, policies, and audit data</li>
+                    <li><strong>Technology:</strong> Proprietary hardened OS, not a standard Windows/Linux server</li>
+                    <li><strong>Encryption:</strong> AES-256 encryption, optional HSM integration for key protection</li>
+                    <li><strong>Access:</strong> Only vault protocol (port 1858), no RDP/SSH to vault</li>
+                    <li><strong>High Availability:</strong> Active-Passive clustering, DR replication</li>
+                </ul>
+
+                <div class="info-box warning">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Vault Server Keys</h4>
+                        <p>The vault uses "Server Keys" to encrypt data. These keys are critical—losing them means losing access to all credentials. Keys can be stored on the vault server (default), on removable media, or in an HSM. For production, HSM is strongly recommended.</p>
+                    </div>
+                </div>
+
+                <h3>Password Vault Web Access (PVWA)</h3>
+                <p>
+                    The web interface for users and administrators.
+                </p>
+
+                <ul>
+                    <li><strong>Purpose:</strong> Web portal for credential access, session launch, administration</li>
+                    <li><strong>Technology:</strong> IIS-based web application</li>
+                    <li><strong>Users:</strong> End users (access credentials), Administrators (manage platform)</li>
+                    <li><strong>Features:</strong> Dashboard, safe management, account management, reports, policies</li>
+                    <li><strong>Scalability:</strong> Multiple PVWA servers behind load balancer</li>
+                </ul>
+
+                <h3>Central Policy Manager (CPM)</h3>
+                <p>
+                    Automated password management engine.
+                </p>
+
+                <ul>
+                    <li><strong>Purpose:</strong> Change passwords on target systems, verify passwords, reconcile mismatches</li>
+                    <li><strong>How it works:</strong> Connects to vault, retrieves accounts due for rotation, connects to targets, changes passwords</li>
+                    <li><strong>Platforms:</strong> Uses "platforms" (plugins) to know how to change passwords on different system types</li>
+                    <li><strong>Scalability:</strong> Multiple CPMs for distributed environments</li>
+                </ul>
+
+                <h4>CPM Operations</h4>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Operation</th>
+                                <th>What It Does</th>
+                                <th>When It Runs</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Change</strong></td>
+                                <td>Rotate password to new random value</td>
+                                <td>Scheduled or on-demand</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Verify</strong></td>
+                                <td>Confirm vault password matches target</td>
+                                <td>Scheduled or after change</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Reconcile</strong></td>
+                                <td>Reset password using privileged account when out of sync</td>
+                                <td>When verify fails</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Privileged Session Manager (PSM)</h3>
+                <p>
+                    Session proxy and recording server.
+                </p>
+
+                <ul>
+                    <li><strong>Purpose:</strong> Proxy privileged sessions, record all activity, enable monitoring</li>
+                    <li><strong>Technology:</strong> Windows Server with RDS (Remote Desktop Services)</li>
+                    <li><strong>Protocols:</strong> RDP, SSH, HTTPS (web apps), database clients, custom</li>
+                    <li><strong>Recording:</strong> Video recording stored in vault, searchable metadata</li>
+                    <li><strong>Monitoring:</strong> Live session view, ability to terminate sessions</li>
+                </ul>
+
+                <h4>PSM Connection Methods</h4>
+                <ul>
+                    <li><strong>PSM for Windows (RDP):</strong> Native RDP client connects to PSM, PSM proxies to target</li>
+                    <li><strong>PSM for SSH:</strong> SSH client connects to PSM, PSM proxies to target</li>
+                    <li><strong>PSM for Web:</strong> Browser-based access to web applications (via PSM)</li>
+                    <li><strong>PSMP (PSM Proxy):</strong> Linux-based SSH proxy (alternative to Windows PSM)</li>
+                </ul>
+
+                <h3>Privileged Threat Analytics (PTA)</h3>
+                <p>
+                    Behavioral analytics and threat detection.
+                </p>
+
+                <ul>
+                    <li><strong>Purpose:</strong> Detect anomalous privileged activity, alert on threats</li>
+                    <li><strong>Data sources:</strong> Vault logs, Windows events, Syslog, network traffic</li>
+                    <li><strong>Detection:</strong> Machine learning baselines, rule-based alerts</li>
+                    <li><strong>Alerts:</strong> Suspected credential theft, unusual access patterns, risky commands</li>
+                </ul>
+            </section>
+
+            <section id="deployment">
+                <h2>Deployment Models</h2>
+
+                <h3>Self-Hosted (On-Premises)</h3>
+
+                <p>Traditional deployment where you manage all infrastructure:</p>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Component</th>
+                                <th>Typical Sizing (Small)</th>
+                                <th>Typical Sizing (Large)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Vault</strong></td>
+                                <td>1 server + DR</td>
+                                <td>1 server + DR per region</td>
+                            </tr>
+                            <tr>
+                                <td><strong>PVWA</strong></td>
+                                <td>2 servers (HA)</td>
+                                <td>4+ servers behind LB</td>
+                            </tr>
+                            <tr>
+                                <td><strong>CPM</strong></td>
+                                <td>1-2 servers</td>
+                                <td>Multiple per region</td>
+                            </tr>
+                            <tr>
+                                <td><strong>PSM</strong></td>
+                                <td>2 servers</td>
+                                <td>Farm of 10+ servers</td>
+                            </tr>
+                            <tr>
+                                <td><strong>PTA</strong></td>
+                                <td>1 server</td>
+                                <td>Clustered</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Privilege Cloud (SaaS)</h3>
+
+                <p>CyberArk-managed vault in the cloud:</p>
+
+                <ul>
+                    <li><strong>Vault:</strong> Managed by CyberArk in their cloud</li>
+                    <li><strong>PVWA:</strong> Cloud-hosted web interface</li>
+                    <li><strong>Connector:</strong> You deploy "Privilege Cloud Connector" on-premises</li>
+                    <li><strong>PSM:</strong> Can be cloud-hosted or on-premises</li>
+                    <li><strong>CPM:</strong> Runs on connector, manages on-prem systems</li>
+                </ul>
+
+                <div class="info-box success">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    <div class="info-box-content">
+                        <h4>Privilege Cloud Benefits</h4>
+                        <p>Faster deployment (weeks vs. months), CyberArk handles patching/upgrades, built-in HA/DR, predictable subscription costs. Trade-off: Less control, data in CyberArk's cloud (may be concern for some industries).</p>
+                    </div>
+                </div>
+
+                <h3>Hybrid Deployment</h3>
+
+                <p>Combination of cloud and on-premises:</p>
+
+                <ul>
+                    <li>Privilege Cloud vault + on-premises PSM servers</li>
+                    <li>On-premises vault + cloud connectors for cloud workloads</li>
+                    <li>Separate vaults for different security zones (IT vs. OT)</li>
+                </ul>
+            </section>
+
+            <section id="safes">
+                <h2>Safes & Policies</h2>
+
+                <h3>What is a Safe?</h3>
+
+                <p>
+                    A "Safe" in CyberArk is a logical container for storing credentials. Think of it as a folder with access controls.
+                </p>
+
+                <ul>
+                    <li><strong>Purpose:</strong> Group related accounts, apply common permissions</li>
+                    <li><strong>Access control:</strong> Users/groups are granted permissions on safes</li>
+                    <li><strong>Typical organization:</strong> By department, application, environment, or sensitivity tier</li>
+                </ul>
+
+                <h4>Safe Organization Examples</h4>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+By Application:
+├── SAP-Production
+├── SAP-Development
+├── Oracle-ERP
+└── Exchange-Servers
+
+By Tier:
+├── Tier0-DomainAdmins
+├── Tier1-ServerAdmins
+├── Tier2-Workstations
+└── ServiceAccounts
+
+By Team:
+├── DBA-Team
+├── Network-Team
+├── Windows-Team
+└── Linux-Team
+                </pre>
+
+                <h3>Safe Permissions</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Permission</th>
+                                <th>What It Allows</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>List accounts</strong></td>
+                                <td>See accounts exist in safe</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Retrieve accounts</strong></td>
+                                <td>View/copy password (manual checkout)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Use accounts</strong></td>
+                                <td>Launch session via PSM</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Add accounts</strong></td>
+                                <td>Create new accounts in safe</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Update account content</strong></td>
+                                <td>Modify account properties</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Delete accounts</strong></td>
+                                <td>Remove accounts from safe</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Manage safe</strong></td>
+                                <td>Modify safe settings</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Manage safe members</strong></td>
+                                <td>Add/remove users from safe</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Platforms (Policies)</h3>
+
+                <p>
+                    A "Platform" defines how CyberArk manages a type of account:
+                </p>
+
+                <ul>
+                    <li><strong>Connection method:</strong> How PSM connects (RDP, SSH, etc.)</li>
+                    <li><strong>Password policy:</strong> Length, complexity, rotation frequency</li>
+                    <li><strong>Password change method:</strong> How CPM changes passwords on this system type</li>
+                    <li><strong>Verification method:</strong> How CPM verifies passwords</li>
+                </ul>
+
+                <h4>Built-in Platforms</h4>
+                <ul>
+                    <li>Windows Server Local Accounts</li>
+                    <li>Windows Domain Accounts</li>
+                    <li>Unix via SSH</li>
+                    <li>Oracle Database</li>
+                    <li>SQL Server</li>
+                    <li>Cisco IOS</li>
+                    <li>VMware vCenter</li>
+                    <li>AWS Access Keys</li>
+                    <li>...and many more</li>
+                </ul>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Custom Platforms</h4>
+                        <p>If CyberArk doesn't have a built-in platform for your system, you can create custom platforms. This involves writing scripts (PowerShell, shell) that CPM executes to change passwords. CyberArk Marketplace has community-contributed platforms.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="platforms">
+                <h2>Platform Management</h2>
+
+                <h3>Account Onboarding</h3>
+
+                <p>Getting accounts into CyberArk:</p>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Discovery</h4>
+                            <p>Use CyberArk Discovery to find privileged accounts (scans AD, servers, etc.)</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Review</h4>
+                            <p>Pending accounts appear in discovery queue. Review and approve for onboarding.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Onboard</h4>
+                            <p>Assign to safe, select platform, optionally set initial password or let CPM change it.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Verify</h4>
+                            <p>CPM verifies it can connect with the credential.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Manage</h4>
+                            <p>Account is now managed—rotation, session recording, access control active.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Bulk Onboarding</h3>
+
+                <p>For large environments, use:</p>
+
+                <ul>
+                    <li><strong>Password Upload Utility:</strong> CSV-based bulk import</li>
+                    <li><strong>REST API:</strong> Programmatic account creation</li>
+                    <li><strong>Accounts Feed:</strong> Automatic onboarding from discovery</li>
+                </ul>
+
+                <h3>Linked Accounts</h3>
+
+                <p>
+                    Some operations require multiple accounts. CyberArk supports "linked accounts":
+                </p>
+
+                <ul>
+                    <li><strong>Logon account:</strong> Account used to authenticate to target</li>
+                    <li><strong>Reconcile account:</strong> Privileged account to reset password if out of sync</li>
+                    <li><strong>Extra pass account:</strong> Additional accounts for complex scenarios</li>
+                </ul>
+            </section>
+
+            <section id="integrations">
+                <h2>Key Integrations</h2>
+
+                <h3>SIEM Integration</h3>
+
+                <ul>
+                    <li><strong>Splunk:</strong> CyberArk Add-on for Splunk with pre-built dashboards</li>
+                    <li><strong>Microsoft Sentinel:</strong> Data connector available</li>
+                    <li><strong>QRadar, ArcSight:</strong> Syslog/CEF forwarding</li>
+                    <li><strong>Data:</strong> Authentication, session start/end, password operations, policy changes</li>
+                </ul>
+
+                <h3>Identity Provider Integration</h3>
+
+                <ul>
+                    <li><strong>Azure AD/Entra ID:</strong> SAML SSO, group sync</li>
+                    <li><strong>Okta:</strong> SAML/OIDC, SCIM provisioning</li>
+                    <li><strong>Ping Identity:</strong> Federation support</li>
+                    <li><strong>LDAP/AD:</strong> Native integration for authentication and provisioning</li>
+                </ul>
+
+                <h3>ITSM Integration</h3>
+
+                <ul>
+                    <li><strong>ServiceNow:</strong> Ticket-based access requests, CMDB sync</li>
+                    <li><strong>BMC Remedy:</strong> Approval workflow integration</li>
+                    <li><strong>Custom:</strong> REST API for any ticketing system</li>
+                </ul>
+
+                <h3>DevOps Integration (Conjur)</h3>
+
+                <ul>
+                    <li><strong>Kubernetes:</strong> Secrets Provider for K8s, sidecar injection</li>
+                    <li><strong>Ansible:</strong> Lookup plugin, credential injection</li>
+                    <li><strong>Jenkins:</strong> Credential binding plugin</li>
+                    <li><strong>Terraform:</strong> Provider for secrets retrieval</li>
+                </ul>
+            </section>
+
+            <section id="certification">
+                <h2>Certification Path</h2>
+
+                <p>
+                    CyberArk offers a certification program for professionals:
+                </p>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Certification</th>
+                                <th>Focus</th>
+                                <th>Audience</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>CyberArk Trustee</strong></td>
+                                <td>Foundational PAM concepts</td>
+                                <td>Anyone starting with CyberArk</td>
+                            </tr>
+                            <tr>
+                                <td><strong>CyberArk Defender</strong></td>
+                                <td>PAM administration, operations</td>
+                                <td>PAM administrators</td>
+                            </tr>
+                            <tr>
+                                <td><strong>CyberArk Sentry</strong></td>
+                                <td>Advanced administration, troubleshooting</td>
+                                <td>Senior administrators</td>
+                            </tr>
+                            <tr>
+                                <td><strong>CyberArk Guardian</strong></td>
+                                <td>Architecture, design, implementation</td>
+                                <td>Architects, consultants</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Training Resources</h3>
+
+                <ul>
+                    <li><strong>CyberArk University:</strong> Official training portal</li>
+                    <li><strong>CyberArk Marketplace:</strong> Plugins, integrations, community content</li>
+                    <li><strong>Documentation:</strong> docs.cyberark.com</li>
+                    <li><strong>Community:</strong> CyberArk Community forums</li>
+                </ul>
+            </section>
+
+            <div class="info-box success">
+                <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <div class="info-box-content">
+                    <h4>Key Takeaways</h4>
+                    <p>CyberArk is the market leader with the most comprehensive PAM platform. Core components: Vault (storage), PVWA (web UI), CPM (password management), PSM (session proxy), PTA (analytics). Understanding CyberArk architecture is valuable for any PAM professional—even if you use a different vendor, the concepts transfer.</p>
+                </div>
+            </div>
+
+            <nav class="page-nav">
+                <a href="vendors.html" class="page-nav-link prev">
+                    <span class="page-nav-label">Previous</span>
+                    <span class="page-nav-title">← Vendor Overview</span>
+                </a>
+                <a href="best-practices.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next</span>
+                    <span class="page-nav-title">Best Practices →</span>
+                </a>
+            </nav>
+        </div>
+
+        <footer class="footer">
+            <p>PAM & KMS Ultimate Guide — A comprehensive enterprise security documentation resource</p>
+        </footer>
+    </main>
+
+    <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+    </button>
+
+    <script src="../js/main.js"></script>
+</body>
+</html>

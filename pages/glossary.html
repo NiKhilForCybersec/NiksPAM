@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PAM & KMS Glossary - Complete terminology reference for Privileged Access Management and Key Management Systems">
+    <title>Glossary | PAM & KMS Guide</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="scroll-progress" id="scroll-progress"></div>
+
+    <header class="header">
+        <div class="header-content">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                PAM & KMS Guide
+            </a>
+            
+            <nav class="header-nav">
+                <a href="pam-fundamentals.html">PAM</a>
+                <a href="kms-fundamentals.html">KMS</a>
+                <a href="vendors.html">Vendors</a>
+                <a href="implementation.html">Implementation</a>
+            </nav>
+            
+            <div class="header-actions">
+                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-title">Getting Started</div>
+            <ul class="sidebar-nav">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="introduction.html">Introduction</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">PAM Fundamentals</div>
+            <ul class="sidebar-nav">
+                <li><a href="pam-fundamentals.html">What is PAM?</a></li>
+                <li><a href="pam-components.html">Core Components</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">KMS Fundamentals</div>
+            <ul class="sidebar-nav">
+                <li><a href="kms-fundamentals.html">What is KMS?</a></li>
+                <li><a href="cryptographic-basics.html">Cryptographic Basics</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">Resources</div>
+            <ul class="sidebar-nav">
+                <li><a href="glossary.html" class="active">Glossary</a></li>
+                <li><a href="interview-prep.html">Interview Prep</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <main class="main-wrapper">
+        <div class="main-content">
+            <nav class="breadcrumb">
+                <a href="../index.html">Home</a>
+                <span class="breadcrumb-separator">/</span>
+                <a href="glossary.html">Resources</a>
+                <span class="breadcrumb-separator">/</span>
+                <span>Glossary</span>
+            </nav>
+
+            <div class="page-header">
+                <h1>PAM & KMS Glossary</h1>
+                <p class="page-description">
+                    A comprehensive reference of terminology used in Privileged Access Management, Key Management Systems, and related security domains. Use this as a quick reference during your studies or work.
+                </p>
+            </div>
+
+            <div class="toc">
+                <div class="toc-title">Jump to Section</div>
+                <ul class="toc-list" style="display: flex; flex-wrap: wrap; gap: var(--space-2);">
+                    <li><a href="#section-a">A</a></li>
+                    <li><a href="#section-b">B</a></li>
+                    <li><a href="#section-c">C</a></li>
+                    <li><a href="#section-d">D</a></li>
+                    <li><a href="#section-e">E</a></li>
+                    <li><a href="#section-f">F</a></li>
+                    <li><a href="#section-h">H</a></li>
+                    <li><a href="#section-i">I</a></li>
+                    <li><a href="#section-j">J</a></li>
+                    <li><a href="#section-k">K</a></li>
+                    <li><a href="#section-l">L</a></li>
+                    <li><a href="#section-m">M</a></li>
+                    <li><a href="#section-n">N</a></li>
+                    <li><a href="#section-o">O</a></li>
+                    <li><a href="#section-p">P</a></li>
+                    <li><a href="#section-r">R</a></li>
+                    <li><a href="#section-s">S</a></li>
+                    <li><a href="#section-t">T</a></li>
+                    <li><a href="#section-v">V</a></li>
+                    <li><a href="#section-z">Z</a></li>
+                </ul>
+            </div>
+
+            <section id="section-a">
+                <h2>A</h2>
+                
+                <div class="glossary-term">
+                    <h3>A2A (Application-to-Application)</h3>
+                    <p>Password management for non-human accounts where applications need to authenticate to other applications or databases. PAM solutions provide APIs for applications to retrieve credentials without hard-coding them.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>Access Control List (ACL)</h3>
+                    <p>A list that defines which users or systems have permission to access specific resources and what operations they can perform.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>AES (Advanced Encryption Standard)</h3>
+                    <p>A symmetric encryption algorithm adopted by the U.S. government as the standard for encrypting sensitive data. AES-256 (256-bit key) is the most common strength used in enterprise environments.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>Asymmetric Encryption</h3>
+                    <p>Encryption using a mathematically related key pair: a public key (can be shared) and a private key (must be kept secret). Also called public-key cryptography. Used for digital signatures, key exchange, and encrypting small amounts of data.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>Audit Trail</h3>
+                    <p>A chronological record of system activities that enables reconstruction and examination of events. In PAM, this includes who accessed what credential, when, from where, and what they did during their session.</p>
+                </div>
+            </section>
+
+            <section id="section-b">
+                <h2>B</h2>
+                
+                <div class="glossary-term">
+                    <h3>Break-Glass Access</h3>
+                    <p>Emergency access procedure that bypasses normal approval workflows when immediate access is required. Typically triggers enhanced logging and alerts, and requires post-incident justification.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>Brokered Access</h3>
+                    <p>Access method where a proxy (the broker) establishes the connection to the target system on behalf of the user. The user never directly connects to the target or sees the credential. This is how PAM session management works.</p>
+                </div>
+            </section>
+
+            <section id="section-c">
+                <h2>C</h2>
+                
+                <div class="glossary-term">
+                    <h3>CA (Certificate Authority)</h3>
+                    <p>An entity that issues digital certificates. The CA verifies the identity of certificate requesters and digitally signs certificates with its private key. CAs can be public (DigiCert, Let's Encrypt) or private (internal enterprise CA).</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>Checkout/Checkin</h3>
+                    <p>The process of temporarily claiming exclusive access to a credential (checkout) and returning it when finished (checkin). Prevents multiple people from using the same credential simultaneously.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>Ciphertext</h3>
+                    <p>The encrypted form of data. Ciphertext is unreadable without the decryption key. Contrast with plaintext.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>CPM (Central Password Manager)</h3>
+                    <p>CyberArk-specific term for the component that automatically rotates passwords on target systems. Generic term: Password Rotation Engine.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>Credential Injection</h3>
+                    <p>The process where PAM automatically enters credentials into the login prompt of a target system so users never see or type the password. This is done by the session manager component.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>Credential Vaulting</h3>
+                    <p>Securely storing credentials in an encrypted repository (vault) with access controls, audit logging, and automated management capabilities.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>Cryptoperiod</h3>
+                    <p>The time span during which a specific cryptographic key is authorized for use. After the cryptoperiod expires, the key should be rotated.</p>
+                </div>
+            </section>
+
+            <section id="section-d">
+                <h2>D</h2>
+                
+                <div class="glossary-term">
+                    <h3>DEK (Data Encryption Key)</h3>
+                    <p>A key used directly to encrypt actual data (files, database records, etc.). DEKs are typically protected by higher-level Key Encryption Keys (KEKs) in a key hierarchy.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>Digital Signature</h3>
+                    <p>A cryptographic mechanism that proves the authenticity and integrity of a message or document. Created using the signer's private key and verified using their public key.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>Discovery</h3>
+                    <p>The process of scanning an environment to identify privileged accounts that should be managed by PAM. Can be network-based, directory-based, or cloud-based.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>Dual Control</h3>
+                    <p>A security principle requiring two or more people to complete a sensitive action. In PAM, this might mean two approvers must approve a request, or two people must be present for break-glass access.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>Dynamic Secrets</h3>
+                    <p>Credentials generated on-demand with short lifespans that are automatically revoked after use. A key feature of HashiCorp Vault and modern secrets management. Eliminates standing credentials.</p>
+                </div>
+            </section>
+
+            <section id="section-e">
+                <h2>E</h2>
+                
+                <div class="glossary-term">
+                    <h3>Envelope Encryption</h3>
+                    <p>A key management pattern where data is encrypted with a Data Encryption Key (DEK), and the DEK is encrypted with a Key Encryption Key (KEK). This allows efficient key rotation without re-encrypting all data.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>Ephemeral Credentials</h3>
+                    <p>Short-lived credentials that exist only for the duration of a specific session or task. After use, they're automatically revoked or expire. Reduces the window of exposure if credentials are compromised.</p>
+                </div>
+            </section>
+
+            <section id="section-f">
+                <h2>F</h2>
+                
+                <div class="glossary-term">
+                    <h3>FIPS 140-2/140-3</h3>
+                    <p>Federal Information Processing Standards that specify security requirements for cryptographic modules. FIPS 140-2 Level 3 is commonly required for HSMs in regulated environments. FIPS 140-3 is the newer version.</p>
+                </div>
+            </section>
+
+            <section id="section-h">
+                <h2>H</h2>
+                
+                <div class="glossary-term">
+                    <h3>Hash</h3>
+                    <p>A fixed-size output produced by a hash function from variable-size input. Hashes are one-way (cannot be reversed) and deterministic (same input always produces same output). Used for integrity verification and password storage.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>HMAC (Hash-based Message Authentication Code)</h3>
+                    <p>A type of message authentication code calculated using a cryptographic hash function and a secret key. Provides both integrity and authenticity.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>HSM (Hardware Security Module)</h3>
+                    <p>A dedicated physical device that securely generates, stores, and manages cryptographic keys. HSMs are tamper-resistant and provide the highest level of key protection. Required for many compliance standards.</p>
+                </div>
+            </section>
+
+            <section id="section-i">
+                <h2>I</h2>
+                
+                <div class="glossary-term">
+                    <h3>IdP (Identity Provider)</h3>
+                    <p>A system that creates, maintains, and manages identity information and provides authentication services. Examples: Azure AD, Okta, Ping Identity. PAM solutions typically integrate with IdPs for SSO.</p>
+                </div>
+            </section>
+
+            <section id="section-j">
+                <h2>J</h2>
+                
+                <div class="glossary-term">
+                    <h3>JIT (Just-In-Time) Access</h3>
+                    <p>A PAM approach where privileged access is granted only when needed and for only as long as needed. Users don't have standing privileges; they request access which is granted temporarily.</p>
+                </div>
+            </section>
+
+            <section id="section-k">
+                <h2>K</h2>
+                
+                <div class="glossary-term">
+                    <h3>KEK (Key Encryption Key)</h3>
+                    <p>A key used to encrypt other keys rather than data directly. Part of a key hierarchy. Master keys and key-wrapping keys are types of KEKs.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>Key Hierarchy</h3>
+                    <p>A structured arrangement of cryptographic keys where higher-level keys protect lower-level keys. Typically: Master Key → Key Encryption Keys → Data Encryption Keys → Data.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>Key Rotation</h3>
+                    <p>The process of replacing a cryptographic key with a new one. For symmetric keys, this may involve re-encrypting data. For asymmetric keys, this involves generating new key pairs.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>Key Wrapping</h3>
+                    <p>Encrypting one key with another key for secure storage or transmission. The protected key is "wrapped" and can only be used after being "unwrapped" with the wrapping key.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>KMIP (Key Management Interoperability Protocol)</h3>
+                    <p>An OASIS standard that defines a single, comprehensive protocol for communication between key management systems and encryption systems. Enables interoperability between different vendor solutions.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>KMS (Key Management System)</h3>
+                    <p>A system that manages the lifecycle of cryptographic keys: generation, storage, distribution, rotation, and destruction. Can be software, hardware (HSM), or cloud-based.</p>
+                </div>
+            </section>
+
+            <section id="section-l">
+                <h2>L</h2>
+                
+                <div class="glossary-term">
+                    <h3>Least Privilege</h3>
+                    <p>The security principle that users should have only the minimum access necessary to perform their job functions. A core principle driving PAM and JIT access implementations.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>Live Session Monitoring</h3>
+                    <p>The ability to watch privileged sessions in real-time. Security teams can observe what users are doing and terminate sessions if suspicious activity is detected.</p>
+                </div>
+            </section>
+
+            <section id="section-m">
+                <h2>M</h2>
+                
+                <div class="glossary-term">
+                    <h3>Master Key</h3>
+                    <p>The top-level key in a key hierarchy. Protects all other keys. Master keys are typically stored in HSMs and never exposed in plaintext outside the HSM.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>MFA (Multi-Factor Authentication)</h3>
+                    <p>Authentication requiring two or more verification factors: something you know (password), something you have (token, phone), or something you are (biometric). Critical for PAM access.</p>
+                </div>
+            </section>
+
+            <section id="section-n">
+                <h2>N</h2>
+                
+                <div class="glossary-term">
+                    <h3>NLA (Network Level Authentication)</h3>
+                    <p>A security feature for RDP that requires authentication before a full remote desktop connection is established. PAM session managers must support NLA for Windows systems.</p>
+                </div>
+            </section>
+
+            <section id="section-o">
+                <h2>O</h2>
+                
+                <div class="glossary-term">
+                    <h3>OIDC (OpenID Connect)</h3>
+                    <p>An authentication layer on top of OAuth 2.0. Commonly used for SSO integration between PAM solutions and identity providers.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>Orphan Account</h3>
+                    <p>A privileged account that no longer has an associated owner (e.g., the employee left the company). Orphan accounts are security risks and should be identified and remediated.</p>
+                </div>
+            </section>
+
+            <section id="section-p">
+                <h2>P</h2>
+                
+                <div class="glossary-term">
+                    <h3>PAM (Privileged Access Management)</h3>
+                    <p>A category of solutions that secure, control, and monitor privileged access to critical systems and data. Includes credential vaulting, session management, and access control.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>Password Rotation</h3>
+                    <p>Automatically changing passwords on a schedule or after use. PAM solutions connect to target systems to change passwords and store the new values in the vault.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>PIM (Privileged Identity Management)</h3>
+                    <p>Managing the identities that have or can obtain privileged access. Often used interchangeably with PAM, though PIM focuses more on the identity lifecycle aspect.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>PKI (Public Key Infrastructure)</h3>
+                    <p>The framework of policies, procedures, and technology for managing digital certificates and public/private key pairs. Includes Certificate Authorities, registration authorities, and certificate repositories.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>Plaintext</h3>
+                    <p>Data in its original, readable form before encryption. Contrast with ciphertext.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>Privileged Account</h3>
+                    <p>An account with elevated permissions that can perform administrative functions, access sensitive data, or make system-wide changes. Examples: root, Administrator, DBA accounts.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>PSM (Privileged Session Manager)</h3>
+                    <p>The PAM component that acts as a proxy for privileged sessions. Enables credential injection, session recording, and live monitoring without users directly connecting to targets.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>PTA (Privileged Threat Analytics)</h3>
+                    <p>Analytics capabilities that detect anomalous privileged behavior. Uses machine learning and behavioral analysis to identify potential threats or compromised accounts.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>PVWA (Password Vault Web Access)</h3>
+                    <p>CyberArk-specific term for the web portal where users access the PAM system. Generic term: PAM Web Portal.</p>
+                </div>
+            </section>
+
+            <section id="section-r">
+                <h2>R</h2>
+                
+                <div class="glossary-term">
+                    <h3>RBAC (Role-Based Access Control)</h3>
+                    <p>An access control method where permissions are assigned to roles, and users are assigned to roles. Simplifies access management compared to assigning permissions directly to users.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>Reconciliation</h3>
+                    <p>The process of re-synchronizing credentials when PAM's stored password doesn't match the actual password on the target system. Uses a reconciliation account to reset the password.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>RSA</h3>
+                    <p>A widely used asymmetric encryption algorithm named after its inventors (Rivest, Shamir, Adleman). Common for TLS certificates and code signing. Minimum recommended key size is 2048 bits.</p>
+                </div>
+            </section>
+
+            <section id="section-s">
+                <h2>S</h2>
+                
+                <div class="glossary-term">
+                    <h3>Safe</h3>
+                    <p>CyberArk term for a logical container within the vault that holds a group of credentials with common access policies. Other vendors may call this a folder, container, or secret path.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>SAML (Security Assertion Markup Language)</h3>
+                    <p>An XML-based standard for exchanging authentication and authorization data between parties, particularly between an identity provider and a service provider. Used for SSO.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>Secret</h3>
+                    <p>Any sensitive credential or data that should be protected. Includes passwords, API keys, tokens, certificates, and encryption keys.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>Secrets Management</h3>
+                    <p>The process of securely storing, accessing, and distributing secrets (credentials, API keys, etc.) to applications and services. HashiCorp Vault is a leading secrets management solution.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>Service Account</h3>
+                    <p>An account used by an application, service, or automated process rather than a human user. Service accounts often have elevated privileges and don't rotate passwords frequently, making them high-value targets.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>Session Recording</h3>
+                    <p>Capturing a complete record of a privileged session including video, keystrokes, and commands. Used for audit, compliance, and forensic investigation.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>SSH Key</h3>
+                    <p>An asymmetric key pair used for SSH authentication. The private key stays with the user; the public key is placed on servers. PAM can vault and rotate SSH keys.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>SSO (Single Sign-On)</h3>
+                    <p>Authentication scheme that allows users to log in once and access multiple applications without re-authenticating. PAM solutions integrate with SSO via SAML or OIDC.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>Symmetric Encryption</h3>
+                    <p>Encryption using the same key for both encryption and decryption. Fast and efficient for bulk data encryption. AES is the most common symmetric algorithm.</p>
+                </div>
+            </section>
+
+            <section id="section-t">
+                <h2>T</h2>
+                
+                <div class="glossary-term">
+                    <h3>TDE (Transparent Data Encryption)</h3>
+                    <p>Database feature that encrypts data at rest without application changes. The database encrypts data when writing to disk and decrypts when reading. Managed encryption keys are essential for TDE.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>TLS (Transport Layer Security)</h3>
+                    <p>Cryptographic protocol that provides secure communication over networks. Successor to SSL. Uses both asymmetric (for key exchange) and symmetric (for data encryption) cryptography.</p>
+                </div>
+            </section>
+
+            <section id="section-v">
+                <h2>V</h2>
+                
+                <div class="glossary-term">
+                    <h3>Vault</h3>
+                    <p>A secure repository for storing sensitive credentials and secrets. In PAM, the vault is the central component that stores privileged credentials encrypted at rest with strict access controls.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>Verification</h3>
+                    <p>In PAM, the process of testing that a stored credential can successfully authenticate to its target system. Verifications are run after rotations to ensure the new password works.</p>
+                </div>
+            </section>
+
+            <section id="section-z">
+                <h2>Z</h2>
+                
+                <div class="glossary-term">
+                    <h3>Zeroization</h3>
+                    <p>The process of erasing sensitive data (especially cryptographic keys) from a device so it cannot be recovered. HSMs perform zeroization when tamper events are detected.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>Zero Standing Privileges (ZSP)</h3>
+                    <p>A security model where users have no persistent privileged access. All privileged access is granted just-in-time based on request and approval, and automatically revoked after use.</p>
+                </div>
+
+                <div class="glossary-term">
+                    <h3>Zero Trust</h3>
+                    <p>A security model based on "never trust, always verify." Assumes no user or system should be trusted by default, regardless of network location. PAM is a key component of Zero Trust architectures.</p>
+                </div>
+            </section>
+
+            <div class="info-box success">
+                <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <div class="info-box-content">
+                    <h4>Bookmark This Page</h4>
+                    <p>This glossary is a useful reference while studying PAM and KMS concepts or preparing for interviews. The terminology covered here represents the core vocabulary you'll encounter in enterprise security environments.</p>
+                </div>
+            </div>
+
+            <nav class="page-nav">
+                <a href="implementation.html" class="page-nav-link prev">
+                    <span class="page-nav-label">Previous</span>
+                    <span class="page-nav-title">← Implementation Guide</span>
+                </a>
+                <a href="interview-prep.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next</span>
+                    <span class="page-nav-title">Interview Prep →</span>
+                </a>
+            </nav>
+        </div>
+
+        <footer class="footer">
+            <p>PAM & KMS Ultimate Guide — A comprehensive enterprise security documentation resource</p>
+        </footer>
+    </main>
+
+    <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+    </button>
+
+    <script src="../js/main.js"></script>
+    <style>
+        .glossary-term {
+            margin-bottom: var(--space-6);
+            padding-bottom: var(--space-4);
+            border-bottom: 1px solid var(--border-primary);
+        }
+        .glossary-term:last-child {
+            border-bottom: none;
+        }
+        .glossary-term h3 {
+            color: var(--primary-600);
+            margin-bottom: var(--space-2);
+            font-size: 1.1rem;
+        }
+        [data-theme="dark"] .glossary-term h3 {
+            color: var(--primary-400);
+        }
+        .glossary-term p {
+            margin: 0;
+            color: var(--text-secondary);
+        }
+    </style>
+</body>
+</html>

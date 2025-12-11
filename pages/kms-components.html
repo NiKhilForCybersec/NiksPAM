@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="KMS Components - Understanding the building blocks of Key Management Systems">
+    <title>KMS Components | PAM & KMS Guide</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="scroll-progress" id="scroll-progress"></div>
+
+    <header class="header">
+        <div class="header-content">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                PAM & KMS Guide
+            </a>
+            
+            <nav class="header-nav">
+                <a href="pam-fundamentals.html">PAM</a>
+                <a href="kms-fundamentals.html" class="active">KMS</a>
+                <a href="vendors.html">Vendors</a>
+                <a href="implementation.html">Implementation</a>
+            </nav>
+            
+            <div class="header-actions">
+                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-title">Getting Started</div>
+            <ul class="sidebar-nav">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="introduction.html">Introduction</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">KMS Fundamentals</div>
+            <ul class="sidebar-nav">
+                <li><a href="kms-fundamentals.html">What is KMS?</a></li>
+                <li><a href="cryptographic-basics.html">Cryptographic Basics</a></li>
+                <li><a href="key-lifecycle.html">Key Lifecycle</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">KMS Architecture</div>
+            <ul class="sidebar-nav">
+                <li><a href="kms-components.html" class="active">KMS Components</a></li>
+                <li><a href="hsm.html">HSM Deep Dive</a></li>
+                <li><a href="cloud-kms.html">Cloud KMS</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">Vendors</div>
+            <ul class="sidebar-nav">
+                <li><a href="vendors.html">Vendor Overview</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <main class="main-wrapper">
+        <div class="main-content">
+            <nav class="breadcrumb">
+                <a href="../index.html">Home</a>
+                <span class="breadcrumb-separator">/</span>
+                <a href="kms-fundamentals.html">KMS</a>
+                <span class="breadcrumb-separator">/</span>
+                <span>KMS Components</span>
+            </nav>
+
+            <div class="page-header">
+                <h1>KMS Components</h1>
+                <p class="page-description">
+                    A Key Management System consists of several interconnected components working together to generate, store, distribute, and manage cryptographic keys throughout their lifecycle. This page details each component and its role.
+                </p>
+            </div>
+
+            <div class="toc">
+                <div class="toc-title">On This Page</div>
+                <ul class="toc-list">
+                    <li><a href="#architecture"><span class="toc-number">1.</span> KMS Architecture Overview</a></li>
+                    <li><a href="#key-store"><span class="toc-number">2.</span> Key Store</a></li>
+                    <li><a href="#crypto-engine"><span class="toc-number">3.</span> Cryptographic Engine</a></li>
+                    <li><a href="#policy-engine"><span class="toc-number">4.</span> Policy Engine</a></li>
+                    <li><a href="#api-gateway"><span class="toc-number">5.</span> API Gateway</a></li>
+                    <li><a href="#audit-logging"><span class="toc-number">6.</span> Audit & Logging</a></li>
+                    <li><a href="#admin-console"><span class="toc-number">7.</span> Administration Console</a></li>
+                    <li><a href="#key-hierarchy"><span class="toc-number">8.</span> Key Hierarchy</a></li>
+                </ul>
+            </div>
+
+            <section id="architecture">
+                <h2>KMS Architecture Overview</h2>
+                
+                <p>
+                    Enterprise KMS solutions share common architectural patterns regardless of vendor. Understanding these components helps you evaluate, deploy, and operate any KMS.
+                </p>
+
+                <div class="diagram-container">
+                    <div class="diagram-title">KMS Component Architecture</div>
+                    <div class="architecture-flow">
+                        <div class="arch-row">
+                            <div class="arch-box">
+                                <div class="arch-box-title">Applications</div>
+                                <div class="arch-box-subtitle">Databases, Services</div>
+                            </div>
+                            <div class="arch-arrow">REST/KMIP →</div>
+                            <div class="arch-box accent">
+                                <div class="arch-box-title">API Gateway</div>
+                                <div class="arch-box-subtitle">Auth & Routing</div>
+                            </div>
+                        </div>
+                        <div style="margin: var(--space-4) 0; text-align: center; color: var(--text-secondary);">⬇️ Internal Processing ⬇️</div>
+                        <div class="arch-row">
+                            <div class="arch-box primary">
+                                <div class="arch-box-title">Policy Engine</div>
+                                <div class="arch-box-subtitle">Access decisions</div>
+                            </div>
+                            <div class="arch-box primary">
+                                <div class="arch-box-title">Crypto Engine</div>
+                                <div class="arch-box-subtitle">Key operations</div>
+                            </div>
+                            <div class="arch-box secondary">
+                                <div class="arch-box-title">Audit Service</div>
+                                <div class="arch-box-subtitle">Logging</div>
+                            </div>
+                        </div>
+                        <div style="margin: var(--space-4) 0; text-align: center; color: var(--text-secondary);">⬇️ Secure Storage ⬇️</div>
+                        <div class="arch-row">
+                            <div class="arch-box primary">
+                                <div class="arch-box-title">Key Store</div>
+                                <div class="arch-box-subtitle">Encrypted keys</div>
+                            </div>
+                            <div class="arch-arrow">⟷</div>
+                            <div class="arch-box danger">
+                                <div class="arch-box-title">HSM</div>
+                                <div class="arch-box-subtitle">Master keys</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="key-store">
+                <h2>Key Store</h2>
+
+                <p>
+                    The <strong>key store</strong> is the secure repository where cryptographic keys are stored. Keys are never stored in plaintext—they're encrypted by a master key (typically in an HSM).
+                </p>
+
+                <h3>Key Store Types</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Description</th>
+                                <th>Use Case</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Software Key Store</strong></td>
+                                <td>Encrypted database or file storage</td>
+                                <td>Development, lower-security workloads</td>
+                            </tr>
+                            <tr>
+                                <td><strong>HSM Key Store</strong></td>
+                                <td>Keys stored directly in HSM</td>
+                                <td>Highest security, master keys</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Hybrid</strong></td>
+                                <td>Master key in HSM, data keys in software store</td>
+                                <td>Most enterprise deployments</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Key Store Contents</h3>
+
+                <p>For each key, the store typically maintains:</p>
+
+                <ul>
+                    <li><strong>Key material:</strong> The encrypted key bytes</li>
+                    <li><strong>Key metadata:</strong> Algorithm, length, creation date, expiry</li>
+                    <li><strong>Key state:</strong> Active, deactivated, compromised, destroyed</li>
+                    <li><strong>Key attributes:</strong> Usage permissions, exportability</li>
+                    <li><strong>Key versions:</strong> Historical versions for rotation</li>
+                    <li><strong>Key ownership:</strong> Creator, owner, authorized users</li>
+                </ul>
+            </section>
+
+            <section id="crypto-engine">
+                <h2>Cryptographic Engine</h2>
+
+                <p>
+                    The <strong>cryptographic engine</strong> performs all cryptographic operations—key generation, encryption, decryption, signing, and verification.
+                </p>
+
+                <h3>Core Operations</h3>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
+                        </div>
+                        <div class="feature-title">Key Generation</div>
+                        <p class="feature-description">Generate keys using cryptographically secure random number generators (CSPRNG) or HSM hardware RNG.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        </div>
+                        <div class="feature-title">Encrypt/Decrypt</div>
+                        <p class="feature-description">Perform symmetric and asymmetric encryption/decryption operations using stored keys.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="M9 12l2 2 4-4"></path></svg>
+                        </div>
+                        <div class="feature-title">Sign/Verify</div>
+                        <p class="feature-description">Create digital signatures and verify signatures using asymmetric keys.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                        </div>
+                        <div class="feature-title">Key Wrapping</div>
+                        <p class="feature-description">Encrypt keys with other keys for secure transport or storage (envelope encryption).</p>
+                    </div>
+                </div>
+
+                <h3>Supported Algorithms</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Algorithms</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Symmetric Encryption</strong></td>
+                                <td>AES-128, AES-256, AES-GCM, ChaCha20-Poly1305, 3DES (legacy)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Asymmetric Encryption</strong></td>
+                                <td>RSA-2048, RSA-4096, ECIES</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Digital Signatures</strong></td>
+                                <td>RSA-PSS, ECDSA (P-256, P-384), EdDSA</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Key Exchange</strong></td>
+                                <td>ECDH, DH</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Hashing</strong></td>
+                                <td>SHA-256, SHA-384, SHA-512, SHA-3</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Key Derivation</strong></td>
+                                <td>HKDF, PBKDF2, scrypt, Argon2</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="policy-engine">
+                <h2>Policy Engine</h2>
+
+                <p>
+                    The <strong>policy engine</strong> enforces access control and usage policies for keys. It determines who can use which keys for what operations.
+                </p>
+
+                <h3>Policy Types</h3>
+
+                <ul>
+                    <li><strong>Access policies:</strong> Who can access which keys (users, roles, services)</li>
+                    <li><strong>Usage policies:</strong> What operations are allowed (encrypt, decrypt, sign, etc.)</li>
+                    <li><strong>Lifecycle policies:</strong> Rotation schedules, expiration, destruction rules</li>
+                    <li><strong>Approval policies:</strong> Require approval for sensitive operations</li>
+                </ul>
+
+                <h3>Policy Evaluation</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Request Received</h4>
+                            <p>Application requests key operation (e.g., encrypt data with key X).</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Identity Verification</h4>
+                            <p>Verify the caller's identity via API key, certificate, or token.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Policy Lookup</h4>
+                            <p>Retrieve policies for the requested key and operation.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Policy Evaluation</h4>
+                            <p>Evaluate whether the caller is authorized for the operation.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Allow or Deny</h4>
+                            <p>If authorized, proceed with operation; otherwise, return error.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="api-gateway">
+                <h2>API Gateway</h2>
+
+                <p>
+                    The <strong>API gateway</strong> is the entry point for all KMS requests. It handles authentication, routing, rate limiting, and protocol translation.
+                </p>
+
+                <h3>API Interfaces</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Interface</th>
+                                <th>Description</th>
+                                <th>Use Case</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>REST API</strong></td>
+                                <td>HTTP/JSON interface</td>
+                                <td>Modern applications, cloud-native</td>
+                            </tr>
+                            <tr>
+                                <td><strong>KMIP</strong></td>
+                                <td>Key Management Interoperability Protocol</td>
+                                <td>Enterprise interoperability, storage arrays</td>
+                            </tr>
+                            <tr>
+                                <td><strong>PKCS#11</strong></td>
+                                <td>Cryptographic token interface</td>
+                                <td>HSM access, traditional applications</td>
+                            </tr>
+                            <tr>
+                                <td><strong>gRPC</strong></td>
+                                <td>High-performance RPC</td>
+                                <td>Microservices, high-throughput</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Gateway Functions</h3>
+
+                <ul>
+                    <li><strong>Authentication:</strong> Verify caller identity (API keys, mTLS, OAuth tokens)</li>
+                    <li><strong>Rate limiting:</strong> Prevent abuse and ensure fair usage</li>
+                    <li><strong>Request routing:</strong> Route to appropriate backend services</li>
+                    <li><strong>Load balancing:</strong> Distribute load across KMS nodes</li>
+                    <li><strong>TLS termination:</strong> Handle encrypted connections</li>
+                </ul>
+            </section>
+
+            <section id="audit-logging">
+                <h2>Audit & Logging</h2>
+
+                <p>
+                    The <strong>audit service</strong> maintains a complete record of all KMS operations for security monitoring and compliance.
+                </p>
+
+                <h3>Logged Events</h3>
+
+                <ul>
+                    <li><strong>Key operations:</strong> Create, encrypt, decrypt, sign, verify, rotate, delete</li>
+                    <li><strong>Administrative actions:</strong> Policy changes, user management</li>
+                    <li><strong>Access events:</strong> Successful and failed authentication attempts</li>
+                    <li><strong>System events:</strong> Startup, shutdown, configuration changes</li>
+                </ul>
+
+                <h3>Log Contents</h3>
+
+                <p>Each audit log entry typically includes:</p>
+
+                <ul>
+                    <li>Timestamp (UTC)</li>
+                    <li>Operation type</li>
+                    <li>Caller identity</li>
+                    <li>Key identifier (not the key itself)</li>
+                    <li>Source IP address</li>
+                    <li>Success/failure status</li>
+                    <li>Error details (if applicable)</li>
+                </ul>
+
+                <div class="info-box warning">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Tamper-Proof Logging</h4>
+                        <p>Audit logs should be tamper-proof. Forward logs to a separate, protected SIEM or log management system. Use write-once storage or cryptographic signing to detect tampering.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="admin-console">
+                <h2>Administration Console</h2>
+
+                <p>
+                    The <strong>administration console</strong> provides a user interface for managing the KMS—configuring keys, policies, users, and monitoring system health.
+                </p>
+
+                <h3>Administrative Functions</h3>
+
+                <ul>
+                    <li><strong>Key management:</strong> Create, view, rotate, archive, destroy keys</li>
+                    <li><strong>Policy management:</strong> Define and modify access policies</li>
+                    <li><strong>User management:</strong> Manage administrators and service accounts</li>
+                    <li><strong>Monitoring:</strong> View system health, performance metrics</li>
+                    <li><strong>Audit review:</strong> Search and review audit logs</li>
+                    <li><strong>Configuration:</strong> System settings, integrations, HSM management</li>
+                </ul>
+
+                <h3>Access Control</h3>
+
+                <p>Administrative access should be tightly controlled:</p>
+
+                <ul>
+                    <li>Multi-factor authentication required</li>
+                    <li>Role-based access (e.g., key admin, policy admin, auditor)</li>
+                    <li>Separation of duties for critical operations</li>
+                    <li>All admin actions logged and audited</li>
+                </ul>
+            </section>
+
+            <section id="key-hierarchy">
+                <h2>Key Hierarchy</h2>
+
+                <p>
+                    Enterprise KMS implementations use a <strong>key hierarchy</strong> where keys protect other keys, enabling scalable management and limiting exposure.
+                </p>
+
+                <div class="diagram-container">
+                    <div class="diagram-title">Typical Key Hierarchy</div>
+                    <div class="architecture-flow">
+                        <div class="arch-row">
+                            <div class="arch-box danger">
+                                <div class="arch-box-title">Root Key (RK)</div>
+                                <div class="arch-box-subtitle">In HSM, never exported</div>
+                            </div>
+                        </div>
+                        <div style="margin: var(--space-4) 0; text-align: center; color: var(--text-secondary);">⬇️ Protects ⬇️</div>
+                        <div class="arch-row">
+                            <div class="arch-box primary">
+                                <div class="arch-box-title">Master Keys (MK)</div>
+                                <div class="arch-box-subtitle">Per-tenant or per-region</div>
+                            </div>
+                        </div>
+                        <div style="margin: var(--space-4) 0; text-align: center; color: var(--text-secondary);">⬇️ Protects ⬇️</div>
+                        <div class="arch-row">
+                            <div class="arch-box accent">
+                                <div class="arch-box-title">Key-Encrypting Keys (KEK)</div>
+                                <div class="arch-box-subtitle">Per-application or per-service</div>
+                            </div>
+                        </div>
+                        <div style="margin: var(--space-4) 0; text-align: center; color: var(--text-secondary);">⬇️ Protects ⬇️</div>
+                        <div class="arch-row">
+                            <div class="arch-box secondary">
+                                <div class="arch-box-title">Data Encryption Keys (DEK)</div>
+                                <div class="arch-box-subtitle">Encrypt actual data</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Benefits of Key Hierarchy</h3>
+
+                <ul>
+                    <li><strong>Limited exposure:</strong> Only DEKs touch data; higher keys stay in KMS</li>
+                    <li><strong>Manageable rotation:</strong> Rotate DEKs frequently; rotate higher keys less often</li>
+                    <li><strong>Scalability:</strong> One master key can protect millions of DEKs</li>
+                    <li><strong>Compliance:</strong> Master key in HSM satisfies strict requirements</li>
+                </ul>
+            </section>
+
+            <div class="info-box success">
+                <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <div class="info-box-content">
+                    <h4>Key Takeaways</h4>
+                    <p>KMS consists of key store, cryptographic engine, policy engine, API gateway, audit service, and admin console. Keys are stored encrypted, protected by a key hierarchy with root/master keys in HSMs. The policy engine enforces access control, while comprehensive audit logging ensures compliance and security monitoring.</p>
+                </div>
+            </div>
+
+            <nav class="page-nav">
+                <a href="key-lifecycle.html" class="page-nav-link prev">
+                    <span class="page-nav-label">Previous</span>
+                    <span class="page-nav-title">← Key Lifecycle</span>
+                </a>
+                <a href="hsm.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next</span>
+                    <span class="page-nav-title">HSM Deep Dive →</span>
+                </a>
+            </nav>
+        </div>
+
+        <footer class="footer">
+            <p>PAM & KMS Ultimate Guide — A comprehensive enterprise security documentation resource</p>
+        </footer>
+    </main>
+
+    <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+    </button>
+
+    <script src="../js/main.js"></script>
+</body>
+</html>

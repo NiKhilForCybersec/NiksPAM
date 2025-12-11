@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Introduction to Privileged Access Management and Key Management Systems - Understanding the fundamentals">
+    <title>Introduction | PAM & KMS Guide</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <!-- Scroll Progress -->
+    <div class="scroll-progress" id="scroll-progress"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                PAM & KMS Guide
+            </a>
+            
+            <nav class="header-nav">
+                <a href="pam-fundamentals.html">PAM</a>
+                <a href="kms-fundamentals.html">KMS</a>
+                <a href="vendors.html">Vendors</a>
+                <a href="implementation.html">Implementation</a>
+            </nav>
+            
+            <div class="header-actions">
+                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-title">Getting Started</div>
+            <ul class="sidebar-nav">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="introduction.html" class="active">Introduction</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">PAM Fundamentals</div>
+            <ul class="sidebar-nav">
+                <li><a href="pam-fundamentals.html">What is PAM?</a></li>
+                <li><a href="pam-business-case.html">Business Case</a></li>
+                <li><a href="privileged-accounts.html">Privileged Accounts</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">PAM Architecture</div>
+            <ul class="sidebar-nav">
+                <li><a href="pam-components.html">Core Components</a></li>
+                <li><a href="pam-architecture.html">Architecture Patterns</a></li>
+                <li><a href="pam-data-flows.html">Data Flows</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">PAM Workflows</div>
+            <ul class="sidebar-nav">
+                <li><a href="user-access-workflow.html">User Access Workflow</a></li>
+                <li><a href="session-management.html">Session Management</a></li>
+                <li><a href="jit-access.html">Just-In-Time Access</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">KMS Fundamentals</div>
+            <ul class="sidebar-nav">
+                <li><a href="kms-fundamentals.html">What is KMS?</a></li>
+                <li><a href="cryptographic-basics.html">Cryptographic Basics</a></li>
+                <li><a href="key-lifecycle.html">Key Lifecycle</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">KMS Architecture</div>
+            <ul class="sidebar-nav">
+                <li><a href="kms-components.html">KMS Components</a></li>
+                <li><a href="hsm.html">HSM Deep Dive</a></li>
+                <li><a href="cloud-kms.html">Cloud KMS</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">Vendors</div>
+            <ul class="sidebar-nav">
+                <li><a href="vendors.html">Vendor Overview</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">Resources</div>
+            <ul class="sidebar-nav">
+                <li><a href="glossary.html">Glossary</a></li>
+                <li><a href="interview-prep.html">Interview Prep</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-wrapper">
+        <div class="main-content">
+            <!-- Breadcrumb -->
+            <nav class="breadcrumb">
+                <a href="../index.html">Home</a>
+                <span class="breadcrumb-separator">/</span>
+                <span>Introduction</span>
+            </nav>
+
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1>Introduction to PAM & KMS</h1>
+                <p class="page-description">
+                    Before diving into the technical details, let's understand why Privileged Access Management (PAM) and Key Management Systems (KMS) are essential pillars of enterprise security, and how they work together to protect your organization.
+                </p>
+            </div>
+
+            <!-- Table of Contents -->
+            <div class="toc">
+                <div class="toc-title">On This Page</div>
+                <ul class="toc-list">
+                    <li><a href="#why-matters"><span class="toc-number">1.</span> Why This Matters</a></li>
+                    <li><a href="#pam-overview"><span class="toc-number">2.</span> PAM at a Glance</a></li>
+                    <li><a href="#kms-overview"><span class="toc-number">3.</span> KMS at a Glance</a></li>
+                    <li><a href="#how-they-relate"><span class="toc-number">4.</span> How PAM & KMS Relate</a></li>
+                    <li><a href="#who-needs"><span class="toc-number">5.</span> Who Needs This Knowledge</a></li>
+                </ul>
+            </div>
+
+            <!-- Content Sections -->
+            <section id="why-matters">
+                <h2>Why This Matters</h2>
+                
+                <p>
+                    In today's threat landscape, attackers have a clear favorite target: <strong>privileged accounts</strong>. These are the accounts with elevated permissions—domain administrators, root accounts, service accounts—that control your most critical systems. Once an attacker gains access to a privileged account, they can move laterally through your network, access sensitive data, install backdoors, and cause devastating damage.
+                </p>
+
+                <div class="info-box warning">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>The Reality of Privileged Account Attacks</h4>
+                        <p>Over 80% of security breaches involve compromised privileged credentials. The average cost of a breach involving privileged access is significantly higher than other types of breaches due to the scope of access attackers gain.</p>
+                    </div>
+                </div>
+
+                <p>
+                    Similarly, <strong>cryptographic keys</strong> are the foundation of data protection. If your encryption keys are compromised, all the data they protect becomes vulnerable. Poor key management leads to data breaches, compliance failures, and operational disruptions.
+                </p>
+
+                <p>
+                    This guide exists to help you understand and implement proper controls for both privileged access and cryptographic keys—because protecting these assets is fundamental to enterprise security.
+                </p>
+            </section>
+
+            <section id="pam-overview">
+                <h2>PAM at a Glance</h2>
+
+                <p>
+                    <strong>Privileged Access Management (PAM)</strong> is a category of security solutions that helps organizations control, monitor, and secure access to privileged accounts and systems. Think of PAM as a secure gatekeeper that ensures only authorized people can access powerful accounts, and that everything they do is recorded and auditable.
+                </p>
+
+                <h3>What PAM Does (In Simple Terms)</h3>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        </div>
+                        <div class="feature-title">Vaulting Credentials</div>
+                        <p class="feature-description">Stores privileged passwords in an encrypted vault instead of in spreadsheets, sticky notes, or people's heads.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                        </div>
+                        <div class="feature-title">Rotating Passwords</div>
+                        <p class="feature-description">Automatically changes passwords after use (or on schedule), so stolen credentials quickly become useless.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                        </div>
+                        <div class="feature-title">Recording Sessions</div>
+                        <p class="feature-description">Records what privileged users do during their sessions, creating a video-like audit trail for forensics and compliance.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                        </div>
+                        <div class="feature-title">Controlling Access</div>
+                        <p class="feature-description">Enforces who can access what systems, when, and under what conditions (approval required, time limits, etc.).</p>
+                    </div>
+                </div>
+
+                <h3>A Simple Example</h3>
+
+                <p>
+                    Imagine you're a database administrator who needs to access a production database server to perform maintenance. Without PAM, you might have the server's root password saved in a document or memorized. Anyone who gets that password could use it indefinitely.
+                </p>
+
+                <p>
+                    <strong>With PAM:</strong>
+                </p>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Request Access</h4>
+                            <p>You log into the PAM portal, find the database server, and click to request access. You provide a reason for the access.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Approval (If Required)</h4>
+                            <p>Depending on policy, your manager might need to approve the request. This happens automatically via notification.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Connect Securely</h4>
+                            <p>Once approved, PAM launches a secure session to the server. You never see the actual password—PAM injects it for you.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Work is Recorded</h4>
+                            <p>Everything you type and see is recorded for audit purposes. If something goes wrong, there's a complete record.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Password Rotates</h4>
+                            <p>After you disconnect, PAM automatically changes the password on the server, so even if someone intercepted it, it's already invalid.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="kms-overview">
+                <h2>KMS at a Glance</h2>
+
+                <p>
+                    <strong>Key Management System (KMS)</strong> is a solution for managing the lifecycle of cryptographic keys—the secret values used to encrypt and decrypt data, sign and verify documents, and authenticate systems. Without proper key management, encryption provides a false sense of security.
+                </p>
+
+                <h3>What KMS Does (In Simple Terms)</h3>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
+                        </div>
+                        <div class="feature-title">Generating Keys Securely</div>
+                        <p class="feature-description">Creates cryptographic keys using proper random number generation, often in tamper-resistant hardware (HSMs).</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        </div>
+                        <div class="feature-title">Storing Keys Safely</div>
+                        <p class="feature-description">Protects keys in encrypted storage, hardware security modules, or specialized vaults—never in plain text files.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                        </div>
+                        <div class="feature-title">Rotating Keys Regularly</div>
+                        <p class="feature-description">Automatically rotates keys on schedule to limit the impact if a key is compromised and to meet compliance requirements.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        </div>
+                        <div class="feature-title">Destroying Keys Properly</div>
+                        <p class="feature-description">Ensures keys are completely destroyed when no longer needed, making associated encrypted data unrecoverable.</p>
+                    </div>
+                </div>
+
+                <h3>A Simple Example</h3>
+
+                <p>
+                    Your company encrypts customer data in a database. The encryption key is what makes this protection work—without it, the encrypted data is just meaningless gibberish. But where is that key stored? Who has access to it? What happens if it gets lost?
+                </p>
+
+                <p>
+                    <strong>Without KMS:</strong> The key might be stored in a configuration file on the database server, accessible to any administrator. If someone copies that file, they can decrypt all your customer data.
+                </p>
+
+                <p>
+                    <strong>With KMS:</strong>
+                </p>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Key Generation</h4>
+                            <p>The encryption key is generated inside a Hardware Security Module (HSM)—a tamper-resistant device designed to protect keys.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Key Storage</h4>
+                            <p>The key never leaves the HSM in plain text. The database server has a "wrapped" version that only the HSM can unwrap.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Encryption Operations</h4>
+                            <p>When the database needs to encrypt or decrypt data, it sends requests to the KMS, which performs the operation securely.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Access Control</h4>
+                            <p>Only authorized applications and services can request key operations. Every request is logged and auditable.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Key Rotation</h4>
+                            <p>Periodically, the key is rotated—new data uses a new key, and old data can be re-encrypted as needed.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="how-they-relate">
+                <h2>How PAM and KMS Relate</h2>
+
+                <p>
+                    While PAM and KMS solve different problems, they are deeply interconnected in enterprise security:
+                </p>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Aspect</th>
+                                <th>PAM</th>
+                                <th>KMS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Primary Focus</strong></td>
+                                <td>Human and service account access to systems</td>
+                                <td>Cryptographic key lifecycle management</td>
+                            </tr>
+                            <tr>
+                                <td><strong>What It Protects</strong></td>
+                                <td>Privileged credentials (passwords, SSH keys)</td>
+                                <td>Encryption keys, signing keys, certificates</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Main Threat Addressed</strong></td>
+                                <td>Unauthorized privileged access</td>
+                                <td>Key compromise and data exposure</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Core Mechanism</strong></td>
+                                <td>Vaulting, session brokering, recording</td>
+                                <td>HSMs, key encryption, lifecycle automation</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Compliance Drivers</strong></td>
+                                <td>SOX, PCI-DSS, HIPAA, NERC CIP</td>
+                                <td>PCI-DSS, FIPS 140, GDPR, HIPAA</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Where They Overlap</h3>
+
+                <p>
+                    In modern environments, PAM and KMS often work together:
+                </p>
+
+                <ul>
+                    <li><strong>SSH Key Management:</strong> PAM vaults SSH private keys (a form of cryptographic key management)</li>
+                    <li><strong>Application Secrets:</strong> Both PAM and KMS can manage API keys and tokens</li>
+                    <li><strong>Certificate Lifecycle:</strong> KMS manages certificates; PAM controls who can use them</li>
+                    <li><strong>Unified Secrets Platforms:</strong> Solutions like HashiCorp Vault blur the line between PAM and KMS</li>
+                </ul>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>The Convergence Trend</h4>
+                        <p>Many organizations are moving toward unified "secrets management" platforms that combine PAM and KMS capabilities. This guide covers both traditional separated approaches and modern converged solutions.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="who-needs">
+                <h2>Who Needs This Knowledge</h2>
+
+                <p>
+                    This guide is designed for security professionals across multiple roles:
+                </p>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                        </div>
+                        <div class="feature-title">Security Engineers</div>
+                        <p class="feature-description">Implement, configure, and maintain PAM/KMS solutions. Integrate with SIEM, SOAR, and other security tools.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                        </div>
+                        <div class="feature-title">SOC Analysts</div>
+                        <p class="feature-description">Monitor PAM alerts, investigate privileged access incidents, and understand attack patterns involving credentials.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                        </div>
+                        <div class="feature-title">Security Architects</div>
+                        <p class="feature-description">Design enterprise PAM/KMS architectures, select vendors, and plan deployment strategies across IT and OT.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                        </div>
+                        <div class="feature-title">Compliance Teams</div>
+                        <p class="feature-description">Understand how PAM/KMS satisfies regulatory requirements and how to audit implementations effectively.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+                        </div>
+                        <div class="feature-title">System Administrators</div>
+                        <p class="feature-description">Use PAM daily for privileged access, understand operational workflows, and manage vault integrations.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                        </div>
+                        <div class="feature-title">OT/ICS Security Teams</div>
+                        <p class="feature-description">Secure privileged access in industrial environments with unique requirements around availability and safety.</p>
+                    </div>
+                </div>
+
+                <div class="key-points">
+                    <div class="key-points-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                        Ready to Begin?
+                    </div>
+                    <ul>
+                        <li>If you're <strong>new to PAM</strong>, start with the <a href="pam-fundamentals.html">PAM Fundamentals</a> page</li>
+                        <li>If you're <strong>new to KMS</strong>, start with the <a href="kms-fundamentals.html">KMS Fundamentals</a> page</li>
+                        <li>If you want to see <strong>how access works</strong>, jump to <a href="user-access-workflow.html">User Access Workflows</a></li>
+                        <li>If you're <strong>evaluating vendors</strong>, check the <a href="vendors.html">Vendor Comparison</a></li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Page Navigation -->
+            <nav class="page-nav">
+                <a href="../index.html" class="page-nav-link prev">
+                    <span class="page-nav-label">Previous</span>
+                    <span class="page-nav-title">← Home</span>
+                </a>
+                <a href="pam-fundamentals.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next</span>
+                    <span class="page-nav-title">What is PAM? →</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>PAM & KMS Ultimate Guide — A comprehensive enterprise security documentation resource</p>
+        </footer>
+    </main>
+
+    <!-- Back to Top Button -->
+    <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+    </button>
+
+    <script src="../js/main.js"></script>
+</body>
+</html>

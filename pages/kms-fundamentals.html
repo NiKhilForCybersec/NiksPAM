@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What is KMS? | PAM & KMS Guide</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="scroll-progress" id="scroll-progress"></div>
+
+    <header class="header">
+        <div class="header-content">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                </div>
+                PAM & KMS Guide
+            </a>
+            <nav class="header-nav">
+                <a href="pam-fundamentals.html">PAM</a>
+                <a href="kms-fundamentals.html" class="active">KMS</a>
+                <a href="vendors.html">Vendors</a>
+                <a href="implementation.html">Implementation</a>
+            </nav>
+            <div class="header-actions">
+                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button>
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-title">Getting Started</div>
+            <ul class="sidebar-nav">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="introduction.html">Introduction</a></li>
+            </ul>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-title">PAM Fundamentals</div>
+            <ul class="sidebar-nav">
+                <li><a href="pam-fundamentals.html">What is PAM?</a></li>
+                <li><a href="privileged-accounts.html">Privileged Accounts</a></li>
+            </ul>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-title">PAM Workflows</div>
+            <ul class="sidebar-nav">
+                <li><a href="user-access-workflow.html">User Access Workflow</a></li>
+                <li><a href="session-management.html">Session Management</a></li>
+            </ul>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-title">KMS Fundamentals</div>
+            <ul class="sidebar-nav">
+                <li><a href="kms-fundamentals.html" class="active">What is KMS?</a></li>
+                <li><a href="cryptographic-basics.html">Cryptographic Basics</a></li>
+                <li><a href="key-lifecycle.html">Key Lifecycle</a></li>
+            </ul>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-title">KMS Architecture</div>
+            <ul class="sidebar-nav">
+                <li><a href="kms-components.html">KMS Components</a></li>
+                <li><a href="hsm.html">HSM Deep Dive</a></li>
+                <li><a href="cloud-kms.html">Cloud KMS</a></li>
+            </ul>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-title">Vendors</div>
+            <ul class="sidebar-nav">
+                <li><a href="vendors.html">Vendor Overview</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <main class="main-wrapper">
+        <div class="main-content">
+            <nav class="breadcrumb">
+                <a href="../index.html">Home</a>
+                <span class="breadcrumb-separator">/</span>
+                <a href="kms-fundamentals.html">KMS Fundamentals</a>
+                <span class="breadcrumb-separator">/</span>
+                <span>What is KMS?</span>
+            </nav>
+
+            <div class="page-header">
+                <h1>What is Key Management System (KMS)?</h1>
+                <p class="page-description">
+                    Key Management Systems protect the cryptographic keys that make encryption work. Without proper key management, encryption is like having a lock but leaving the key under the doormat. This page explains KMS from the ground up.
+                </p>
+            </div>
+
+            <div class="toc">
+                <div class="toc-title">On This Page</div>
+                <ul class="toc-list">
+                    <li><a href="#why-keys-matter"><span class="toc-number">1.</span> Why Cryptographic Keys Matter</a></li>
+                    <li><a href="#what-is-kms"><span class="toc-number">2.</span> What is a Key Management System?</a></li>
+                    <li><a href="#key-types"><span class="toc-number">3.</span> Types of Cryptographic Keys</a></li>
+                    <li><a href="#key-lifecycle"><span class="toc-number">4.</span> The Key Lifecycle (Overview)</a></li>
+                    <li><a href="#kms-vs-pam"><span class="toc-number">5.</span> KMS vs PAM vs Secrets Management</a></li>
+                    <li><a href="#real-world"><span class="toc-number">6.</span> Real-World KMS Example</a></li>
+                </ul>
+            </div>
+
+            <!-- Why Keys Matter -->
+            <section id="why-keys-matter">
+                <h2>Why Cryptographic Keys Matter</h2>
+
+                <p>
+                    To understand KMS, you first need to understand why cryptographic keys are so important. Let's start with a simple analogy.
+                </p>
+
+                <h3>The Lock and Key Analogy</h3>
+
+                <p>
+                    Imagine you have a safe that protects your most valuable possessions. The safe uses a lock with a unique key. The security of your valuables depends on two things:
+                </p>
+
+                <ul>
+                    <li><strong>The strength of the lock:</strong> A cheap lock can be easily picked or broken</li>
+                    <li><strong>The protection of the key:</strong> Even the strongest lock is useless if anyone can get a copy of the key</li>
+                </ul>
+
+                <p>
+                    In the digital world, <strong>encryption</strong> is the lock, and <strong>cryptographic keys</strong> are the keys. Modern encryption algorithms (like AES-256) are incredibly strong—essentially unbreakable. But if someone gets your encryption key, they can decrypt all your data.
+                </p>
+
+                <div class="info-box danger">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>The Hard Truth About Encryption</h4>
+                        <p>Encryption without proper key management is security theater. If your encryption key is stored in a plain text file, hard-coded in source code, or shared via email, your encrypted data isn't really protected. An attacker just needs to find the key.</p>
+                    </div>
+                </div>
+
+                <h3>Where Keys Are Used Every Day</h3>
+
+                <p>
+                    Cryptographic keys are everywhere in modern IT infrastructure:
+                </p>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+                        </div>
+                        <div class="feature-title">Database Encryption</div>
+                        <p class="feature-description">SQL Server TDE, Oracle TDE, and other database encryption features use keys to protect data at rest.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        </div>
+                        <div class="feature-title">TLS/HTTPS</div>
+                        <p class="feature-description">Every secure website uses keys for HTTPS certificates that encrypt traffic between browser and server.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+                        </div>
+                        <div class="feature-title">Disk Encryption</div>
+                        <p class="feature-description">BitLocker, LUKS, and storage array encryption use keys to protect entire volumes.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                        </div>
+                        <div class="feature-title">Digital Signatures</div>
+                        <p class="feature-description">Code signing, document signing, and email signing use keys to prove authenticity.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
+                        </div>
+                        <div class="feature-title">Cloud Storage Encryption</div>
+                        <p class="feature-description">AWS S3, Azure Blob, and GCP Cloud Storage use keys to encrypt stored objects.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                        </div>
+                        <div class="feature-title">API Authentication</div>
+                        <p class="feature-description">API keys, JWT signing keys, and OAuth tokens rely on cryptographic keys.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- What is KMS -->
+            <section id="what-is-kms">
+                <h2>What is a Key Management System?</h2>
+
+                <p>
+                    A <strong>Key Management System (KMS)</strong> is a solution that manages the complete lifecycle of cryptographic keys—from creation to destruction—in a secure, centralized, and auditable way.
+                </p>
+
+                <h3>What KMS Does (In Simple Terms)</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Creates Keys Securely</h4>
+                            <p>Generates cryptographic keys using secure random number generation, often in tamper-resistant hardware.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Stores Keys Safely</h4>
+                            <p>Protects keys in encrypted storage or Hardware Security Modules (HSMs) that resist physical and logical attacks.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Controls Access to Keys</h4>
+                            <p>Enforces policies about which applications, services, and users can use which keys for what operations.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Rotates Keys Automatically</h4>
+                            <p>Periodically creates new keys and transitions encryption to new keys without disrupting operations.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Destroys Keys Completely</h4>
+                            <p>When keys are no longer needed, securely destroys them so data encrypted with them becomes permanently unrecoverable.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <h4>Audits Everything</h4>
+                            <p>Logs every key operation—creation, usage, rotation, destruction—for compliance and forensics.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>The Core Problem KMS Solves</h3>
+
+                <p>
+                    Without KMS, organizations typically end up with:
+                </p>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Problem</th>
+                                <th>Without KMS</th>
+                                <th>With KMS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Key Storage</strong></td>
+                                <td>Keys in config files, source code, spreadsheets</td>
+                                <td>Keys in encrypted vault or HSM</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Key Sprawl</strong></td>
+                                <td>Nobody knows how many keys exist or where</td>
+                                <td>Centralized inventory of all keys</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Key Rotation</strong></td>
+                                <td>Manual, painful, often skipped</td>
+                                <td>Automated rotation on schedule</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Access Control</strong></td>
+                                <td>Anyone with file access has keys</td>
+                                <td>Granular policies per key</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Audit Trail</strong></td>
+                                <td>No visibility into key usage</td>
+                                <td>Complete log of all operations</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Key Recovery</strong></td>
+                                <td>"Where's the backup?" panic</td>
+                                <td>Secure backup with dual control</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Types of Keys -->
+            <section id="key-types">
+                <h2>Types of Cryptographic Keys</h2>
+
+                <p>
+                    There are different types of keys used for different purposes. Understanding these helps you design proper key management.
+                </p>
+
+                <h3>Symmetric Keys</h3>
+
+                <p>
+                    <strong>Symmetric encryption</strong> uses the same key for both encryption and decryption. Think of it like a padlock where the same physical key locks and unlocks it.
+                </p>
+
+                <div class="key-points">
+                    <div class="key-points-title">Symmetric Key Characteristics</div>
+                    <ul>
+                        <li><strong>Speed:</strong> Very fast encryption/decryption</li>
+                        <li><strong>Key Size:</strong> Typically 128, 192, or 256 bits</li>
+                        <li><strong>Common Algorithms:</strong> AES, ChaCha20</li>
+                        <li><strong>Use Cases:</strong> Encrypting data at rest, bulk data encryption</li>
+                        <li><strong>Challenge:</strong> Both parties need the same key—how do you share it securely?</li>
+                    </ul>
+                </div>
+
+                <div class="diagram-container">
+                    <div class="diagram-title">Symmetric Encryption</div>
+                    <div class="architecture-flow">
+                        <div class="arch-row">
+                            <div class="arch-box">
+                                <div class="arch-box-title">📄 Plaintext</div>
+                                <div class="arch-box-subtitle">"Hello World"</div>
+                            </div>
+                            <div class="arch-box primary">
+                                <div class="arch-box-title">🔐 Encrypt</div>
+                                <div class="arch-box-subtitle">Key: ABC123</div>
+                            </div>
+                            <div class="arch-box accent">
+                                <div class="arch-box-title">🔒 Ciphertext</div>
+                                <div class="arch-box-subtitle">"Xj8#kL..."</div>
+                            </div>
+                        </div>
+                        <div class="arch-arrow">↓ Same key</div>
+                        <div class="arch-row">
+                            <div class="arch-box accent">
+                                <div class="arch-box-title">🔒 Ciphertext</div>
+                                <div class="arch-box-subtitle">"Xj8#kL..."</div>
+                            </div>
+                            <div class="arch-box primary">
+                                <div class="arch-box-title">🔓 Decrypt</div>
+                                <div class="arch-box-subtitle">Key: ABC123</div>
+                            </div>
+                            <div class="arch-box">
+                                <div class="arch-box-title">📄 Plaintext</div>
+                                <div class="arch-box-subtitle">"Hello World"</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Asymmetric Keys (Public Key Cryptography)</h3>
+
+                <p>
+                    <strong>Asymmetric encryption</strong> uses a pair of mathematically related keys: a public key (anyone can have it) and a private key (must be kept secret).
+                </p>
+
+                <div class="key-points">
+                    <div class="key-points-title">Asymmetric Key Characteristics</div>
+                    <ul>
+                        <li><strong>Speed:</strong> Much slower than symmetric</li>
+                        <li><strong>Key Size:</strong> 2048-4096 bits (RSA) or 256-384 bits (ECC)</li>
+                        <li><strong>Common Algorithms:</strong> RSA, ECDSA, Ed25519</li>
+                        <li><strong>Use Cases:</strong> Key exchange, digital signatures, TLS handshakes</li>
+                        <li><strong>Advantage:</strong> Can share public key openly; only private key needs protection</li>
+                    </ul>
+                </div>
+
+                <div class="diagram-container">
+                    <div class="diagram-title">Asymmetric Encryption</div>
+                    <div class="architecture-flow">
+                        <div class="arch-row">
+                            <div class="arch-box">
+                                <div class="arch-box-title">📄 Message</div>
+                            </div>
+                            <div class="arch-box primary">
+                                <div class="arch-box-title">🔐 Encrypt</div>
+                                <div class="arch-box-subtitle">Recipient's PUBLIC key</div>
+                            </div>
+                            <div class="arch-box accent">
+                                <div class="arch-box-title">🔒 Encrypted</div>
+                            </div>
+                        </div>
+                        <div class="arch-arrow">↓ Different key</div>
+                        <div class="arch-row">
+                            <div class="arch-box accent">
+                                <div class="arch-box-title">🔒 Encrypted</div>
+                            </div>
+                            <div class="arch-box primary">
+                                <div class="arch-box-title">🔓 Decrypt</div>
+                                <div class="arch-box-subtitle">Recipient's PRIVATE key</div>
+                            </div>
+                            <div class="arch-box">
+                                <div class="arch-box-title">📄 Message</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Key Hierarchy</h3>
+
+                <p>
+                    In enterprise KMS, keys are organized in a hierarchy. This allows keys to protect other keys, minimizing exposure of the most sensitive keys.
+                </p>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Key Type</th>
+                                <th>What It Is</th>
+                                <th>How It's Protected</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Master Key (Root Key)</strong></td>
+                                <td>The top of the hierarchy; protects all other keys</td>
+                                <td>Stored in HSM, never leaves hardware</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Key Encryption Key (KEK)</strong></td>
+                                <td>Encrypts other keys (key wrapping)</td>
+                                <td>Encrypted by master key</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Data Encryption Key (DEK)</strong></td>
+                                <td>Actually encrypts the data</td>
+                                <td>Encrypted by KEK</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Why Key Hierarchy Matters</h4>
+                        <p>With a key hierarchy, you can rotate DEKs frequently (easy, minimal impact) while keeping the master key extremely secure (rarely accessed). If a DEK is compromised, only data encrypted with that specific key is at risk.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Key Lifecycle Overview -->
+            <section id="key-lifecycle">
+                <h2>The Key Lifecycle (Overview)</h2>
+
+                <p>
+                    Every cryptographic key goes through a lifecycle from creation to destruction. Managing this lifecycle properly is the core function of KMS.
+                </p>
+
+                <div class="diagram-container">
+                    <div class="diagram-title">Key Lifecycle Stages</div>
+                    <div class="architecture-flow">
+                        <div class="arch-row">
+                            <div class="arch-box primary">
+                                <div class="arch-box-title">1. Generation</div>
+                                <div class="arch-box-subtitle">Create the key</div>
+                            </div>
+                            <div class="arch-arrow">→</div>
+                            <div class="arch-box">
+                                <div class="arch-box-title">2. Distribution</div>
+                                <div class="arch-box-subtitle">Deliver to systems</div>
+                            </div>
+                            <div class="arch-arrow">→</div>
+                            <div class="arch-box accent">
+                                <div class="arch-box-title">3. Active Use</div>
+                                <div class="arch-box-subtitle">Encrypt/Decrypt</div>
+                            </div>
+                        </div>
+                        <div class="arch-arrow" style="transform: rotate(90deg); margin: 20px 0;">→</div>
+                        <div class="arch-row">
+                            <div class="arch-box">
+                                <div class="arch-box-title">6. Destruction</div>
+                                <div class="arch-box-subtitle">Securely delete</div>
+                            </div>
+                            <div class="arch-arrow">←</div>
+                            <div class="arch-box">
+                                <div class="arch-box-title">5. Archive</div>
+                                <div class="arch-box-subtitle">Long-term storage</div>
+                            </div>
+                            <div class="arch-arrow">←</div>
+                            <div class="arch-box secondary">
+                                <div class="arch-box-title">4. Rotation</div>
+                                <div class="arch-box-subtitle">Replace with new key</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Lifecycle Stages Explained</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Stage</th>
+                                <th>What Happens</th>
+                                <th>Key Considerations</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>1. Generation</strong></td>
+                                <td>Key is created using secure random number generation</td>
+                                <td>Use hardware RNG (HSM) for highest security; ensure proper entropy</td>
+                            </tr>
+                            <tr>
+                                <td><strong>2. Distribution</strong></td>
+                                <td>Key is securely delivered to systems that need it</td>
+                                <td>Encrypt in transit; authenticate recipients; use key wrapping</td>
+                            </tr>
+                            <tr>
+                                <td><strong>3. Active Use</strong></td>
+                                <td>Key is used for encryption/decryption operations</td>
+                                <td>Protect from unauthorized access; log all usage; monitor for anomalies</td>
+                            </tr>
+                            <tr>
+                                <td><strong>4. Rotation</strong></td>
+                                <td>Key is replaced with a new key</td>
+                                <td>Transition smoothly; re-encrypt if needed; don't break applications</td>
+                            </tr>
+                            <tr>
+                                <td><strong>5. Archive</strong></td>
+                                <td>Old key kept for decrypting historical data</td>
+                                <td>Decrypt-only access; maintain until data retention expires</td>
+                            </tr>
+                            <tr>
+                                <td><strong>6. Destruction</strong></td>
+                                <td>Key is permanently and securely destroyed</td>
+                                <td>Ensure all copies destroyed; data becomes unrecoverable; document</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- KMS vs PAM vs Secrets -->
+            <section id="kms-vs-pam">
+                <h2>KMS vs PAM vs Secrets Management</h2>
+
+                <p>
+                    These three concepts are related but serve different purposes. Understanding the differences helps you choose the right tools.
+                </p>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Aspect</th>
+                                <th>KMS</th>
+                                <th>PAM</th>
+                                <th>Secrets Management</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Primary Focus</strong></td>
+                                <td>Cryptographic key lifecycle</td>
+                                <td>Human privileged access</td>
+                                <td>Application secrets/credentials</td>
+                            </tr>
+                            <tr>
+                                <td><strong>What It Protects</strong></td>
+                                <td>Encryption keys, signing keys</td>
+                                <td>Admin passwords, SSH keys</td>
+                                <td>API keys, database passwords, tokens</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Primary Users</strong></td>
+                                <td>Applications, services</td>
+                                <td>Administrators, operators</td>
+                                <td>Applications, DevOps pipelines</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Key Feature</strong></td>
+                                <td>HSM integration, key hierarchy</td>
+                                <td>Session recording, approval workflows</td>
+                                <td>Dynamic secrets, API access</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Example Products</strong></td>
+                                <td>Thales CipherTrust, AWS KMS</td>
+                                <td>CyberArk, BeyondTrust</td>
+                                <td>HashiCorp Vault, AWS Secrets Manager</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>The Convergence Trend</h4>
+                        <p>Modern platforms increasingly blur these boundaries. HashiCorp Vault, for example, does secrets management but also has a "Transit" engine for encryption operations (KMS-like). CyberArk combines PAM with secrets management. Choose based on your primary use case.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Real World Example -->
+            <section id="real-world">
+                <h2>Real-World KMS Example</h2>
+
+                <p>
+                    Let's walk through a concrete example of how KMS protects data in a typical scenario: encrypting customer data in a database.
+                </p>
+
+                <h3>Scenario: Protecting Customer Credit Cards</h3>
+
+                <p>
+                    Your company stores customer payment information in a database. Regulations (PCI-DSS) require this data to be encrypted.
+                </p>
+
+                <h4>Without KMS (The Problem)</h4>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">❌</div>
+                        <div class="step-content">
+                            <h4>Key in Configuration File</h4>
+                            <p>The encryption key is stored in <code>app-config.yml</code>: <code>encryption_key: "abc123secretkey"</code></p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">❌</div>
+                        <div class="step-content">
+                            <h4>Accessible to Many</h4>
+                            <p>Any developer, DevOps engineer, or anyone who can read the config file now has the encryption key.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">❌</div>
+                        <div class="step-content">
+                            <h4>Never Rotated</h4>
+                            <p>Changing the key would require re-encrypting all data and updating all config files. It's never done.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">❌</div>
+                        <div class="step-content">
+                            <h4>No Audit Trail</h4>
+                            <p>There's no record of who accessed the key or when. If data is breached, you can't tell when or how.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h4>With KMS (The Solution)</h4>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Master Key in HSM</h4>
+                            <p>The root encryption key is generated and stored inside a Hardware Security Module. It never leaves the tamper-resistant hardware.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Data Encryption Key (DEK) Created</h4>
+                            <p>KMS generates a DEK for your database. The DEK is "wrapped" (encrypted) by the master key. Only the wrapped DEK is stored with the database.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Application Requests Decryption</h4>
+                            <p>When your app needs to decrypt data, it sends the wrapped DEK to KMS and asks it to unwrap it. KMS verifies the application's identity and permissions.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>KMS Returns Unwrapped DEK</h4>
+                            <p>If authorized, KMS uses the master key (inside HSM) to unwrap the DEK and returns it to the application over an encrypted channel.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Application Decrypts Data</h4>
+                            <p>The application uses the DEK to decrypt the customer data. The DEK exists in memory only for the needed operation.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <h4>Everything Is Logged</h4>
+                            <p>KMS logs every key operation: which application requested which key at what time. Auditors can review this for compliance.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-box success">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    <div class="info-box-content">
+                        <h4>Security Improvement</h4>
+                        <p>Now, even if attackers compromise the database server and steal the encrypted data AND the wrapped DEK, they can't decrypt anything without access to the KMS and proper authorization. The master key in the HSM remains protected.</p>
+                    </div>
+                </div>
+            </section>
+
+            <div class="key-points" style="margin-top: var(--space-12);">
+                <div class="key-points-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    Key Takeaways
+                </div>
+                <ul>
+                    <li>Encryption without key management is like a lock with the key under the doormat</li>
+                    <li>KMS centralizes, protects, and audits the complete lifecycle of cryptographic keys</li>
+                    <li>Keys are organized in hierarchies; master keys protect other keys</li>
+                    <li>HSMs provide the highest level of key protection through tamper-resistant hardware</li>
+                    <li>KMS differs from PAM (human access) and Secrets Management (application credentials)</li>
+                </ul>
+            </div>
+
+            <nav class="page-nav">
+                <a href="pam-fundamentals.html" class="page-nav-link prev">
+                    <span class="page-nav-label">Previous</span>
+                    <span class="page-nav-title">← What is PAM?</span>
+                </a>
+                <a href="key-lifecycle.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next</span>
+                    <span class="page-nav-title">Key Lifecycle →</span>
+                </a>
+            </nav>
+        </div>
+
+        <footer class="footer">
+            <p>PAM & KMS Ultimate Guide — A comprehensive enterprise security documentation resource</p>
+        </footer>
+    </main>
+
+    <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"></polyline></svg>
+    </button>
+
+    <script src="../js/main.js"></script>
+</body>
+</html>

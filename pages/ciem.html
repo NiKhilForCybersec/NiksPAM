@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Cloud Infrastructure Entitlement Management (CIEM) - Managing cloud permissions, preventing privilege escalation, and securing multi-cloud environments">
+    <title>CIEM - Cloud Entitlements | PAM & KMS Guide</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="scroll-progress" id="scroll-progress"></div>
+
+    <header class="header">
+        <div class="header-content">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                PAM & KMS Guide
+            </a>
+            
+            <nav class="header-nav">
+                <a href="pam-fundamentals.html">PAM</a>
+                <a href="kms-fundamentals.html">KMS</a>
+                <a href="vendors.html">Vendors</a>
+                <a href="implementation.html" class="active">Implementation</a>
+            </nav>
+            
+            <div class="header-actions">
+                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-title">Advanced Topics</div>
+            <ul class="sidebar-nav">
+                <li><a href="zero-trust.html">Zero Trust</a></li>
+                <li><a href="ciem.html" class="active">CIEM</a></li>
+                <li><a href="devops-secrets.html">DevOps Secrets</a></li>
+                <li><a href="machine-identity.html">Machine Identity</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <main class="main-wrapper">
+        <div class="main-content">
+            <nav class="breadcrumb">
+                <a href="../index.html">Home</a>
+                <span class="breadcrumb-separator">/</span>
+                <a href="zero-trust.html">Advanced Topics</a>
+                <span class="breadcrumb-separator">/</span>
+                <span>CIEM</span>
+            </nav>
+
+            <div class="page-header">
+                <h1>Cloud Infrastructure Entitlement Management (CIEM)</h1>
+                <p class="page-description">
+                    CIEM addresses the explosive growth of cloud permissions. With thousands of services across AWS, Azure, and GCP, managing who can do what is a massive challenge. CIEM provides visibility, analysis, and remediation for cloud entitlements.
+                </p>
+            </div>
+
+            <div class="toc">
+                <div class="toc-title">On This Page</div>
+                <ul class="toc-list">
+                    <li><a href="#problem"><span class="toc-number">1.</span> The Cloud Permissions Problem</a></li>
+                    <li><a href="#what-is-ciem"><span class="toc-number">2.</span> What is CIEM?</a></li>
+                    <li><a href="#cloud-iam"><span class="toc-number">3.</span> Cloud IAM Deep Dive</a></li>
+                    <li><a href="#risks"><span class="toc-number">4.</span> Cloud Permission Risks</a></li>
+                    <li><a href="#capabilities"><span class="toc-number">5.</span> CIEM Capabilities</a></li>
+                    <li><a href="#implementation"><span class="toc-number">6.</span> Implementation Approach</a></li>
+                    <li><a href="#vendors"><span class="toc-number">7.</span> CIEM Vendors</a></li>
+                    <li><a href="#pam-integration"><span class="toc-number">8.</span> CIEM + PAM Integration</a></li>
+                </ul>
+            </div>
+
+            <section id="problem">
+                <h2>The Cloud Permissions Problem</h2>
+                
+                <p>
+                    Cloud permissions have exploded in complexity. Traditional on-premises environments had relatively simple permission models. Cloud environments? Not so much.
+                </p>
+
+                <h3>The Scale of the Problem</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Cloud Provider</th>
+                                <th>Services</th>
+                                <th>IAM Actions</th>
+                                <th>Complexity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>AWS</strong></td>
+                                <td>200+ services</td>
+                                <td>14,000+ actions</td>
+                                <td>Resource-based + Identity-based policies, SCPs, Permission boundaries</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Azure</strong></td>
+                                <td>200+ services</td>
+                                <td>10,000+ permissions</td>
+                                <td>RBAC + Classic, Management groups, Blueprints</td>
+                            </tr>
+                            <tr>
+                                <td><strong>GCP</strong></td>
+                                <td>100+ services</td>
+                                <td>5,000+ permissions</td>
+                                <td>IAM roles, Organization policies, VPC Service Controls</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Why This Matters</h3>
+
+                <ul>
+                    <li><strong>Over-privileged identities:</strong> Studies show 95%+ of cloud permissions are never used</li>
+                    <li><strong>Permission sprawl:</strong> Average organization has thousands of IAM policies</li>
+                    <li><strong>Cross-account complexity:</strong> Multi-account strategies multiply the problem</li>
+                    <li><strong>Human error:</strong> Easy to grant "Admin" when you meant "ReadOnly"</li>
+                    <li><strong>Credential compromise:</strong> Overprivileged credentials = larger blast radius</li>
+                </ul>
+
+                <div class="info-box warning">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Real-World Impact</h4>
+                        <p>Capital One breach (2019): Misconfigured WAF + overly permissive IAM role allowed attacker to access S3 buckets containing 100M+ customer records. Proper CIEM would have detected the excessive permissions.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="what-is-ciem">
+                <h2>What is CIEM?</h2>
+
+                <p>
+                    <strong>Cloud Infrastructure Entitlement Management (CIEM)</strong> is a category of security tools that help organizations manage and secure cloud permissions across multi-cloud environments.
+                </p>
+
+                <h3>CIEM vs. Related Technologies</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Technology</th>
+                                <th>Focus</th>
+                                <th>Relationship to CIEM</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>IAM</strong></td>
+                                <td>Identity and Access Management (general)</td>
+                                <td>CIEM is specialized IAM for cloud entitlements</td>
+                            </tr>
+                            <tr>
+                                <td><strong>PAM</strong></td>
+                                <td>Privileged human access, session management</td>
+                                <td>CIEM complements PAM with cloud permission analysis</td>
+                            </tr>
+                            <tr>
+                                <td><strong>IGA</strong></td>
+                                <td>Identity Governance & Administration</td>
+                                <td>CIEM provides cloud-specific governance capabilities</td>
+                            </tr>
+                            <tr>
+                                <td><strong>CSPM</strong></td>
+                                <td>Cloud Security Posture Management</td>
+                                <td>CSPM checks config; CIEM analyzes permissions deeply</td>
+                            </tr>
+                            <tr>
+                                <td><strong>CNAPP</strong></td>
+                                <td>Cloud-Native Application Protection Platform</td>
+                                <td>CIEM is often a component of CNAPP</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Core CIEM Functions</h3>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+┌─────────────────────────────────────────────────────────────────────┐
+│                         CIEM PLATFORM                                │
+│                                                                      │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐ │
+│  │  DISCOVERY  │  │  ANALYSIS   │  │ REMEDIATION │  │ GOVERNANCE  │ │
+│  │             │  │             │  │             │  │             │ │
+│  │ • Identities│  │ • Effective │  │ • Right-    │  │ • Access    │ │
+│  │ • Roles     │  │   permissions│ │   sizing    │  │   reviews   │ │
+│  │ • Policies  │  │ • Usage     │  │ • Policy    │  │ • Compliance│ │
+│  │ • Resources │  │   analysis  │  │   generation│  │   reporting │ │
+│  │ • Cross-    │  │ • Risk      │  │ • Automation│  │ • Audit     │ │
+│  │   account   │  │   scoring   │  │             │  │   trails    │ │
+│  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘ │
+│                                                                      │
+│  ┌───────────────────────────────────────────────────────────────┐  │
+│  │                    MULTI-CLOUD SUPPORT                         │  │
+│  │         AWS    │    Azure    │    GCP    │    Others          │  │
+│  └───────────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────────┘
+                </pre>
+            </section>
+
+            <section id="cloud-iam">
+                <h2>Cloud IAM Deep Dive</h2>
+
+                <p>
+                    To understand CIEM, you need to understand how each cloud handles permissions:
+                </p>
+
+                <h3>AWS IAM Model</h3>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+AWS Permission Evaluation Flow:
+
+Request → Explicit Deny? → YES → DENY
+              │
+              NO
+              ↓
+         SCP Allow? → NO → DENY (Organization level)
+              │
+              YES
+              ↓
+    Permission Boundary? → NO → DENY (If boundary exists)
+              │
+              YES
+              ↓
+    Identity Policy Allow? → NO → Check Resource Policy
+              │                         │
+              YES                       ↓
+              │               Resource Policy Allow? → NO → DENY
+              ↓                         │
+           ALLOW                       YES
+                                        ↓
+                                     ALLOW
+
+Key AWS Concepts:
+• Identity-based policies: Attached to users, groups, roles
+• Resource-based policies: Attached to resources (S3 buckets, KMS keys)
+• Permission boundaries: Maximum permissions an identity CAN have
+• Service Control Policies (SCPs): Organization-level guardrails
+• Session policies: Temporary restrictions during role assumption
+                </pre>
+
+                <h4>AWS Policy Example</h4>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowS3ReadOnly",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "arn:aws:s3:::my-bucket",
+        "arn:aws:s3:::my-bucket/*"
+      ],
+      "Condition": {
+        "IpAddress": {
+          "aws:SourceIp": "10.0.0.0/8"
+        }
+      }
+    },
+    {
+      "Sid": "DenyDeleteBucket",
+      "Effect": "Deny",
+      "Action": "s3:DeleteBucket",
+      "Resource": "*"
+    }
+  ]
+}
+                </pre>
+
+                <h3>Azure RBAC Model</h3>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+Azure Permission Hierarchy:
+
+Management Group (Root)
+    │
+    ├── Management Group (IT)
+    │       │
+    │       ├── Subscription (Production)
+    │       │       │
+    │       │       ├── Resource Group (App1-RG)
+    │       │       │       │
+    │       │       │       └── Resources (VMs, Storage, etc.)
+    │       │       │
+    │       │       └── Resource Group (App2-RG)
+    │       │
+    │       └── Subscription (Development)
+    │
+    └── Management Group (Finance)
+
+Key Azure Concepts:
+• Role Definitions: Collection of permissions (Reader, Contributor, Owner, Custom)
+• Role Assignments: Principal + Role + Scope
+• Scope: Management group, Subscription, Resource group, or Resource
+• Deny Assignments: Block specific actions (rare, mostly system-used)
+• Inheritance: Permissions flow down the hierarchy
+                </pre>
+
+                <h3>GCP IAM Model</h3>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+GCP Permission Hierarchy:
+
+Organization
+    │
+    ├── Folder (Engineering)
+    │       │
+    │       ├── Project (prod-app)
+    │       │       │
+    │       │       └── Resources (GCE, GCS, etc.)
+    │       │
+    │       └── Project (dev-app)
+    │
+    └── Folder (Finance)
+
+Key GCP Concepts:
+• Permissions: Granular actions (storage.buckets.get)
+• Roles: Collections of permissions
+  - Basic roles: Owner, Editor, Viewer (avoid these!)
+  - Predefined roles: Cloud-managed, service-specific
+  - Custom roles: User-defined
+• Policies: Bindings of principals to roles at a resource
+• IAM Conditions: Attribute-based access control
+• VPC Service Controls: Perimeter-based access
+                </pre>
+            </section>
+
+            <section id="risks">
+                <h2>Cloud Permission Risks</h2>
+
+                <h3>Common Risky Patterns</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Risk Pattern</th>
+                                <th>Example</th>
+                                <th>Impact</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Wildcard permissions</strong></td>
+                                <td><code>"Action": "*"</code> or <code>"Resource": "*"</code></td>
+                                <td>Full account compromise if credentials stolen</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Admin on everything</strong></td>
+                                <td>AdministratorAccess attached to developers</td>
+                                <td>No blast radius limitation</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Unused permissions</strong></td>
+                                <td>Permissions granted "just in case"</td>
+                                <td>Larger attack surface than needed</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Cross-account trust too broad</strong></td>
+                                <td>Role trusts entire external account, not specific role</td>
+                                <td>Any identity in trusted account can assume role</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Privilege escalation paths</strong></td>
+                                <td>iam:PassRole + lambda:CreateFunction</td>
+                                <td>User can escalate to any role they can pass</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Data exfiltration permissions</strong></td>
+                                <td>s3:GetObject on sensitive buckets</td>
+                                <td>Mass data theft possible</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Stale access</strong></td>
+                                <td>Former employees still have access</td>
+                                <td>Unauthorized access risk</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>AWS Privilege Escalation Techniques</h3>
+
+                <p>CIEM tools detect these dangerous permission combinations:</p>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# 1. Create new policy version with admin access
+iam:CreatePolicyVersion → Modify existing policy to grant admin
+
+# 2. Attach admin policy to self
+iam:AttachUserPolicy / iam:AttachRolePolicy → Add AdministratorAccess
+
+# 3. Create access key for another user
+iam:CreateAccessKey → Generate credentials for admin user
+
+# 4. Lambda privilege escalation
+iam:PassRole + lambda:CreateFunction + lambda:InvokeFunction
+→ Create Lambda with high-privilege role, invoke to escalate
+
+# 5. EC2 instance profile escalation
+iam:PassRole + ec2:RunInstances
+→ Launch EC2 with admin role, SSH in, use metadata service
+
+# 6. CloudFormation stack with admin role
+iam:PassRole + cloudformation:CreateStack
+→ Create stack that provisions resources as admin
+
+# 7. Update assume role policy
+iam:UpdateAssumeRolePolicy → Allow yourself to assume admin role
+
+# 8. Glue dev endpoint escalation  
+iam:PassRole + glue:CreateDevEndpoint
+→ Create Glue endpoint with high-privilege role
+                </pre>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Interview Tip</h4>
+                        <p>Being able to explain privilege escalation paths is a high-value interview skill. "iam:PassRole is particularly dangerous because it allows a user to delegate permissions to services, potentially creating resources with more privileges than the user directly has."</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="capabilities">
+                <h2>CIEM Capabilities</h2>
+
+                <h3>1. Discovery & Inventory</h3>
+
+                <p>CIEM discovers all identities and their relationships:</p>
+
+                <ul>
+                    <li><strong>Human identities:</strong> IAM users, federated users, SSO users</li>
+                    <li><strong>Machine identities:</strong> Service accounts, IAM roles, instance profiles</li>
+                    <li><strong>External identities:</strong> Cross-account access, third-party integrations</li>
+                    <li><strong>Resources:</strong> What can be accessed (buckets, databases, compute)</li>
+                    <li><strong>Policies:</strong> All IAM policies, resource policies, SCPs</li>
+                </ul>
+
+                <h3>2. Effective Permission Analysis</h3>
+
+                <p>Calculates what an identity can actually do:</p>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+Example Analysis for User "<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="70141506151c1f00150230131f1d00111e095e131f1d">[email&#160;protected]</a>":
+
+Direct Policies:
+  └── DeveloperPolicy: s3:*, ec2:Describe*, lambda:*
+
+Group Memberships:
+  └── Engineering Group
+        └── EngineeringPolicy: rds:*, dynamodb:*
+
+Assumable Roles:
+  └── DeploymentRole (via AssumeRole)
+        └── Full Admin in Production account!   ⚠️ HIGH RISK
+
+Permission Boundaries:
+  └── None configured                          ⚠️ NO GUARDRAILS
+
+Effective Permissions:
+  └── Can access 47 S3 buckets (3 contain PII)  ⚠️ REVIEW
+  └── Can launch EC2 instances in all regions
+  └── Can modify Lambda functions
+  └── Can escalate to admin via role assumption  ⚠️ CRITICAL
+                </pre>
+
+                <h3>3. Usage Analysis</h3>
+
+                <p>Compares granted permissions to actual usage:</p>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+Permission Usage Report for "<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4d29283b2821223d283f0d2e22203d2c2334632e2220">[email&#160;protected]</a>" (Last 90 days):
+
+Granted: 247 unique actions
+Used: 12 unique actions (4.8% utilization)
+
+Actions Used:
+  ✓ s3:GetObject (used 1,247 times)
+  ✓ s3:PutObject (used 89 times)
+  ✓ s3:ListBucket (used 456 times)
+  ✓ ec2:DescribeInstances (used 23 times)
+  ... 8 more
+
+Actions NEVER Used (sample):
+  ✗ s3:DeleteBucket
+  ✗ ec2:RunInstances
+  ✗ iam:CreateUser
+  ✗ lambda:DeleteFunction
+  ... 227 more
+
+Recommendation: Right-size to only used permissions
+Estimated Risk Reduction: 95%
+                </pre>
+
+                <h3>4. Right-Sizing & Remediation</h3>
+
+                <p>Generate least-privilege policies based on actual usage:</p>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# CIEM-generated policy based on 90 days of usage:
+
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "S3Access",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "arn:aws:s3:::app-data-bucket",
+        "arn:aws:s3:::app-data-bucket/*",
+        "arn:aws:s3:::app-logs-bucket",
+        "arn:aws:s3:::app-logs-bucket/*"
+      ]
+    },
+    {
+      "Sid": "EC2ReadOnly",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:DescribeInstances",
+        "ec2:DescribeSecurityGroups"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+
+# vs. Original policy with s3:* and ec2:* on all resources
+                </pre>
+
+                <h3>5. Governance & Compliance</h3>
+
+                <ul>
+                    <li><strong>Access reviews:</strong> Periodic certification of permissions</li>
+                    <li><strong>Policy compliance:</strong> Ensure policies meet standards</li>
+                    <li><strong>Drift detection:</strong> Alert when permissions change</li>
+                    <li><strong>Audit trails:</strong> Who granted what, when</li>
+                    <li><strong>Compliance reporting:</strong> SOC 2, PCI-DSS, HIPAA evidence</li>
+                </ul>
+            </section>
+
+            <section id="implementation">
+                <h2>Implementation Approach</h2>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Phase 1: Discovery (Week 1-2)</h4>
+                            <p>Connect CIEM to all cloud accounts. Discover all identities, policies, and resources. Build baseline inventory. Don't make changes yet—just observe.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Phase 2: Analysis (Week 3-4)</h4>
+                            <p>Analyze effective permissions. Identify high-risk patterns (wildcards, admin access, privilege escalation paths). Correlate with usage data. Prioritize by risk.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Phase 3: Quick Wins (Week 5-6)</h4>
+                            <p>Remove unused service accounts. Revoke access for departed employees. Fix obvious misconfigurations. Address critical privilege escalation paths.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Phase 4: Right-Sizing (Week 7-12)</h4>
+                            <p>Generate right-sized policies. Test in non-production first. Roll out gradually. Monitor for access denied errors. Iterate based on feedback.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Phase 5: Continuous Governance (Ongoing)</h4>
+                            <p>Implement access reviews. Alert on new risky permissions. Automate policy generation for new resources. Integrate with ticketing and approval workflows.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-box warning">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Right-Sizing Warning</h4>
+                        <p>Always test right-sized policies in non-production first! Usage data may not capture infrequent but critical operations (disaster recovery, annual compliance tasks). Work with application owners before removing permissions.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="vendors">
+                <h2>CIEM Vendors</h2>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Vendor</th>
+                                <th>Product</th>
+                                <th>Strengths</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>CyberArk</strong></td>
+                                <td>Cloud Entitlements Manager</td>
+                                <td>Integrates with CyberArk PAM, strong remediation</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Wiz</strong></td>
+                                <td>CIEM (part of CNAPP)</td>
+                                <td>Attack path analysis, agentless, fast deployment</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Orca Security</strong></td>
+                                <td>CIEM (part of platform)</td>
+                                <td>Agentless, risk prioritization, compliance</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Ermetic</strong></td>
+                                <td>CIEM Platform (acquired by Tenable)</td>
+                                <td>Deep AWS expertise, strong analysis engine</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Sonrai Security</strong></td>
+                                <td>Dig Platform</td>
+                                <td>Identity graph, enterprise-focused</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Zscaler</strong></td>
+                                <td>CIEM (Posture Control)</td>
+                                <td>Part of broader zero trust platform</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Microsoft</strong></td>
+                                <td>Entra Permissions Management</td>
+                                <td>Multi-cloud, Azure native integration</td>
+                            </tr>
+                            <tr>
+                                <td><strong>AWS</strong></td>
+                                <td>IAM Access Analyzer</td>
+                                <td>Free, native AWS, policy validation</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>AWS Native Tools</h3>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# IAM Access Analyzer - Find external access
+aws accessanalyzer list-findings --analyzer-arn $ANALYZER_ARN
+
+# IAM Policy Simulator - Test permissions
+aws iam simulate-principal-policy \
+    --policy-source-arn arn:aws:iam::123456789012:user/developer \
+    --action-names s3:GetObject \
+    --resource-arns arn:aws:s3:::sensitive-bucket/*
+
+# IAM Access Advisor - Last accessed info
+aws iam generate-service-last-accessed-details \
+    --arn arn:aws:iam::123456789012:user/developer
+
+# Get report
+aws iam get-service-last-accessed-details \
+    --job-id $JOB_ID
+
+# CloudTrail - Actual API usage
+aws cloudtrail lookup-events \
+    --lookup-attributes AttributeKey=Username,AttributeValue=developer
+                </pre>
+            </section>
+
+            <section id="pam-integration">
+                <h2>CIEM + PAM Integration</h2>
+
+                <p>
+                    CIEM and PAM are complementary technologies:
+                </p>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Capability</th>
+                                <th>PAM</th>
+                                <th>CIEM</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Human access to cloud console</strong></td>
+                                <td>✓ Session recording, JIT access</td>
+                                <td>Analyze what they can do</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Cloud permission analysis</strong></td>
+                                <td>Limited</td>
+                                <td>✓ Core capability</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Machine identity permissions</strong></td>
+                                <td>Limited</td>
+                                <td>✓ Service accounts, roles</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Privilege escalation detection</strong></td>
+                                <td>Limited</td>
+                                <td>✓ Path analysis</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Right-sizing recommendations</strong></td>
+                                <td>No</td>
+                                <td>✓ Based on usage</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Session management</strong></td>
+                                <td>✓ Core capability</td>
+                                <td>No</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Credential vaulting</strong></td>
+                                <td>✓ Core capability</td>
+                                <td>No</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Integration Pattern</h3>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+┌──────────────────────────────────────────────────────────────────┐
+│                     CLOUD ACCESS SECURITY                        │
+│                                                                  │
+│  ┌────────────────────┐      ┌────────────────────┐             │
+│  │        PAM         │      │        CIEM        │             │
+│  │                    │      │                    │             │
+│  │ • Human access     │◄────►│ • Permission       │             │
+│  │ • Session recording│      │   analysis         │             │
+│  │ • JIT elevation    │      │ • Right-sizing     │             │
+│  │ • Credential vault │      │ • Risk detection   │             │
+│  └─────────┬──────────┘      └─────────┬──────────┘             │
+│            │                           │                         │
+│            └───────────┬───────────────┘                         │
+│                        │                                         │
+│                        ▼                                         │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │                    CLOUD PROVIDERS                       │    │
+│  │     AWS Account    │   Azure Subscription   │   GCP     │    │
+│  └─────────────────────────────────────────────────────────┘    │
+└──────────────────────────────────────────────────────────────────┘
+
+Integration Points:
+1. CIEM identifies risky permissions → PAM restricts access
+2. PAM provides JIT access → CIEM validates appropriate scope
+3. CIEM detects unused permissions → PAM enforces removal
+4. PAM audit logs → CIEM correlates with permission usage
+                </pre>
+            </section>
+
+            <div class="info-box success">
+                <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <div class="info-box-content">
+                    <h4>Key Takeaways</h4>
+                    <p>CIEM addresses cloud permission sprawl that traditional IAM/PAM can't handle. Key capabilities: discover all identities, analyze effective permissions, detect privilege escalation paths, right-size based on usage. CIEM complements PAM—use PAM for human access and session management, CIEM for cloud permission governance. In interviews, demonstrate understanding of cloud IAM complexity and privilege escalation risks.</p>
+                </div>
+            </div>
+
+            <nav class="page-nav">
+                <a href="zero-trust.html" class="page-nav-link prev">
+                    <span class="page-nav-label">Previous</span>
+                    <span class="page-nav-title">← Zero Trust</span>
+                </a>
+                <a href="devops-secrets.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next</span>
+                    <span class="page-nav-title">DevOps Secrets →</span>
+                </a>
+            </nav>
+        </div>
+
+        <footer class="footer">
+            <p>PAM & KMS Ultimate Guide — A comprehensive enterprise security documentation resource</p>
+        </footer>
+    </main>
+
+    <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24

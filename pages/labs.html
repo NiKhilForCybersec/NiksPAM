@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Hands-On Labs - Practical exercises for learning PAM and KMS with free tools and home lab setups">
+    <title>Hands-On Labs | PAM & KMS Guide</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="scroll-progress" id="scroll-progress"></div>
+
+    <header class="header">
+        <div class="header-content">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                PAM & KMS Guide
+            </a>
+            
+            <nav class="header-nav">
+                <a href="pam-fundamentals.html">PAM</a>
+                <a href="kms-fundamentals.html">KMS</a>
+                <a href="vendors.html">Vendors</a>
+                <a href="implementation.html" class="active">Implementation</a>
+            </nav>
+            
+            <div class="header-actions">
+                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-title">Learning</div>
+            <ul class="sidebar-nav">
+                <li><a href="interview-prep.html">Interview Prep</a></li>
+                <li><a href="labs.html" class="active">Hands-On Labs</a></li>
+                <li><a href="glossary.html">Glossary</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <main class="main-wrapper">
+        <div class="main-content">
+            <nav class="breadcrumb">
+                <a href="../index.html">Home</a>
+                <span class="breadcrumb-separator">/</span>
+                <a href="interview-prep.html">Learning</a>
+                <span class="breadcrumb-separator">/</span>
+                <span>Hands-On Labs</span>
+            </nav>
+
+            <div class="page-header">
+                <h1>Hands-On Labs</h1>
+                <p class="page-description">
+                    The best way to learn PAM and KMS is hands-on practice. This guide provides lab setups using free tools, step-by-step exercises, and practical scenarios you can run on your own computer.
+                </p>
+            </div>
+
+            <div class="toc">
+                <div class="toc-title">On This Page</div>
+                <ul class="toc-list">
+                    <li><a href="#lab-setup"><span class="toc-number">1.</span> Lab Environment Setup</a></li>
+                    <li><a href="#vault-labs"><span class="toc-number">2.</span> HashiCorp Vault Labs</a></li>
+                    <li><a href="#kms-labs"><span class="toc-number">3.</span> Cloud KMS Labs</a></li>
+                    <li><a href="#pki-labs"><span class="toc-number">4.</span> PKI & Certificate Labs</a></li>
+                    <li><a href="#integration-labs"><span class="toc-number">5.</span> Integration Labs</a></li>
+                    <li><a href="#attack-labs"><span class="toc-number">6.</span> Attack Simulation Labs</a></li>
+                    <li><a href="#enterprise-trials"><span class="toc-number">7.</span> Enterprise Trial Options</a></li>
+                </ul>
+            </div>
+
+            <section id="lab-setup">
+                <h2>Lab Environment Setup</h2>
+                
+                <p>
+                    You can build a fully functional PAM/KMS lab with free tools. Here's what you need:
+                </p>
+
+                <h3>Option 1: Local Docker Lab (Recommended)</h3>
+
+                <p>Minimal requirements, runs on any modern laptop:</p>
+
+                <ul>
+                    <li><strong>Docker Desktop:</strong> Required for running containers</li>
+                    <li><strong>8GB RAM minimum:</strong> 16GB recommended</li>
+                    <li><strong>20GB disk space:</strong> For images and data</li>
+                </ul>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# Create lab network
+docker network create pam-lab
+
+# Start Vault in dev mode
+docker run -d --name vault \
+  --network pam-lab \
+  -p 8200:8200 \
+  -e 'VAULT_DEV_ROOT_TOKEN_ID=myroot' \
+  -e 'VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:8200' \
+  hashicorp/vault:latest
+
+# Start PostgreSQL (for dynamic secrets lab)
+docker run -d --name postgres \
+  --network pam-lab \
+  -p 5432:5432 \
+  -e POSTGRES_PASSWORD=labpassword \
+  -e POSTGRES_USER=labuser \
+  -e POSTGRES_DB=labdb \
+  postgres:15
+
+# Start MySQL (alternative database)
+docker run -d --name mysql \
+  --network pam-lab \
+  -p 3306:3306 \
+  -e MYSQL_ROOT_PASSWORD=labpassword \
+  -e MYSQL_DATABASE=labdb \
+  mysql:8
+
+# Verify containers running
+docker ps
+                </pre>
+
+                <h3>Option 2: Cloud Lab (Free Tier)</h3>
+
+                <p>Use cloud free tiers for more realistic experience:</p>
+
+                <ul>
+                    <li><strong>AWS Free Tier:</strong> 12 months free, includes Secrets Manager and KMS</li>
+                    <li><strong>Azure Free Account:</strong> $200 credit, includes Key Vault</li>
+                    <li><strong>GCP Free Tier:</strong> $300 credit, includes Secret Manager</li>
+                </ul>
+
+                <h3>Option 3: VM Lab (Most Realistic)</h3>
+
+                <p>For practicing with AD-integrated scenarios:</p>
+
+                <ul>
+                    <li><strong>VirtualBox or VMware:</strong> Free hypervisor</li>
+                    <li><strong>Windows Server eval:</strong> 180-day evaluation license</li>
+                    <li><strong>Linux VMs:</strong> Ubuntu Server or CentOS</li>
+                </ul>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Lab Best Practice</h4>
+                        <p>Start with Docker for quick experiments. Move to VMs when you need to practice AD integration, Windows service accounts, or network segmentation. Use cloud for practicing cloud-native services.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="vault-labs">
+                <h2>HashiCorp Vault Labs</h2>
+
+                <h3>Lab 1: Basic Secrets Operations</h3>
+
+                <p><strong>Objective:</strong> Learn to store, retrieve, and manage secrets</p>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Connect to Vault</h4>
+                            <pre style="background: var(--bg-tertiary); padding: var(--space-3); border-radius: var(--radius-md); font-family: monospace; font-size: var(--text-sm); margin-top: var(--space-2);">
+# Set environment variables
+export VAULT_ADDR='http://127.0.0.1:8200'
+export VAULT_TOKEN='myroot'
+
+# Verify connection
+vault status
+                            </pre>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Enable KV Secrets Engine</h4>
+                            <pre style="background: var(--bg-tertiary); padding: var(--space-3); border-radius: var(--radius-md); font-family: monospace; font-size: var(--text-sm); margin-top: var(--space-2);">
+# Enable KV v2 at 'secret' path
+vault secrets enable -path=secret kv-v2
+
+# Verify
+vault secrets list
+                            </pre>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Create and Read Secrets</h4>
+                            <pre style="background: var(--bg-tertiary); padding: var(--space-3); border-radius: var(--radius-md); font-family: monospace; font-size: var(--text-sm); margin-top: var(--space-2);">
+# Write a secret
+vault kv put secret/myapp/database \
+    username="dbuser" \
+    password="SuperSecret123!" \
+    host="db.example.com" \
+    port="5432"
+
+# Read the secret
+vault kv get secret/myapp/database
+
+# Read specific field
+vault kv get -field=password secret/myapp/database
+
+# Read as JSON
+vault kv get -format=json secret/myapp/database
+                            </pre>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Update and Version</h4>
+                            <pre style="background: var(--bg-tertiary); padding: var(--space-3); border-radius: var(--radius-md); font-family: monospace; font-size: var(--text-sm); margin-top: var(--space-2);">
+# Update secret (creates new version)
+vault kv put secret/myapp/database \
+    username="dbuser" \
+    password="NewPassword456!" \
+    host="db.example.com" \
+    port="5432"
+
+# View metadata (versions)
+vault kv metadata get secret/myapp/database
+
+# Read old version
+vault kv get -version=1 secret/myapp/database
+                            </pre>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Delete and Recover</h4>
+                            <pre style="background: var(--bg-tertiary); padding: var(--space-3); border-radius: var(--radius-md); font-family: monospace; font-size: var(--text-sm); margin-top: var(--space-2);">
+# Soft delete (can recover)
+vault kv delete secret/myapp/database
+
+# Try to read (fails)
+vault kv get secret/myapp/database
+
+# Undelete
+vault kv undelete -versions=2 secret/myapp/database
+
+# Permanent destroy
+vault kv destroy -versions=1 secret/myapp/database
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Lab 2: Dynamic Database Secrets</h3>
+
+                <p><strong>Objective:</strong> Generate database credentials on-demand</p>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# Step 1: Enable database secrets engine
+vault secrets enable database
+
+# Step 2: Configure PostgreSQL connection
+vault write database/config/my-postgresql-database \
+    plugin_name=postgresql-database-plugin \
+    allowed_roles="readonly,readwrite" \
+    connection_url="postgresql://{{username}}:{{password}}@postgres:5432/labdb?sslmode=disable" \
+    username="labuser" \
+    password="labpassword"
+
+# Step 3: Create readonly role
+vault write database/roles/readonly \
+    db_name=my-postgresql-database \
+    creation_statements="CREATE ROLE \"{{name}}\" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}'; GRANT SELECT ON ALL TABLES IN SCHEMA public TO \"{{name}}\";" \
+    default_ttl="1h" \
+    max_ttl="24h"
+
+# Step 4: Generate credentials
+vault read database/creds/readonly
+
+# Output:
+# Key                Value
+# ---                -----
+# lease_id           database/creds/readonly/abcd1234...
+# lease_duration     1h
+# username           v-root-readonly-xyz123
+# password           A1B2C3D4E5...
+
+# Step 5: Test the credentials
+# (Use psql or any PostgreSQL client)
+PGPASSWORD='A1B2C3D4E5...' psql -h localhost -U v-root-readonly-xyz123 -d labdb
+
+# Step 6: Watch the lease expire or revoke manually
+vault lease revoke database/creds/readonly/abcd1234...
+                </pre>
+
+                <h3>Lab 3: Policies and Auth Methods</h3>
+
+                <p><strong>Objective:</strong> Create policies and test access control</p>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# Step 1: Create a policy file
+cat > /tmp/app-policy.hcl << 'EOF'
+# Read secrets for myapp
+path "secret/data/myapp/*" {
+  capabilities = ["read", "list"]
+}
+
+# Generate database credentials
+path "database/creds/readonly" {
+  capabilities = ["read"]
+}
+
+# Deny access to other apps
+path "secret/data/otherapp/*" {
+  capabilities = ["deny"]
+}
+EOF
+
+# Step 2: Upload policy
+vault policy write myapp-policy /tmp/app-policy.hcl
+
+# Step 3: Enable AppRole auth
+vault auth enable approle
+
+# Step 4: Create AppRole with policy
+vault write auth/approle/role/myapp \
+    token_policies="myapp-policy" \
+    token_ttl=1h \
+    secret_id_ttl=24h
+
+# Step 5: Get Role ID and Secret ID
+ROLE_ID=$(vault read -field=role_id auth/approle/role/myapp/role-id)
+SECRET_ID=$(vault write -f -field=secret_id auth/approle/role/myapp/secret-id)
+
+echo "Role ID: $ROLE_ID"
+echo "Secret ID: $SECRET_ID"
+
+# Step 6: Login with AppRole (simulating application)
+APP_TOKEN=$(vault write -field=token auth/approle/login \
+    role_id=$ROLE_ID \
+    secret_id=$SECRET_ID)
+
+# Step 7: Test access with app token
+export VAULT_TOKEN=$APP_TOKEN
+
+# Should work
+vault kv get secret/myapp/database
+
+# Should fail (denied by policy)
+vault kv get secret/otherapp/config
+                </pre>
+
+                <h3>Lab 4: Transit Encryption</h3>
+
+                <p><strong>Objective:</strong> Use Vault as encryption-as-a-service</p>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# Reset to root token
+export VAULT_TOKEN='myroot'
+
+# Step 1: Enable transit engine
+vault secrets enable transit
+
+# Step 2: Create encryption key
+vault write -f transit/keys/my-encryption-key
+
+# Step 3: Encrypt data
+# Note: plaintext must be base64 encoded
+PLAINTEXT=$(echo -n "My secret credit card: 4111-1111-1111-1111" | base64)
+CIPHERTEXT=$(vault write -field=ciphertext transit/encrypt/my-encryption-key \
+    plaintext=$PLAINTEXT)
+
+echo "Ciphertext: $CIPHERTEXT"
+
+# Step 4: Decrypt data
+DECRYPTED=$(vault write -field=plaintext transit/decrypt/my-encryption-key \
+    ciphertext=$CIPHERTEXT)
+
+echo "Decrypted: $(echo $DECRYPTED | base64 -d)"
+
+# Step 5: Rotate the key
+vault write -f transit/keys/my-encryption-key/rotate
+
+# Step 6: Re-encrypt with new key version (rewrap)
+NEW_CIPHERTEXT=$(vault write -field=ciphertext transit/rewrap/my-encryption-key \
+    ciphertext=$CIPHERTEXT)
+
+echo "New ciphertext: $NEW_CIPHERTEXT"
+
+# Step 7: Old and new ciphertext both decrypt correctly
+vault write -field=plaintext transit/decrypt/my-encryption-key \
+    ciphertext=$CIPHERTEXT | base64 -d
+
+vault write -field=plaintext transit/decrypt/my-encryption-key \
+    ciphertext=$NEW_CIPHERTEXT | base64 -d
+                </pre>
+            </section>
+
+            <section id="kms-labs">
+                <h2>Cloud KMS Labs</h2>
+
+                <h3>Lab 5: AWS KMS (Free Tier)</h3>
+
+                <p><strong>Objective:</strong> Create and use KMS keys in AWS</p>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# Prerequisites: AWS CLI configured with credentials
+
+# Step 1: Create a KMS key
+KEY_ID=$(aws kms create-key \
+    --description "Lab encryption key" \
+    --query 'KeyMetadata.KeyId' \
+    --output text)
+
+echo "Key ID: $KEY_ID"
+
+# Step 2: Create an alias for easier reference
+aws kms create-alias \
+    --alias-name alias/lab-key \
+    --target-key-id $KEY_ID
+
+# Step 3: Encrypt data
+echo -n "Secret data to encrypt" > /tmp/plaintext.txt
+
+aws kms encrypt \
+    --key-id alias/lab-key \
+    --plaintext fileb:///tmp/plaintext.txt \
+    --output text \
+    --query CiphertextBlob > /tmp/ciphertext.b64
+
+# Step 4: Decrypt data
+aws kms decrypt \
+    --ciphertext-blob fileb://<(base64 -d /tmp/ciphertext.b64) \
+    --output text \
+    --query Plaintext | base64 -d
+
+# Step 5: Generate data key (envelope encryption)
+aws kms generate-data-key \
+    --key-id alias/lab-key \
+    --key-spec AES_256
+
+# Returns:
+# - Plaintext (use this to encrypt your data, then discard)
+# - CiphertextBlob (store this alongside encrypted data)
+
+# Step 6: Enable key rotation
+aws kms enable-key-rotation --key-id $KEY_ID
+
+# Step 7: Check key rotation status
+aws kms get-key-rotation-status --key-id $KEY_ID
+
+# Step 8: View key policy
+aws kms get-key-policy --key-id $KEY_ID --policy-name default
+                </pre>
+
+                <h3>Lab 6: Azure Key Vault</h3>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# Prerequisites: Azure CLI logged in
+
+# Step 1: Create resource group
+az group create --name pam-lab-rg --location eastus
+
+# Step 2: Create Key Vault
+az keyvault create \
+    --name pamlabvault$RANDOM \
+    --resource-group pam-lab-rg \
+    --location eastus
+
+VAULT_NAME=$(az keyvault list --resource-group pam-lab-rg --query '[0].name' -o tsv)
+
+# Step 3: Store a secret
+az keyvault secret set \
+    --vault-name $VAULT_NAME \
+    --name "DatabasePassword" \
+    --value "SuperSecret123!"
+
+# Step 4: Retrieve the secret
+az keyvault secret show \
+    --vault-name $VAULT_NAME \
+    --name "DatabasePassword" \
+    --query "value" -o tsv
+
+# Step 5: Create an encryption key
+az keyvault key create \
+    --vault-name $VAULT_NAME \
+    --name "EncryptionKey" \
+    --kty RSA \
+    --size 2048
+
+# Step 6: Encrypt data with the key
+echo -n "Secret data" | base64 > /tmp/plaintext.b64
+
+az keyvault key encrypt \
+    --vault-name $VAULT_NAME \
+    --name "EncryptionKey" \
+    --algorithm RSA-OAEP \
+    --value $(cat /tmp/plaintext.b64)
+
+# Step 7: Enable soft delete and purge protection (production best practice)
+az keyvault update \
+    --name $VAULT_NAME \
+    --enable-soft-delete true \
+    --enable-purge-protection true
+
+# Cleanup (optional)
+# az group delete --name pam-lab-rg --yes
+                </pre>
+            </section>
+
+            <section id="pki-labs">
+                <h2>PKI & Certificate Labs</h2>
+
+                <h3>Lab 7: Build a Private CA with Vault</h3>
+
+                <p><strong>Objective:</strong> Create a certificate authority and issue certificates</p>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+export VAULT_ADDR='http://127.0.0.1:8200'
+export VAULT_TOKEN='myroot'
+
+# Step 1: Enable PKI engine for root CA
+vault secrets enable -path=pki pki
+
+# Step 2: Configure max TTL (10 years for root)
+vault secrets tune -max-lease-ttl=87600h pki
+
+# Step 3: Generate root CA
+vault write -field=certificate pki/root/generate/internal \
+    common_name="Lab Root CA" \
+    issuer_name="root-ca" \
+    ttl=87600h > /tmp/root_ca.crt
+
+# Step 4: Configure CA URLs
+vault write pki/config/urls \
+    issuing_certificates="http://127.0.0.1:8200/v1/pki/ca" \
+    crl_distribution_points="http://127.0.0.1:8200/v1/pki/crl"
+
+# Step 5: Enable intermediate CA
+vault secrets enable -path=pki_int pki
+vault secrets tune -max-lease-ttl=43800h pki_int
+
+# Step 6: Generate intermediate CSR
+vault write -field=csr pki_int/intermediate/generate/internal \
+    common_name="Lab Intermediate CA" \
+    issuer_name="intermediate-ca" > /tmp/intermediate.csr
+
+# Step 7: Sign intermediate with root
+vault write -field=certificate pki/root/sign-intermediate \
+    csr=@/tmp/intermediate.csr \
+    format=pem_bundle \
+    ttl=43800h > /tmp/intermediate.crt
+
+# Step 8: Import signed intermediate
+vault write pki_int/intermediate/set-signed \
+    certificate=@/tmp/intermediate.crt
+
+# Step 9: Create role for issuing server certificates
+vault write pki_int/roles/servers \
+    allowed_domains="example.com,lab.local" \
+    allow_subdomains=true \
+    max_ttl="720h"
+
+# Step 10: Issue a certificate!
+vault write pki_int/issue/servers \
+    common_name="myserver.lab.local" \
+    ttl="24h"
+
+# Output includes:
+# - certificate
+# - issuing_ca
+# - private_key
+# - serial_number
+                </pre>
+
+                <h3>Lab 8: Short-Lived SSH Certificates</h3>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# Step 1: Enable SSH secrets engine
+vault secrets enable -path=ssh-client-signer ssh
+
+# Step 2: Generate CA for signing
+vault write ssh-client-signer/config/ca generate_signing_key=true
+
+# Get public key (configure this on SSH servers)
+vault read -field=public_key ssh-client-signer/config/ca
+
+# Step 3: Create role for signing user keys
+vault write ssh-client-signer/roles/my-role \
+    algorithm_signer="rsa-sha2-256" \
+    key_type="ca" \
+    default_user="ubuntu" \
+    allowed_users="ubuntu,admin" \
+    allow_user_certificates=true \
+    valid_principals="ubuntu,admin" \
+    ttl="30m" \
+    max_ttl="1h"
+
+# Step 4: Generate your SSH key pair (if you don't have one)
+ssh-keygen -t rsa -b 4096 -f ~/.ssh/vault_lab_key -N ""
+
+# Step 5: Sign your public key
+vault write -field=signed_key ssh-client-signer/sign/my-role \
+    public_key=@$HOME/.ssh/vault_lab_key.pub > ~/.ssh/vault_lab_key-cert.pub
+
+# Step 6: View the certificate
+ssh-keygen -L -f ~/.ssh/vault_lab_key-cert.pub
+
+# Shows:
+# - Key ID
+# - Valid principals
+# - Valid from/to (short-lived!)
+# - Extensions
+                </pre>
+            </section>
+
+            <section id="integration-labs">
+                <h2>Integration Labs</h2>
+
+                <h3>Lab 9: Kubernetes + Vault</h3>
+
+                <p><strong>Objective:</strong> Inject secrets into Kubernetes pods</p>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# Prerequisites: Kubernetes cluster (minikube, kind, or cloud)
+
+# Step 1: Install Vault via Helm
+helm repo add hashicorp https://helm.releases.hashicorp.com
+helm install vault hashicorp/vault \
+    --set "server.dev.enabled=true" \
+    --set "injector.enabled=true"
+
+# Step 2: Wait for Vault to be ready
+kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=vault
+
+# Step 3: Configure Vault
+kubectl exec -it vault-0 -- /bin/sh
+
+# Inside Vault pod:
+vault secrets enable -path=secret kv-v2
+vault kv put secret/myapp/config username="appuser" password="apppassword"
+
+# Enable Kubernetes auth
+vault auth enable kubernetes
+vault write auth/kubernetes/config \
+    kubernetes_host="https://$KUBERNETES_PORT_443_TCP_ADDR:443"
+
+# Create policy
+vault policy write myapp - <<EOF
+path "secret/data/myapp/*" {
+  capabilities = ["read"]
+}
+EOF
+
+# Create role
+vault write auth/kubernetes/role/myapp \
+    bound_service_account_names=myapp-sa \
+    bound_service_account_namespaces=default \
+    policies=myapp \
+    ttl=1h
+
+exit
+
+# Step 4: Create service account
+kubectl create serviceaccount myapp-sa
+
+# Step 5: Deploy app with Vault annotations
+cat <<EOF | kubectl apply -f -
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/role: "myapp"
+        vault.hashicorp.com/agent-inject-secret-config: "secret/data/myapp/config"
+    spec:
+      serviceAccountName: myapp-sa
+      containers:
+      - name: myapp
+        image: nginx
+        command: ["sh", "-c", "cat /vault/secrets/config && sleep 3600"]
+EOF
+
+# Step 6: Verify secrets are injected
+kubectl logs -f deployment/myapp -c myapp
+                </pre>
+
+                <h3>Lab 10: CI/CD Pipeline Integration</h3>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# GitHub Actions example
+# .github/workflows/deploy.yml
+
+name: Deploy with Vault Secrets
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write  # Required for JWT auth
+      contents: read
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Import Secrets from Vault
+        uses: hashicorp/vault-action@v2
+        with:
+          url: ${{ secrets.VAULT_ADDR }}
+          method: jwt
+          role: github-actions
+          secrets: |
+            secret/data/myapp/database username | DB_USER ;
+            secret/data/myapp/database password | DB_PASS ;
+            secret/data/myapp/api key | API_KEY
+      
+      - name: Deploy Application
+        run: |
+          echo "Deploying with credentials..."
+          # DB_USER, DB_PASS, API_KEY are now environment variables
+          ./deploy.sh
+        env:
+          DATABASE_URL: "postgres://${{ env.DB_USER }}:${{ env.DB_PASS }}@db.example.com/mydb"
+                </pre>
+            </section>
+
+            <section id="attack-labs">
+                <h2>Attack Simulation Labs</h2>
+
+                <div class="info-box warning">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Legal Warning</h4>
+                        <p>Only perform these exercises in YOUR OWN lab environment. Never attempt these techniques against systems you don't own or have explicit authorization to test.</p>
+                    </div>
+                </div>
+
+                <h3>Lab 11: Credential Theft Scenarios</h3>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# Scenario: Demonstrate why hardcoded secrets are dangerous
+
+# Step 1: Create a "bad" application with hardcoded secret
+cat > /tmp/bad_app.py << 'EOF'
+# BAD: Hardcoded credentials
+DATABASE_PASSWORD = "SuperSecret123!"
+API_KEY = "sk-live-abc123xyz"
+
+def connect_database():
+    print(f"Connecting with password: {DATABASE_PASSWORD}")
+EOF
+
+# Step 2: Search for secrets (attacker perspective)
+grep -r "password\|secret\|key\|token" /tmp/bad_app.py
+
+# Step 3: Create a "good" version using Vault
+cat > /tmp/good_app.py << 'EOF'
+import hvac
+import os
+
+def get_secrets():
+    client = hvac.Client(url=os.environ['VAULT_ADDR'])
+    client.token = os.environ.get('VAULT_TOKEN')  # Or use AppRole
+    
+    secret = client.secrets.kv.v2.read_secret_version(
+        path='myapp/database'
+    )
+    return secret['data']['data']
+
+def connect_database():
+    secrets = get_secrets()
+    print(f"Connecting securely...")
+    # Use secrets['password'] - never logged
+EOF
+
+# Step 4: Search again - no credentials found!
+grep -r "password\|secret\|key\|token" /tmp/good_app.py
+                </pre>
+
+                <h3>Lab 12: Detecting Secret Sprawl</h3>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# Use TruffleHog to scan for leaked secrets
+
+# Install TruffleHog
+pip install truffleHog
+
+# Scan a git repository
+trufflehog git https://github.com/your-username/your-repo --only-verified
+
+# Scan local directory
+trufflehog filesystem /path/to/code
+
+# Scan for specific patterns
+trufflehog filesystem /path/to/code --regex
+
+# Alternative: git-secrets (pre-commit hook)
+# Install
+brew install git-secrets  # macOS
+# or
+git clone https://github.com/awslabs/git-secrets.git && cd git-secrets && make install
+
+# Configure for AWS patterns
+git secrets --register-aws --global
+
+# Scan existing repo
+git secrets --scan
+
+# Install pre-commit hook (prevents commits with secrets)
+git secrets --install
+                </pre>
+            </section>
+
+            <section id="enterprise-trials">
+                <h2>Enterprise Trial Options</h2>
+
+                <p>For more realistic PAM experience, vendor trials are available:</p>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Vendor</th>
+                                <th>Trial Option</th>
+                                <th>Duration</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>CyberArk</strong></td>
+                                <td>Privilege Cloud trial, CyberArk Blueprint (sandbox)</td>
+                                <td>30 days</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Delinea</strong></td>
+                                <td>Secret Server Cloud trial</td>
+                                <td>30 days</td>
+                            </tr>
+                            <tr>
+                                <td><strong>BeyondTrust</strong></td>
+                                <td>Password Safe trial</td>
+                                <td>Contact sales</td>
+                            </tr>
+                            <tr>
+                                <td><strong>HashiCorp</strong></td>
+                                <td>HCP Vault free tier, Vault Enterprise trial</td>
+                                <td>Free tier ongoing, Enterprise 30 days</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Thales</strong></td>
+                                <td>CipherTrust trial</td>
+                                <td>Contact sales</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="info-box success">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    <div class="info-box-content">
+                        <h4>Learning Path Recommendation</h4>
+                        <p><strong>Week 1-2:</strong> Complete Vault Labs 1-4 (basic operations). <strong>Week 3-4:</strong> Cloud KMS labs + PKI lab. <strong>Week 5-6:</strong> Integration labs (K8s, CI/CD). <strong>Week 7+:</strong> Enterprise trials if pursuing specific vendor certifications. Document everything for your portfolio!</p>
+                    </div>
+                </div>
+            </section>
+
+            <nav class="page-nav">
+                <a href="interview-prep.html" class="page-nav-link prev">
+                    <span class="page-nav-label">Previous</span>
+                    <span class="page-nav-title">← Interview Prep</span>
+                </a>
+                <a href="glossary.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next</span>
+                    <span class="page-nav-title">Glossary →</span>
+                </a>
+            </nav>
+        </div>
+
+        <footer class="footer">
+            <p>PAM & KMS Ultimate Guide — A comprehensive enterprise security documentation resource</p>
+        </footer>
+    </main>
+
+    <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+    </button>
+
+    <script src="../js/main.js"></script>
+</body>
+</html>

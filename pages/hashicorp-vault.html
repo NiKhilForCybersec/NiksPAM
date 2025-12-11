@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="HashiCorp Vault Deep Dive - Architecture, secrets engines, auth methods, and operational best practices">
+    <title>HashiCorp Vault Deep Dive | PAM & KMS Guide</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="scroll-progress" id="scroll-progress"></div>
+
+    <header class="header">
+        <div class="header-content">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                PAM & KMS Guide
+            </a>
+            
+            <nav class="header-nav">
+                <a href="pam-fundamentals.html">PAM</a>
+                <a href="kms-fundamentals.html">KMS</a>
+                <a href="vendors.html" class="active">Vendors</a>
+                <a href="implementation.html">Implementation</a>
+            </nav>
+            
+            <div class="header-actions">
+                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-title">Vendors</div>
+            <ul class="sidebar-nav">
+                <li><a href="vendors.html">Vendor Overview</a></li>
+                <li><a href="cyberark.html">CyberArk</a></li>
+                <li><a href="hashicorp-vault.html" class="active">HashiCorp Vault</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <main class="main-wrapper">
+        <div class="main-content">
+            <nav class="breadcrumb">
+                <a href="../index.html">Home</a>
+                <span class="breadcrumb-separator">/</span>
+                <a href="vendors.html">Vendors</a>
+                <span class="breadcrumb-separator">/</span>
+                <span>HashiCorp Vault</span>
+            </nav>
+
+            <div class="page-header">
+                <h1>HashiCorp Vault Deep Dive</h1>
+                <p class="page-description">
+                    HashiCorp Vault is the leading secrets management platform for modern infrastructure. It's DevOps-native, API-first, and excels at dynamic secrets. This guide covers architecture, secrets engines, auth methods, and operational best practices.
+                </p>
+            </div>
+
+            <div class="toc">
+                <div class="toc-title">On This Page</div>
+                <ul class="toc-list">
+                    <li><a href="#overview"><span class="toc-number">1.</span> Product Overview</a></li>
+                    <li><a href="#architecture"><span class="toc-number">2.</span> Architecture</a></li>
+                    <li><a href="#secrets-engines"><span class="toc-number">3.</span> Secrets Engines</a></li>
+                    <li><a href="#auth-methods"><span class="toc-number">4.</span> Authentication Methods</a></li>
+                    <li><a href="#policies"><span class="toc-number">5.</span> Policies & ACLs</a></li>
+                    <li><a href="#dynamic-secrets"><span class="toc-number">6.</span> Dynamic Secrets</a></li>
+                    <li><a href="#deployment"><span class="toc-number">7.</span> Deployment Models</a></li>
+                    <li><a href="#operations"><span class="toc-number">8.</span> Operations & Best Practices</a></li>
+                </ul>
+            </div>
+
+            <section id="overview">
+                <h2>Product Overview</h2>
+                
+                <p>
+                    HashiCorp Vault was created in 2015 to solve the secrets sprawl problem in modern infrastructure. Unlike traditional PAM which focuses on human access to privileged systems, Vault focuses on machine-to-machine secrets and application credentials.
+                </p>
+
+                <h3>Vault vs. Traditional PAM</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Aspect</th>
+                                <th>Traditional PAM (CyberArk, etc.)</th>
+                                <th>HashiCorp Vault</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Primary focus</strong></td>
+                                <td>Human privileged access</td>
+                                <td>Application/machine secrets</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Session management</strong></td>
+                                <td>Full session recording, proxy</td>
+                                <td>Not included (different focus)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Dynamic secrets</strong></td>
+                                <td>Limited</td>
+                                <td>Core feature</td>
+                            </tr>
+                            <tr>
+                                <td><strong>DevOps integration</strong></td>
+                                <td>Add-on (Conjur for CyberArk)</td>
+                                <td>Native, API-first</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Deployment model</strong></td>
+                                <td>Typically on-prem, complex</td>
+                                <td>Cloud-native, Kubernetes-ready</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Open source</strong></td>
+                                <td>No</td>
+                                <td>Yes (Enterprise adds features)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Editions</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Edition</th>
+                                <th>Features</th>
+                                <th>Cost</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Open Source</strong></td>
+                                <td>Core secrets management, all secrets engines, all auth methods</td>
+                                <td>Free</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Enterprise</strong></td>
+                                <td>+ Namespaces, replication, HSM support, Sentinel policies, MFA</td>
+                                <td>$$</td>
+                            </tr>
+                            <tr>
+                                <td><strong>HCP Vault</strong></td>
+                                <td>Fully managed SaaS (HashiCorp Cloud Platform)</td>
+                                <td>Pay-as-you-go</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>When to Use Vault vs. Traditional PAM</h4>
+                        <p><strong>Use Vault:</strong> Application secrets, CI/CD pipelines, Kubernetes, dynamic cloud credentials, DevOps-centric environments. <strong>Use Traditional PAM:</strong> Human admin access, session recording requirements, regulatory compliance needing full audit trails. <strong>Use Both:</strong> Many enterprises use CyberArk for humans + Vault for applications.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="architecture">
+                <h2>Architecture</h2>
+
+                <h3>Core Architecture</h3>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+┌─────────────────────────────────────────────────────────────────────┐
+│                         VAULT SERVER                                 │
+│  ┌─────────────────────────────────────────────────────────────┐    │
+│  │                      HTTP API (Port 8200)                    │    │
+│  │              All interaction via REST API                    │    │
+│  └──────────────────────────┬──────────────────────────────────┘    │
+│                             │                                        │
+│  ┌──────────────────────────┼──────────────────────────────────┐    │
+│  │                    BARRIER (Encryption)                      │    │
+│  │         Everything below this line is encrypted              │    │
+│  └──────────────────────────┼──────────────────────────────────┘    │
+│                             │                                        │
+│  ┌────────────┬─────────────┼─────────────┬────────────────────┐    │
+│  │            │             │             │                    │    │
+│  │  Secrets   │    Auth     │   Audit     │    System          │    │
+│  │  Engines   │   Methods   │   Devices   │    Backend         │    │
+│  │            │             │             │                    │    │
+│  │  - KV      │  - Token    │  - File     │  - Policies        │    │
+│  │  - PKI     │  - LDAP     │  - Syslog   │  - Tokens          │    │
+│  │  - Database│  - AppRole  │  - Socket   │  - Leases          │    │
+│  │  - Transit │  - K8s      │             │  - Identity        │    │
+│  │  - AWS     │  - JWT      │             │                    │    │
+│  │  - ...     │  - ...      │             │                    │    │
+│  └────────────┴─────────────┴─────────────┴────────────────────┘    │
+│                             │                                        │
+│  ┌──────────────────────────┴──────────────────────────────────┐    │
+│  │                     STORAGE BACKEND                          │    │
+│  │    Consul | Raft (Integrated) | S3 | PostgreSQL | etc.      │    │
+│  └─────────────────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────────────────┘
+                              │
+                    ┌─────────┴─────────┐
+                    │    UNSEAL KEYS    │
+                    │  (Shamir shares   │
+                    │   or Auto-unseal) │
+                    └───────────────────┘
+                </pre>
+
+                <h3>Key Concepts</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Concept</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Seal/Unseal</strong></td>
+                                <td>Vault starts "sealed" (encrypted). Must be "unsealed" with master key shares before it can serve requests. Protects data at rest.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Barrier</strong></td>
+                                <td>Encryption layer protecting all data. Uses AES-256-GCM. Data is encrypted before hitting storage backend.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Storage Backend</strong></td>
+                                <td>Where encrypted data is stored. Vault doesn't trust the backend—data is always encrypted.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Secrets Engine</strong></td>
+                                <td>Plugin that stores, generates, or encrypts data. Each engine is mounted at a path.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Auth Method</strong></td>
+                                <td>Plugin that authenticates users/machines and assigns policies. Returns a Vault token.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Token</strong></td>
+                                <td>Core authentication mechanism. All API calls require a token. Tokens have policies attached.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Lease</strong></td>
+                                <td>Time-to-live for secrets. When lease expires, secret is revoked. Forces rotation.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Policy</strong></td>
+                                <td>ACL document defining what paths a token can access and what operations are allowed.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Seal/Unseal Process</h3>
+
+                <p>When Vault starts, it's in a "sealed" state:</p>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+INITIALIZATION (first time only):
+┌─────────────────────────────────────────────────────────────┐
+│  vault operator init                                         │
+│                                                              │
+│  Generates:                                                  │
+│  - Master Key (used to encrypt/decrypt barrier)             │
+│  - 5 Unseal Keys (Shamir shares of master key)              │
+│  - Root Token (initial superuser token)                     │
+│                                                              │
+│  Output:                                                     │
+│  Unseal Key 1: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx                │
+│  Unseal Key 2: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx                │
+│  Unseal Key 3: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx                │
+│  Unseal Key 4: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx                │
+│  Unseal Key 5: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx                │
+│  Initial Root Token: s.xxxxxxxxxxxxxxxxxx                    │
+└─────────────────────────────────────────────────────────────┘
+
+UNSEALING (after restart):
+┌─────────────────────────────────────────────────────────────┐
+│  vault operator unseal [key1]   # Progress: 1/3             │
+│  vault operator unseal [key2]   # Progress: 2/3             │
+│  vault operator unseal [key3]   # Vault is unsealed!        │
+│                                                              │
+│  Default: 3 of 5 keys required (configurable)               │
+└─────────────────────────────────────────────────────────────┘
+                </pre>
+
+                <div class="info-box warning">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Unseal Key Security</h4>
+                        <p>Unseal keys are the crown jewels. Distribute to different trusted individuals. Store securely (HSM, separate secure locations). Never store all keys together. Consider auto-unseal with cloud KMS for production.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="secrets-engines">
+                <h2>Secrets Engines</h2>
+
+                <p>Secrets engines are plugins mounted at paths that store, generate, or encrypt data:</p>
+
+                <h3>Key-Value (KV) Engine</h3>
+
+                <p>Simple secret storage (most common starting point):</p>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# Enable KV v2 (versioned)
+vault secrets enable -path=secret kv-v2
+
+# Write a secret
+vault kv put secret/myapp/database \
+    username="dbuser" \
+    password="s3cr3t" \
+    host="db.example.com"
+
+# Read a secret
+vault kv get secret/myapp/database
+
+# Read specific version
+vault kv get -version=2 secret/myapp/database
+
+# Delete (soft delete in v2)
+vault kv delete secret/myapp/database
+                </pre>
+
+                <h3>Database Engine (Dynamic Secrets)</h3>
+
+                <p>Generates database credentials on-demand:</p>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# Enable database engine
+vault secrets enable database
+
+# Configure PostgreSQL connection
+vault write database/config/my-postgres \
+    plugin_name=postgresql-database-plugin \
+    connection_url="postgresql://{{username}}:{{password}}@db.example.com:5432/mydb" \
+    allowed_roles="readonly,readwrite" \
+    username="vault_admin" \
+    password="vault_admin_password"
+
+# Create role with SQL templates
+vault write database/roles/readonly \
+    db_name=my-postgres \
+    creation_statements="CREATE ROLE \"{{name}}\" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}'; \
+                        GRANT SELECT ON ALL TABLES IN SCHEMA public TO \"{{name}}\";" \
+    default_ttl="1h" \
+    max_ttl="24h"
+
+# Get dynamic credentials
+vault read database/creds/readonly
+
+# Returns:
+# Key             Value
+# ---             -----
+# lease_id        database/creds/readonly/abcd1234
+# lease_duration  1h
+# username        v-token-readonly-xyz123
+# password        A1B2C3D4E5...
+                </pre>
+
+                <h3>Transit Engine (Encryption as a Service)</h3>
+
+                <p>Encrypt/decrypt data without storing it in Vault:</p>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# Enable transit engine
+vault secrets enable transit
+
+# Create encryption key
+vault write -f transit/keys/my-app-key
+
+# Encrypt data (base64 encoded plaintext)
+vault write transit/encrypt/my-app-key \
+    plaintext=$(echo "secret data" | base64)
+
+# Returns:
+# ciphertext: vault:v1:8SDd3WHDOjf7mq69...
+
+# Decrypt data
+vault write transit/decrypt/my-app-key \
+    ciphertext="vault:v1:8SDd3WHDOjf7mq69..."
+
+# Returns base64 encoded plaintext
+                </pre>
+
+                <h3>PKI Engine (Certificate Authority)</h3>
+
+                <p>Vault as your private CA:</p>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# Enable PKI engine
+vault secrets enable pki
+
+# Configure max TTL
+vault secrets tune -max-lease-ttl=87600h pki
+
+# Generate root CA
+vault write pki/root/generate/internal \
+    common_name="My Root CA" \
+    ttl=87600h
+
+# Create role for issuing certs
+vault write pki/roles/my-role \
+    allowed_domains="example.com" \
+    allow_subdomains=true \
+    max_ttl="72h"
+
+# Issue certificate
+vault write pki/issue/my-role \
+    common_name="myservice.example.com" \
+    ttl="24h"
+
+# Returns certificate, private key, CA chain
+                </pre>
+
+                <h3>AWS Engine</h3>
+
+                <p>Generate dynamic AWS credentials:</p>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# Enable AWS engine
+vault secrets enable aws
+
+# Configure root credentials
+vault write aws/config/root \
+    access_key=AKIAIOSFODNN7EXAMPLE \
+    secret_key=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY \
+    region=us-east-1
+
+# Create role
+vault write aws/roles/my-role \
+    credential_type=iam_user \
+    policy_document=-<<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "s3:*",
+      "Resource": "*"
+    }
+  ]
+}
+EOF
+
+# Get credentials
+vault read aws/creds/my-role
+                </pre>
+
+                <h3>Secrets Engines Summary</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Engine</th>
+                                <th>Use Case</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>KV</strong></td>
+                                <td>Static secrets (API keys, passwords)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Database</strong></td>
+                                <td>Dynamic database credentials</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Transit</strong></td>
+                                <td>Encryption as a service</td>
+                            </tr>
+                            <tr>
+                                <td><strong>PKI</strong></td>
+                                <td>Certificate authority, TLS certs</td>
+                            </tr>
+                            <tr>
+                                <td><strong>AWS/Azure/GCP</strong></td>
+                                <td>Dynamic cloud credentials</td>
+                            </tr>
+                            <tr>
+                                <td><strong>SSH</strong></td>
+                                <td>SSH key signing, OTP</td>
+                            </tr>
+                            <tr>
+                                <td><strong>TOTP</strong></td>
+                                <td>Generate TOTP codes</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Transform</strong></td>
+                                <td>Tokenization, format-preserving encryption (Enterprise)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="auth-methods">
+                <h2>Authentication Methods</h2>
+
+                <p>Auth methods verify identity and return Vault tokens with attached policies.</p>
+
+                <h3>Token Auth (Default)</h3>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# Create a token
+vault token create -policy=my-policy -ttl=1h
+
+# Use token
+export VAULT_TOKEN=s.xxxxxxxxxxxxxxx
+vault kv get secret/myapp
+                </pre>
+
+                <h3>AppRole (for Applications)</h3>
+
+                <p>Designed for machine/application authentication:</p>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# Enable AppRole
+vault auth enable approle
+
+# Create role
+vault write auth/approle/role/my-app \
+    token_policies="my-app-policy" \
+    token_ttl=1h \
+    secret_id_ttl=24h \
+    secret_id_num_uses=1
+
+# Get Role ID (static, baked into app config)
+vault read auth/approle/role/my-app/role-id
+# role_id: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+
+# Get Secret ID (dynamic, delivered securely at runtime)
+vault write -f auth/approle/role/my-app/secret-id
+# secret_id: yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy
+
+# Application authenticates:
+vault write auth/approle/login \
+    role_id=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx \
+    secret_id=yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy
+
+# Returns token
+                </pre>
+
+                <h3>Kubernetes Auth</h3>
+
+                <p>Pods authenticate using their service account token:</p>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# Enable Kubernetes auth
+vault auth enable kubernetes
+
+# Configure (run from within cluster or provide CA)
+vault write auth/kubernetes/config \
+    kubernetes_host="https://kubernetes.default.svc"
+
+# Create role for specific namespace/service account
+vault write auth/kubernetes/role/my-app \
+    bound_service_account_names=my-app-sa \
+    bound_service_account_namespaces=production \
+    policies=my-app-policy \
+    ttl=1h
+
+# Pod authenticates (from within pod):
+JWT=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+vault write auth/kubernetes/login \
+    role=my-app \
+    jwt=$JWT
+                </pre>
+
+                <h3>LDAP/Active Directory</h3>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# Enable LDAP auth
+vault auth enable ldap
+
+# Configure LDAP
+vault write auth/ldap/config \
+    url="ldaps://ldap.example.com" \
+    userdn="ou=Users,dc=example,dc=com" \
+    groupdn="ou=Groups,dc=example,dc=com" \
+    groupattr="cn" \
+    userattr="sAMAccountName" \
+    binddn="cn=vault,ou=ServiceAccounts,dc=example,dc=com" \
+    bindpass="password"
+
+# Map LDAP group to Vault policies
+vault write auth/ldap/groups/admins policies=admin-policy
+
+# User authenticates
+vault login -method=ldap username=jsmith
+                </pre>
+
+                <h3>JWT/OIDC</h3>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# Enable JWT auth (for CI/CD like GitHub Actions)
+vault auth enable jwt
+
+# Configure for GitHub Actions
+vault write auth/jwt/config \
+    bound_issuer="https://token.actions.githubusercontent.com" \
+    oidc_discovery_url="https://token.actions.githubusercontent.com"
+
+# Create role
+vault write auth/jwt/role/github-actions \
+    bound_audiences="https://github.com/myorg" \
+    bound_claims_type="glob" \
+    bound_claims='{"repository": "myorg/myrepo"}' \
+    user_claim="repository" \
+    policies="ci-cd-policy" \
+    ttl=1h
+                </pre>
+            </section>
+
+            <section id="policies">
+                <h2>Policies & ACLs</h2>
+
+                <p>Policies define what a token can do. They're written in HCL or JSON:</p>
+
+                <h3>Policy Syntax</h3>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# my-app-policy.hcl
+
+# Read secrets at specific path
+path "secret/data/myapp/*" {
+  capabilities = ["read", "list"]
+}
+
+# Full access to app-specific secrets
+path "secret/data/myapp/config" {
+  capabilities = ["create", "read", "update", "delete", "list"]
+}
+
+# Generate database credentials
+path "database/creds/myapp-readonly" {
+  capabilities = ["read"]
+}
+
+# Encrypt/decrypt with transit
+path "transit/encrypt/myapp-key" {
+  capabilities = ["update"]
+}
+path "transit/decrypt/myapp-key" {
+  capabilities = ["update"]
+}
+
+# Deny access to admin paths
+path "sys/*" {
+  capabilities = ["deny"]
+}
+                </pre>
+
+                <h3>Capabilities</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Capability</th>
+                                <th>HTTP Verb</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>create</strong></td>
+                                <td>POST/PUT</td>
+                                <td>Create new data</td>
+                            </tr>
+                            <tr>
+                                <td><strong>read</strong></td>
+                                <td>GET</td>
+                                <td>Read data</td>
+                            </tr>
+                            <tr>
+                                <td><strong>update</strong></td>
+                                <td>POST/PUT</td>
+                                <td>Update existing data</td>
+                            </tr>
+                            <tr>
+                                <td><strong>delete</strong></td>
+                                <td>DELETE</td>
+                                <td>Delete data</td>
+                            </tr>
+                            <tr>
+                                <td><strong>list</strong></td>
+                                <td>LIST</td>
+                                <td>List keys at path</td>
+                            </tr>
+                            <tr>
+                                <td><strong>sudo</strong></td>
+                                <td>-</td>
+                                <td>Access root-protected paths</td>
+                            </tr>
+                            <tr>
+                                <td><strong>deny</strong></td>
+                                <td>-</td>
+                                <td>Explicitly deny (overrides other rules)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Policy Management</h3>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# Write policy from file
+vault policy write my-app-policy my-app-policy.hcl
+
+# List policies
+vault policy list
+
+# Read policy
+vault policy read my-app-policy
+
+# Delete policy
+vault policy delete my-app-policy
+                </pre>
+            </section>
+
+            <section id="dynamic-secrets">
+                <h2>Dynamic Secrets Deep Dive</h2>
+
+                <p>
+                    Dynamic secrets are Vault's killer feature. Instead of storing static credentials, Vault generates them on-demand with automatic expiration.
+                </p>
+
+                <h3>Why Dynamic Secrets Matter</h3>
+
+                <ul>
+                    <li><strong>No shared credentials:</strong> Each application instance gets unique credentials</li>
+                    <li><strong>Automatic expiration:</strong> Credentials have a TTL, automatically revoked when expired</li>
+                    <li><strong>Easy revocation:</strong> Revoke one application's access without affecting others</li>
+                    <li><strong>Blast radius reduction:</strong> Stolen credential only works until lease expires</li>
+                    <li><strong>Audit trail:</strong> Know exactly which credential accessed what, when</li>
+                </ul>
+
+                <h3>Lease Management</h3>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# Get credentials (returns lease)
+vault read database/creds/my-role
+
+# Renew lease before expiration
+vault lease renew database/creds/my-role/abcd1234
+
+# Revoke specific lease
+vault lease revoke database/creds/my-role/abcd1234
+
+# Revoke all leases for a path (emergency)
+vault lease revoke -prefix database/creds/my-role
+                </pre>
+
+                <h3>Application Pattern</h3>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# Python application pseudocode
+
+import hvac
+import threading
+
+class VaultCredentialManager:
+    def __init__(self):
+        self.client = hvac.Client(url='https://vault.example.com')
+        self.client.auth.kubernetes.login(role='my-app')
+        self.credentials = None
+        self.lease_id = None
+        
+    def get_database_credentials(self):
+        # Get new credentials from Vault
+        response = self.client.secrets.database.generate_credentials(
+            name='my-role'
+        )
+        self.credentials = {
+            'username': response['data']['username'],
+            'password': response['data']['password']
+        }
+        self.lease_id = response['lease_id']
+        lease_duration = response['lease_duration']
+        
+        # Schedule renewal at 2/3 of lease duration
+        renewal_time = lease_duration * 0.66
+        threading.Timer(renewal_time, self.renew_lease).start()
+        
+        return self.credentials
+    
+    def renew_lease(self):
+        try:
+            self.client.sys.renew_lease(lease_id=self.lease_id)
+        except:
+            # Lease renewal failed, get new credentials
+            self.get_database_credentials()
+                </pre>
+            </section>
+
+            <section id="deployment">
+                <h2>Deployment Models</h2>
+
+                <h3>Development (Single Node)</h3>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# Dev mode (in-memory, auto-unsealed, NOT for production)
+vault server -dev
+
+# Or with file storage
+vault server -config=config.hcl
+                </pre>
+
+                <h3>Production (HA Cluster)</h3>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# config.hcl for production with Raft storage
+storage "raft" {
+  path = "/vault/data"
+  node_id = "vault-1"
+}
+
+listener "tcp" {
+  address = "0.0.0.0:8200"
+  tls_cert_file = "/vault/tls/server.crt"
+  tls_key_file = "/vault/tls/server.key"
+}
+
+api_addr = "https://vault-1.example.com:8200"
+cluster_addr = "https://vault-1.example.com:8201"
+
+# Auto-unseal with AWS KMS
+seal "awskms" {
+  region     = "us-east-1"
+  kms_key_id = "alias/vault-unseal"
+}
+                </pre>
+
+                <h3>Kubernetes Deployment</h3>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# Using Helm chart
+helm repo add hashicorp https://helm.releases.hashicorp.com
+helm install vault hashicorp/vault \
+  --set server.ha.enabled=true \
+  --set server.ha.replicas=3 \
+  --set injector.enabled=true
+                </pre>
+
+                <h3>HCP Vault (Managed)</h3>
+
+                <p>HashiCorp Cloud Platform provides fully managed Vault:</p>
+
+                <ul>
+                    <li>No infrastructure to manage</li>
+                    <li>Automatic upgrades and patches</li>
+                    <li>Built-in HA and DR</li>
+                    <li>Pay-as-you-go pricing</li>
+                </ul>
+            </section>
+
+            <section id="operations">
+                <h2>Operations & Best Practices</h2>
+
+                <h3>Security Best Practices</h3>
+
+                <ul>
+                    <li><strong>Use auto-unseal:</strong> Cloud KMS or HSM for production (avoid manual unseal)</li>
+                    <li><strong>Enable audit logging:</strong> Log all requests for security and compliance</li>
+                    <li><strong>Rotate root token:</strong> Generate new root token periodically, revoke old ones</li>
+                    <li><strong>Use namespaces:</strong> Isolate teams/environments (Enterprise)</li>
+                    <li><strong>Principle of least privilege:</strong> Minimal policies for each application</li>
+                    <li><strong>Short TTLs:</strong> Use short lease durations, force rotation</li>
+                </ul>
+
+                <h3>Monitoring</h3>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# Enable Prometheus metrics
+telemetry {
+  prometheus_retention_time = "30s"
+  disable_hostname = true
+}
+
+# Key metrics to monitor:
+# - vault.core.unsealed (should be 1)
+# - vault.expire.num_leases (lease count)
+# - vault.token.count (token count)
+# - vault.audit.log_request (audit throughput)
+# - vault.barrier.get/put (storage operations)
+                </pre>
+
+                <h3>Backup and Recovery</h3>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# Raft snapshot (built-in backup)
+vault operator raft snapshot save backup.snap
+
+# Restore
+vault operator raft snapshot restore backup.snap
+
+# For Consul backend, back up Consul
+consul snapshot save vault-consul-backup.snap
+                </pre>
+            </section>
+
+            <div class="info-box success">
+                <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <div class="info-box-content">
+                    <h4>Key Takeaways</h4>
+                    <p>Vault excels at application/machine secrets with dynamic credential generation. Core concepts: secrets engines (store/generate data), auth methods (verify identity), policies (ACLs), tokens (authentication), leases (TTL). Dynamic secrets are the killer feature—credentials generated on-demand, automatically expired. Use Vault for DevOps/cloud workloads; use traditional PAM for human session management. Many enterprises use both together.</p>
+                </div>
+            </div>
+
+            <nav class="page-nav">
+                <a href="cyberark.html" class="page-nav-link prev">
+                    <span class="page-nav-label">Previous</span>
+                    <span class="page-nav-title">← CyberArk</span>
+                </a>
+                <a href="devops-secrets.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next</span>
+                    <span class="page-nav-title">DevOps Secrets →</span>
+                </a>
+            </nav>
+        </div>
+
+        <footer class="footer">
+            <p>PAM & KMS Ultimate Guide — A comprehensive enterprise security documentation resource</p>
+        </footer>
+    </main>
+
+    <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+    </button>
+
+    <script src="../js/main.js"></script>
+</body>
+</html>

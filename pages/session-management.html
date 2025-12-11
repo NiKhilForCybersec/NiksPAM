@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Privileged Session Management - Recording, monitoring, and controlling privileged sessions in PAM">
+    <title>Session Management | PAM & KMS Guide</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="scroll-progress" id="scroll-progress"></div>
+
+    <header class="header">
+        <div class="header-content">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                PAM & KMS Guide
+            </a>
+            
+            <nav class="header-nav">
+                <a href="pam-fundamentals.html" class="active">PAM</a>
+                <a href="kms-fundamentals.html">KMS</a>
+                <a href="vendors.html">Vendors</a>
+                <a href="implementation.html">Implementation</a>
+            </nav>
+            
+            <div class="header-actions">
+                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-title">Getting Started</div>
+            <ul class="sidebar-nav">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="introduction.html">Introduction</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">PAM Fundamentals</div>
+            <ul class="sidebar-nav">
+                <li><a href="pam-fundamentals.html">What is PAM?</a></li>
+                <li><a href="pam-business-case.html">Business Case</a></li>
+                <li><a href="privileged-accounts.html">Privileged Accounts</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">PAM Architecture</div>
+            <ul class="sidebar-nav">
+                <li><a href="pam-components.html">Core Components</a></li>
+                <li><a href="pam-architecture.html">Architecture Patterns</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">PAM Workflows</div>
+            <ul class="sidebar-nav">
+                <li><a href="user-access-workflow.html">User Access Workflow</a></li>
+                <li><a href="session-management.html" class="active">Session Management</a></li>
+                <li><a href="jit-access.html">Just-In-Time Access</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">KMS Fundamentals</div>
+            <ul class="sidebar-nav">
+                <li><a href="kms-fundamentals.html">What is KMS?</a></li>
+                <li><a href="cryptographic-basics.html">Cryptographic Basics</a></li>
+                <li><a href="key-lifecycle.html">Key Lifecycle</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">Vendors</div>
+            <ul class="sidebar-nav">
+                <li><a href="vendors.html">Vendor Overview</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <main class="main-wrapper">
+        <div class="main-content">
+            <nav class="breadcrumb">
+                <a href="../index.html">Home</a>
+                <span class="breadcrumb-separator">/</span>
+                <a href="user-access-workflow.html">PAM Workflows</a>
+                <span class="breadcrumb-separator">/</span>
+                <span>Session Management</span>
+            </nav>
+
+            <div class="page-header">
+                <h1>Privileged Session Management</h1>
+                <p class="page-description">
+                    Session management is one of the most powerful PAM capabilities—it enables complete visibility into privileged activities through recording, real-time monitoring, and session control. This page covers how session management works and why it's critical for security and compliance.
+                </p>
+            </div>
+
+            <div class="toc">
+                <div class="toc-title">On This Page</div>
+                <ul class="toc-list">
+                    <li><a href="#why-session-management"><span class="toc-number">1.</span> Why Session Management Matters</a></li>
+                    <li><a href="#recording-types"><span class="toc-number">2.</span> Types of Session Recording</a></li>
+                    <li><a href="#protocol-support"><span class="toc-number">3.</span> Protocol Support</a></li>
+                    <li><a href="#live-monitoring"><span class="toc-number">4.</span> Live Monitoring & Control</a></li>
+                    <li><a href="#session-search"><span class="toc-number">5.</span> Session Search & Forensics</a></li>
+                    <li><a href="#compliance"><span class="toc-number">6.</span> Compliance Requirements</a></li>
+                    <li><a href="#architecture"><span class="toc-number">7.</span> Technical Architecture</a></li>
+                    <li><a href="#best-practices"><span class="toc-number">8.</span> Best Practices</a></li>
+                </ul>
+            </div>
+
+            <section id="why-session-management">
+                <h2>Why Session Management Matters</h2>
+                
+                <p>
+                    Credential vaulting prevents unauthorized access, but what about authorized users who misuse their access? Session management provides visibility into <em>what people do</em> during their privileged sessions—not just <em>who accessed</em> a system.
+                </p>
+
+                <h3>Security Benefits</h3>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+                        </div>
+                        <div class="feature-title">Complete Audit Trail</div>
+                        <p class="feature-description">Every action is recorded. Answer "what exactly happened during this session?" with video-quality evidence.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        </div>
+                        <div class="feature-title">Deterrence</div>
+                        <p class="feature-description">Users knowing they're recorded think twice before doing something inappropriate. The "observer effect" improves behavior.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                        </div>
+                        <div class="feature-title">Threat Detection</div>
+                        <p class="feature-description">Spot malicious activity in real-time. Terminate sessions before damage is done.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        </div>
+                        <div class="feature-title">Incident Investigation</div>
+                        <p class="feature-description">When something goes wrong, reconstruct exactly what happened. Search recordings for specific commands or activities.</p>
+                    </div>
+                </div>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Real-World Scenario</h4>
+                        <p>A database administrator makes an unauthorized data export. Without session recording, you might know they accessed the system but not what they did. With session recording, you have video evidence of every query they ran, every file they created, and every byte they transferred.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="recording-types">
+                <h2>Types of Session Recording</h2>
+
+                <p>
+                    PAM solutions capture session activity in multiple formats, each serving different purposes.
+                </p>
+
+                <h3>Video Recording</h3>
+
+                <p>
+                    The session is captured as a video stream—exactly what appeared on screen during the session. This is the most comprehensive record.
+                </p>
+
+                <div class="key-points">
+                    <div class="key-points-title">Video Recording Features</div>
+                    <ul>
+                        <li>Screen capture at configurable frame rate (typically 5-30 fps)</li>
+                        <li>Full-motion video playback like watching a movie</li>
+                        <li>Efficient compression to minimize storage (H.264, proprietary codecs)</li>
+                        <li>Scrubbing and playback speed controls</li>
+                        <li>Works for any visual session (RDP, VNC, web apps)</li>
+                    </ul>
+                </div>
+
+                <h3>Keystroke Logging</h3>
+
+                <p>
+                    Every keystroke is captured as searchable text, separate from the video. This enables command-based searching.
+                </p>
+
+                <div class="key-points">
+                    <div class="key-points-title">Keystroke Logging Features</div>
+                    <ul>
+                        <li>Complete text record of all typed commands</li>
+                        <li>Searchable across all sessions ("who ran <code>DROP TABLE</code>?")</li>
+                        <li>Timestamps for each keystroke</li>
+                        <li>Can trigger alerts on specific command patterns</li>
+                        <li>Much smaller storage footprint than video</li>
+                    </ul>
+                </div>
+
+                <h3>Command/Query Logging</h3>
+
+                <p>
+                    For text-based sessions (SSH, database), the actual commands and their outputs are captured as structured data.
+                </p>
+
+                <div class="key-points">
+                    <div class="key-points-title">Command Logging Features</div>
+                    <ul>
+                        <li>Full commands with arguments</li>
+                        <li>Command output (stdout/stderr)</li>
+                        <li>SQL queries and results for database sessions</li>
+                        <li>Easy to export and analyze</li>
+                        <li>Integration with SIEM for automated analysis</li>
+                    </ul>
+                </div>
+
+                <h3>Metadata Capture</h3>
+
+                <p>
+                    Beyond the session content, metadata provides context:
+                </p>
+
+                <ul>
+                    <li><strong>Session metadata:</strong> Start/end time, duration, user, target system, account used</li>
+                    <li><strong>Network data:</strong> Source IP, connection protocol, bytes transferred</li>
+                    <li><strong>File transfers:</strong> Files uploaded/downloaded during session</li>
+                    <li><strong>Clipboard operations:</strong> Copy/paste activity</li>
+                </ul>
+            </section>
+
+            <section id="protocol-support">
+                <h2>Protocol Support</h2>
+
+                <p>
+                    Session management must support the various protocols used to access privileged systems.
+                </p>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Protocol</th>
+                                <th>Use Case</th>
+                                <th>Recording Type</th>
+                                <th>Special Considerations</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>RDP</strong></td>
+                                <td>Windows server administration</td>
+                                <td>Video + keystrokes</td>
+                                <td>Can block clipboard, drives, printers</td>
+                            </tr>
+                            <tr>
+                                <td><strong>SSH</strong></td>
+                                <td>Linux/Unix, network devices</td>
+                                <td>Commands + video (optional)</td>
+                                <td>Command parsing, shell detection</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Telnet</strong></td>
+                                <td>Legacy systems, network devices</td>
+                                <td>Commands</td>
+                                <td>Unencrypted—PSM adds security layer</td>
+                            </tr>
+                            <tr>
+                                <td><strong>HTTPS (Web)</strong></td>
+                                <td>Web consoles (AWS, vSphere, etc.)</td>
+                                <td>Video + keystrokes</td>
+                                <td>Credential injection into web forms</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Database Protocols</strong></td>
+                                <td>SQL Server, Oracle, MySQL</td>
+                                <td>SQL queries + results</td>
+                                <td>Query analysis, data masking</td>
+                            </tr>
+                            <tr>
+                                <td><strong>VNC</strong></td>
+                                <td>Remote desktop (cross-platform)</td>
+                                <td>Video + keystrokes</td>
+                                <td>Legacy remote access</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Web Application Recording</h3>
+
+                <p>
+                    Modern PAM solutions can record access to web-based consoles and applications:
+                </p>
+
+                <ul>
+                    <li><strong>Cloud Consoles:</strong> AWS Management Console, Azure Portal, GCP Console</li>
+                    <li><strong>Virtualization:</strong> vSphere Web Client, Proxmox, Nutanix</li>
+                    <li><strong>Network Devices:</strong> Firewall web UIs, switch management consoles</li>
+                    <li><strong>SaaS Applications:</strong> Admin portals for Salesforce, ServiceNow, etc.</li>
+                </ul>
+            </section>
+
+            <section id="live-monitoring">
+                <h2>Live Monitoring & Control</h2>
+
+                <p>
+                    Beyond recording sessions for later review, PAM enables real-time monitoring and intervention.
+                </p>
+
+                <h3>Live Viewing</h3>
+
+                <div class="key-points">
+                    <div class="key-points-title">Live Monitoring Capabilities</div>
+                    <ul>
+                        <li>Security team can watch active sessions in real-time</li>
+                        <li>Dashboard shows all current privileged sessions</li>
+                        <li>Filter by user, system, risk level</li>
+                        <li>Shadow mode—observe without the user knowing</li>
+                        <li>Co-browse mode—watch alongside the user (for training)</li>
+                    </ul>
+                </div>
+
+                <h3>Session Termination</h3>
+
+                <p>
+                    When suspicious or unauthorized activity is detected, security can immediately terminate the session:
+                </p>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Suspicious Activity Detected</h4>
+                            <p>Alert triggers from command pattern, behavior analytics, or manual observation by SOC analyst.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Analyst Reviews Session</h4>
+                            <p>Analyst opens live view of the session to assess the situation in real-time.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Session Terminated</h4>
+                            <p>Analyst clicks "Terminate Session"—connection is immediately severed. User sees disconnection.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Incident Response Initiated</h4>
+                            <p>Recording preserved as evidence. User account may be locked. Incident ticket created automatically.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Command Blocking</h3>
+
+                <p>
+                    Some PAM solutions can block specific commands in real-time:
+                </p>
+
+                <ul>
+                    <li><strong>Blacklist approach:</strong> Block known dangerous commands (<code>rm -rf /</code>, <code>DROP DATABASE</code>)</li>
+                    <li><strong>Whitelist approach:</strong> Only allow pre-approved commands</li>
+                    <li><strong>Approval workflow:</strong> Dangerous commands require real-time approval before execution</li>
+                </ul>
+
+                <div class="info-box warning">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Command Blocking Limitations</h4>
+                        <p>Command blocking is not foolproof. Sophisticated attackers can obfuscate commands, use aliases, or find alternative ways to achieve the same result. Use command blocking as one layer of defense, not the only control.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="session-search">
+                <h2>Session Search & Forensics</h2>
+
+                <p>
+                    Recorded sessions are only valuable if you can find and analyze them effectively. Enterprise PAM solutions provide powerful search capabilities.
+                </p>
+
+                <h3>Search Capabilities</h3>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        </div>
+                        <div class="feature-title">Text Search</div>
+                        <p class="feature-description">Search all sessions for specific commands, queries, or text. "Find all sessions where someone ran SELECT * FROM customers"</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                        </div>
+                        <div class="feature-title">Time Range</div>
+                        <p class="feature-description">Filter sessions by date/time range. "Show all sessions during the security incident window."</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        </div>
+                        <div class="feature-title">User/Account</div>
+                        <p class="feature-description">Filter by who accessed the system. "Show all sessions by contractor John Smith."</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+                        </div>
+                        <div class="feature-title">Target System</div>
+                        <p class="feature-description">Filter by target. "Show all sessions to production database servers."</p>
+                    </div>
+                </div>
+
+                <h3>Forensic Use Cases</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Scenario</th>
+                                <th>Search Query</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Data breach investigation</strong></td>
+                                <td>Sessions to affected systems during breach window, containing data export commands</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Insider threat</strong></td>
+                                <td>All sessions by suspected employee over past 90 days</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Configuration change audit</strong></td>
+                                <td>Sessions to firewall containing commands that modified rules</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Compliance audit</strong></td>
+                                <td>All database sessions during audit period with SQL queries</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Vendor activity review</strong></td>
+                                <td>All sessions by vendor accounts during their access window</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="compliance">
+                <h2>Compliance Requirements</h2>
+
+                <p>
+                    Many compliance frameworks require session recording for privileged access. Understanding these requirements helps justify PAM investments.
+                </p>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Framework</th>
+                                <th>Relevant Requirements</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>PCI-DSS</strong></td>
+                                <td>Requirement 10: Track and monitor all access to network resources and cardholder data. Session recording provides the detailed audit trail needed.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>SOX</strong></td>
+                                <td>Section 404: Document and test internal controls over financial reporting systems. Session recording proves controls are functioning.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>HIPAA</strong></td>
+                                <td>Access monitoring and audit controls for systems containing PHI. Session recording demonstrates compliance with audit requirements.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>GDPR</strong></td>
+                                <td>Article 32: Appropriate security measures for processing personal data. Includes monitoring of administrative access.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>NIST 800-53</strong></td>
+                                <td>AU-3, AU-12: Audit generation, content, and review. Session recording fulfills detailed audit requirements.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>ISO 27001</strong></td>
+                                <td>A.12.4: Logging and monitoring. Session recording provides evidence of monitoring controls.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Retention Requirements</h3>
+
+                <p>
+                    Different regulations have different retention periods:
+                </p>
+
+                <ul>
+                    <li><strong>PCI-DSS:</strong> Minimum 1 year; 3 months immediately available</li>
+                    <li><strong>SOX:</strong> 7 years for audit workpapers</li>
+                    <li><strong>HIPAA:</strong> 6 years</li>
+                    <li><strong>Industry best practice:</strong> 1-3 years for most organizations</li>
+                </ul>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Storage Considerations</h4>
+                        <p>Session recordings consume significant storage. A single RDP session can generate 50-200 MB per hour depending on activity and compression. Plan for: tiered storage (hot/warm/cold), archival to lower-cost storage, video compression optimization, and retention automation.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="architecture">
+                <h2>Technical Architecture</h2>
+
+                <p>
+                    Understanding the technical architecture helps with deployment planning and troubleshooting.
+                </p>
+
+                <h3>Session Flow Architecture</h3>
+
+                <div class="diagram-container">
+                    <div class="diagram-title">Session Recording Architecture</div>
+                    <div class="architecture-flow">
+                        <div class="arch-row">
+                            <div class="arch-box">
+                                <div class="arch-box-title">User's Client</div>
+                                <div class="arch-box-subtitle">RDP/SSH Client</div>
+                            </div>
+                            <div class="arch-arrow">→</div>
+                            <div class="arch-box primary">
+                                <div class="arch-box-title">Session Proxy</div>
+                                <div class="arch-box-subtitle">PSM Server</div>
+                            </div>
+                            <div class="arch-arrow">→</div>
+                            <div class="arch-box accent">
+                                <div class="arch-box-title">Target System</div>
+                                <div class="arch-box-subtitle">Server/Device</div>
+                            </div>
+                        </div>
+                        <div style="margin: var(--space-4) 0; text-align: center; color: var(--text-secondary);">⬇️ Sessions recorded by PSM ⬇️</div>
+                        <div class="arch-row">
+                            <div class="arch-box secondary">
+                                <div class="arch-box-title">Recording Storage</div>
+                                <div class="arch-box-subtitle">NAS/SAN/Object Storage</div>
+                            </div>
+                            <div class="arch-arrow">→</div>
+                            <div class="arch-box">
+                                <div class="arch-box-title">Archive Storage</div>
+                                <div class="arch-box-subtitle">Long-term retention</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Key Components</h3>
+
+                <ul>
+                    <li><strong>Session Proxy (PSM):</strong> The recording engine. All sessions flow through it. Can be deployed in clusters for HA.</li>
+                    <li><strong>Recording Storage:</strong> Where recordings are written. High-performance storage for active recordings.</li>
+                    <li><strong>Archive Storage:</strong> Long-term storage for compliance retention. Often lower-cost object storage.</li>
+                    <li><strong>Index Database:</strong> Searchable metadata about recordings. Enables fast searches across millions of sessions.</li>
+                    <li><strong>Playback Server:</strong> Serves recordings to users reviewing sessions. May transcode for web playback.</li>
+                </ul>
+            </section>
+
+            <section id="best-practices">
+                <h2>Best Practices</h2>
+
+                <h3>Recording Policies</h3>
+
+                <div class="key-points">
+                    <div class="key-points-title">Recommended Practices</div>
+                    <ul>
+                        <li><strong>Record all privileged sessions</strong>—don't create exceptions that can be exploited</li>
+                        <li><strong>Enable keystroke logging</strong> for searchability, not just video</li>
+                        <li><strong>Capture metadata</strong> (file transfers, clipboard) for complete picture</li>
+                        <li><strong>Test recording regularly</strong> to ensure it's actually working</li>
+                        <li><strong>Define retention periods</strong> aligned with compliance requirements</li>
+                    </ul>
+                </div>
+
+                <h3>Monitoring Practices</h3>
+
+                <div class="key-points">
+                    <div class="key-points-title">Recommended Practices</div>
+                    <ul>
+                        <li><strong>Enable real-time alerts</strong> for high-risk commands or behavior patterns</li>
+                        <li><strong>Integrate with SIEM</strong> for correlation with other security events</li>
+                        <li><strong>Define escalation procedures</strong> for different types of alerts</li>
+                        <li><strong>Review samples of sessions</strong> regularly, not just when incidents occur</li>
+                        <li><strong>Document monitoring procedures</strong> to demonstrate due diligence</li>
+                    </ul>
+                </div>
+
+                <h3>User Communication</h3>
+
+                <div class="key-points">
+                    <div class="key-points-title">Transparency</div>
+                    <ul>
+                        <li><strong>Inform users that sessions are recorded</strong>—display banner at session start</li>
+                        <li><strong>Include in acceptable use policies</strong></li>
+                        <li><strong>Explain the purpose</strong>—security and compliance, not surveillance</li>
+                        <li><strong>Define who can view recordings</strong> and under what circumstances</li>
+                    </ul>
+                </div>
+            </section>
+
+            <div class="info-box success">
+                <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <div class="info-box-content">
+                    <h4>Key Takeaways</h4>
+                    <p>Session management provides complete visibility into privileged activities through recording, real-time monitoring, and session control. It's essential for compliance, incident response, and insider threat detection. Record all privileged sessions, enable searchable keystroke logging, and integrate with your broader security monitoring.</p>
+                </div>
+            </div>
+
+            <nav class="page-nav">
+                <a href="user-access-workflow.html" class="page-nav-link prev">
+                    <span class="page-nav-label">Previous</span>
+                    <span class="page-nav-title">← User Access Workflow</span>
+                </a>
+                <a href="jit-access.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next</span>
+                    <span class="page-nav-title">Just-In-Time Access →</span>
+                </a>
+            </nav>
+        </div>
+
+        <footer class="footer">
+            <p>PAM & KMS Ultimate Guide — A comprehensive enterprise security documentation resource</p>
+        </footer>
+    </main>
+
+    <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+    </button>
+
+    <script src="../js/main.js"></script>
+</body>
+</html>

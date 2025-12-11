@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Machine Identity Management - Securing certificates, API keys, service accounts, and non-human identities">
+    <title>Machine Identity Management | PAM & KMS Guide</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="scroll-progress" id="scroll-progress"></div>
+
+    <header class="header">
+        <div class="header-content">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                PAM & KMS Guide
+            </a>
+            
+            <nav class="header-nav">
+                <a href="pam-fundamentals.html">PAM</a>
+                <a href="kms-fundamentals.html" class="active">KMS</a>
+                <a href="vendors.html">Vendors</a>
+                <a href="implementation.html">Implementation</a>
+            </nav>
+            
+            <div class="header-actions">
+                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-title">Advanced Topics</div>
+            <ul class="sidebar-nav">
+                <li><a href="zero-trust.html">Zero Trust</a></li>
+                <li><a href="devops-secrets.html">DevOps Secrets</a></li>
+                <li><a href="machine-identity.html" class="active">Machine Identity</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <main class="main-wrapper">
+        <div class="main-content">
+            <nav class="breadcrumb">
+                <a href="../index.html">Home</a>
+                <span class="breadcrumb-separator">/</span>
+                <a href="kms-fundamentals.html">KMS</a>
+                <span class="breadcrumb-separator">/</span>
+                <span>Machine Identity Management</span>
+            </nav>
+
+            <div class="page-header">
+                <h1>Machine Identity Management</h1>
+                <p class="page-description">
+                    Machine identities—certificates, API keys, service accounts, and tokens—now outnumber human identities by 45:1 in most enterprises. Managing them is critical for security.
+                </p>
+            </div>
+
+            <div class="toc">
+                <div class="toc-title">On This Page</div>
+                <ul class="toc-list">
+                    <li><a href="#what-is"><span class="toc-number">1.</span> What is Machine Identity?</a></li>
+                    <li><a href="#types"><span class="toc-number">2.</span> Types of Machine Identities</a></li>
+                    <li><a href="#certificates"><span class="toc-number">3.</span> Certificate Management</a></li>
+                    <li><a href="#api-keys"><span class="toc-number">4.</span> API Keys & Tokens</a></li>
+                    <li><a href="#service-accounts"><span class="toc-number">5.</span> Service Accounts</a></li>
+                    <li><a href="#workload-identity"><span class="toc-number">6.</span> Workload Identity</a></li>
+                    <li><a href="#lifecycle"><span class="toc-number">7.</span> Lifecycle Management</a></li>
+                    <li><a href="#solutions"><span class="toc-number">8.</span> Solutions & Vendors</a></li>
+                </ul>
+            </div>
+
+            <section id="what-is">
+                <h2>What is Machine Identity?</h2>
+                
+                <p>
+                    A machine identity is a credential that identifies and authenticates a non-human entity—a server, application, container, IoT device, or automated process. Just as humans need usernames and passwords, machines need identities to communicate securely.
+                </p>
+
+                <h3>The Scale Problem</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Era</th>
+                                <th>Human:Machine Ratio</th>
+                                <th>Characteristic</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Traditional IT</strong></td>
+                                <td>1:1</td>
+                                <td>One server, one service account</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Virtualization</strong></td>
+                                <td>1:10</td>
+                                <td>Multiple VMs per physical server</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Cloud/Containers</strong></td>
+                                <td>1:45+</td>
+                                <td>Ephemeral workloads, microservices, serverless</td>
+                            </tr>
+                            <tr>
+                                <td><strong>IoT</strong></td>
+                                <td>1:1000+</td>
+                                <td>Thousands of devices per deployment</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="info-box warning">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>The Neglected Attack Surface</h4>
+                        <p>Organizations invest heavily in human identity management (SSO, MFA, PAM) but often neglect machine identities. Expired certificates cause outages. Stolen API keys enable breaches. Orphaned service accounts become backdoors. Machine identity management is as critical as human IAM.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="types">
+                <h2>Types of Machine Identities</h2>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>What It Is</th>
+                                <th>Example Use Cases</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>TLS/SSL Certificates</strong></td>
+                                <td>X.509 certificates for encryption and server authentication</td>
+                                <td>HTTPS websites, service-to-service TLS, mTLS</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Code Signing Certificates</strong></td>
+                                <td>Certificates that prove software authenticity</td>
+                                <td>Software distribution, driver signing, container images</td>
+                            </tr>
+                            <tr>
+                                <td><strong>SSH Keys</strong></td>
+                                <td>Public/private key pairs for SSH authentication</td>
+                                <td>Server access, Git operations, automation</td>
+                            </tr>
+                            <tr>
+                                <td><strong>API Keys</strong></td>
+                                <td>Static strings for API authentication</td>
+                                <td>Third-party services, internal APIs, cloud services</td>
+                            </tr>
+                            <tr>
+                                <td><strong>OAuth Tokens</strong></td>
+                                <td>Time-limited access tokens</td>
+                                <td>Application authorization, API access</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Service Accounts</strong></td>
+                                <td>Non-human accounts in identity systems</td>
+                                <td>AD service accounts, cloud IAM principals</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Managed Identities</strong></td>
+                                <td>Cloud-native workload identities</td>
+                                <td>Azure Managed Identity, AWS IAM roles for EC2</td>
+                            </tr>
+                            <tr>
+                                <td><strong>SPIFFE/SPIRE</strong></td>
+                                <td>Workload identity standard</td>
+                                <td>Service mesh identity, zero trust workloads</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="certificates">
+                <h2>Certificate Management</h2>
+
+                <p>
+                    Certificates are the most common and complex machine identity to manage.
+                </p>
+
+                <h3>Certificate Lifecycle</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Request</h4>
+                            <p>Application or system needs a certificate. Generate key pair, create Certificate Signing Request (CSR).</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Issuance</h4>
+                            <p>CA validates request, signs certificate. Public CA for external, private CA for internal.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Deployment</h4>
+                            <p>Certificate and private key installed on server/application. Key must be protected.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Monitoring</h4>
+                            <p>Track expiration dates, usage, compliance. Alert before expiration.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Renewal</h4>
+                            <p>Before expiration, renew certificate. Automated renewal prevents outages.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <h4>Revocation</h4>
+                            <p>If compromised or no longer needed, revoke immediately. Publish to CRL/OCSP.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Certificate Management Challenges</h3>
+
+                <ul>
+                    <li><strong>Inventory:</strong> Where are all certificates? Many organizations don't know.</li>
+                    <li><strong>Expiration:</strong> Certificates expire. Expired certs = outages. (Remember the 2020 Microsoft Teams outage?)</li>
+                    <li><strong>Key protection:</strong> Private keys must be secured. Stolen key = impersonation.</li>
+                    <li><strong>Sprawl:</strong> DevOps creates certificates on demand. Shadow PKI emerges.</li>
+                    <li><strong>Compliance:</strong> Key length requirements, algorithm deprecation (SHA-1, RSA-1024)</li>
+                </ul>
+
+                <h3>Automated Certificate Management (ACME)</h3>
+
+                <p>
+                    ACME protocol (used by Let's Encrypt) enables automated certificate issuance:
+                </p>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# Using certbot for Let's Encrypt
+certbot certonly --webroot -w /var/www/html \
+    -d example.com -d www.example.com
+
+# Automatic renewal (cron or systemd timer)
+certbot renew --quiet
+                </pre>
+
+                <h3>Private CA for Internal Services</h3>
+
+                <p>For internal service-to-service TLS, run your own CA:</p>
+
+                <ul>
+                    <li><strong>HashiCorp Vault PKI:</strong> Dynamic, short-lived certificates</li>
+                    <li><strong>AWS Private CA:</strong> Managed private CA in AWS</li>
+                    <li><strong>Azure Key Vault:</strong> Certificate issuance and management</li>
+                    <li><strong>Smallstep:</strong> Open-source private CA with ACME support</li>
+                    <li><strong>CFSSL:</strong> CloudFlare's PKI toolkit</li>
+                </ul>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# HashiCorp Vault PKI - Issue certificate with 24h TTL
+vault write pki/issue/my-role \
+    common_name="myservice.internal" \
+    ttl="24h"
+
+# Returns certificate, private key, and CA chain
+                </pre>
+            </section>
+
+            <section id="api-keys">
+                <h2>API Keys & Tokens</h2>
+
+                <h3>API Key Risks</h3>
+
+                <ul>
+                    <li><strong>No expiration:</strong> Many API keys never expire</li>
+                    <li><strong>Over-privileged:</strong> Keys often have more access than needed</li>
+                    <li><strong>Scattered:</strong> Keys in config files, environment variables, code</li>
+                    <li><strong>Shared:</strong> Same key used across multiple applications</li>
+                    <li><strong>Untracked:</strong> No inventory of which keys exist</li>
+                </ul>
+
+                <h3>API Key Best Practices</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Practice</th>
+                                <th>Why</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Unique keys per application</strong></td>
+                                <td>Revoke one without affecting others</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Least privilege</strong></td>
+                                <td>Key only has permissions it needs</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Expiration</strong></td>
+                                <td>Force rotation, limit breach window</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Secure storage</strong></td>
+                                <td>In secrets manager, not code/config</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Rotation</strong></td>
+                                <td>Regular rotation even without breach</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Monitoring</strong></td>
+                                <td>Detect unusual usage patterns</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Short-Lived Tokens (Better Than Keys)</h3>
+
+                <p>Modern systems use tokens instead of static keys:</p>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# OAuth 2.0 Client Credentials Flow
+POST /oauth/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=client_credentials
+&client_id=my-app
+&client_secret=secret123
+&scope=api:read
+
+# Response
+{
+  "access_token": "eyJhbGciOiJSUzI1...",
+  "token_type": "Bearer",
+  "expires_in": 3600  // 1 hour
+}
+                </pre>
+            </section>
+
+            <section id="service-accounts">
+                <h2>Service Accounts</h2>
+
+                <h3>Active Directory Service Accounts</h3>
+
+                <p>Traditional AD service accounts have many problems:</p>
+
+                <ul>
+                    <li>Passwords rarely rotated (breaking things is scary)</li>
+                    <li>Over-privileged (Domain Admins "because it was easier")</li>
+                    <li>Orphaned (person who created it left, nobody knows what it does)</li>
+                    <li>Shared (same account for multiple applications)</li>
+                    <li>Exposed to Kerberoasting attacks</li>
+                </ul>
+
+                <h3>Group Managed Service Accounts (gMSA)</h3>
+
+                <p>Microsoft's solution for Windows service accounts:</p>
+
+                <ul>
+                    <li><strong>AD-managed password:</strong> 240-character password, automatically rotated every 30 days</li>
+                    <li><strong>No human knows password:</strong> AD and authorized servers retrieve it automatically</li>
+                    <li><strong>No Kerberoasting:</strong> Password too complex to crack</li>
+                    <li><strong>Single account, multiple servers:</strong> Can be used across server farm</li>
+                </ul>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# Create gMSA in PowerShell
+New-ADServiceAccount -Name "svc_webapp" `
+    -DNSHostName "svc_webapp.corp.example.com" `
+    -PrincipalsAllowedToRetrieveManagedPassword "WebServers"
+
+# Install on server
+Install-ADServiceAccount -Identity "svc_webapp"
+
+# Configure Windows service to use gMSA
+sc.exe config MyService obj= "CORP\svc_webapp$"
+                </pre>
+
+                <h3>Cloud Service Accounts</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Cloud</th>
+                                <th>Service Account Type</th>
+                                <th>Best Practice</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>AWS</strong></td>
+                                <td>IAM Users (avoid) or IAM Roles (preferred)</td>
+                                <td>Use roles with temporary credentials, not access keys</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Azure</strong></td>
+                                <td>Service Principals or Managed Identities</td>
+                                <td>Use managed identities where possible (no credentials to manage)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>GCP</strong></td>
+                                <td>Service Accounts</td>
+                                <td>Use Workload Identity Federation, avoid key files</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="workload-identity">
+                <h2>Workload Identity</h2>
+
+                <p>
+                    Modern workload identity systems provide identities to applications without static credentials.
+                </p>
+
+                <h3>Cloud Workload Identity</h3>
+
+                <h4>AWS: IAM Roles for EC2/ECS/Lambda</h4>
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# EC2 instance gets credentials automatically via metadata service
+curl http://169.254.169.254/latest/meta-data/iam/security-credentials/my-role
+
+# Returns temporary credentials
+{
+  "AccessKeyId": "ASIA...",
+  "SecretAccessKey": "...",
+  "Token": "...",
+  "Expiration": "2024-01-01T12:00:00Z"
+}
+                </pre>
+
+                <h4>Azure: Managed Identity</h4>
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# Azure VM/Container gets token from metadata service
+curl 'http://169.254.169.254/metadata/identity/oauth2/token?
+    api-version=2018-02-01&resource=https://vault.azure.net' \
+    -H Metadata:true
+
+# Use token to access Azure resources - no credentials stored!
+                </pre>
+
+                <h3>SPIFFE/SPIRE</h3>
+
+                <p>
+                    SPIFFE (Secure Production Identity Framework For Everyone) is an open standard for workload identity:
+                </p>
+
+                <ul>
+                    <li><strong>SPIFFE ID:</strong> URI-based identity (spiffe://example.com/service/frontend)</li>
+                    <li><strong>SVID:</strong> Short-lived X.509 certificate or JWT proving identity</li>
+                    <li><strong>SPIRE:</strong> Reference implementation of SPIFFE</li>
+                </ul>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# SPIFFE identity format
+spiffe://trust-domain/path/to/workload
+
+# Examples
+spiffe://example.com/ns/production/sa/frontend
+spiffe://example.com/cluster/k8s-west/ns/default/pod/web-abc123
+                </pre>
+
+                <h3>Kubernetes Workload Identity</h3>
+
+                <p>Connect Kubernetes service accounts to cloud IAM:</p>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# AWS: EKS Pod Identity / IRSA
+# Associates K8s service account with AWS IAM role
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: my-app
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::123456789:role/my-app-role
+
+---
+# Azure: Workload Identity
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: my-app
+  annotations:
+    azure.workload.identity/client-id: "00000000-0000-0000-0000-000000000000"
+                </pre>
+            </section>
+
+            <section id="lifecycle">
+                <h2>Lifecycle Management</h2>
+
+                <h3>Discovery</h3>
+
+                <p>First, find all machine identities:</p>
+
+                <ul>
+                    <li><strong>Certificate scanning:</strong> Scan networks for TLS endpoints, extract certificates</li>
+                    <li><strong>Cloud API enumeration:</strong> List service accounts, roles, keys via cloud APIs</li>
+                    <li><strong>Code scanning:</strong> Search repos for hardcoded credentials, API keys</li>
+                    <li><strong>AD enumeration:</strong> Query for service accounts, SPNs</li>
+                    <li><strong>Secrets manager inventory:</strong> Export list of stored secrets</li>
+                </ul>
+
+                <h3>Inventory & Classification</h3>
+
+                <p>For each machine identity, track:</p>
+
+                <ul>
+                    <li>What is it? (Certificate, API key, service account, etc.)</li>
+                    <li>Where is it used? (Which servers, applications, services)</li>
+                    <li>Who owns it? (Team, individual responsible)</li>
+                    <li>What can it access? (Permissions, scope)</li>
+                    <li>When does it expire? (If applicable)</li>
+                    <li>When was it last used? (Detect orphaned identities)</li>
+                </ul>
+
+                <h3>Rotation</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Identity Type</th>
+                                <th>Recommended Rotation</th>
+                                <th>Approach</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>TLS Certificates</strong></td>
+                                <td>90 days (or shorter)</td>
+                                <td>Automated via ACME or PKI</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Code Signing Certs</strong></td>
+                                <td>1-3 years</td>
+                                <td>Manual with HSM protection</td>
+                            </tr>
+                            <tr>
+                                <td><strong>SSH Keys</strong></td>
+                                <td>90 days or use certificates</td>
+                                <td>SSH certificate authority preferred</td>
+                            </tr>
+                            <tr>
+                                <td><strong>API Keys</strong></td>
+                                <td>90 days</td>
+                                <td>Automated rotation in secrets manager</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Service Account Passwords</strong></td>
+                                <td>30-90 days or use gMSA</td>
+                                <td>PAM automated rotation or gMSA</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Cloud Access Keys</strong></td>
+                                <td>Avoid entirely</td>
+                                <td>Use workload identity instead</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Revocation</h3>
+
+                <p>When machine identity is compromised or no longer needed:</p>
+
+                <ul>
+                    <li><strong>Certificates:</strong> Revoke via CA, publish to CRL/OCSP</li>
+                    <li><strong>API keys:</strong> Delete from provider, rotate all copies</li>
+                    <li><strong>Service accounts:</strong> Disable account, rotate password, then delete</li>
+                    <li><strong>Cloud roles:</strong> Remove role assignments, delete role if not shared</li>
+                </ul>
+            </section>
+
+            <section id="solutions">
+                <h2>Solutions & Vendors</h2>
+
+                <h3>Certificate Lifecycle Management</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Solution</th>
+                                <th>Focus</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Venafi</strong></td>
+                                <td>Enterprise certificate and machine identity management</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Keyfactor</strong></td>
+                                <td>PKI, certificate automation, IoT identity</td>
+                            </tr>
+                            <tr>
+                                <td><strong>DigiCert CertCentral</strong></td>
+                                <td>Public and private certificate management</td>
+                            </tr>
+                            <tr>
+                                <td><strong>HashiCorp Vault PKI</strong></td>
+                                <td>Dynamic certificates, internal PKI</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Smallstep</strong></td>
+                                <td>Open-source certificate automation</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Secrets Management (covers API keys, credentials)</h3>
+
+                <ul>
+                    <li><strong>HashiCorp Vault:</strong> Most comprehensive, multi-cloud</li>
+                    <li><strong>AWS Secrets Manager:</strong> AWS-native</li>
+                    <li><strong>Azure Key Vault:</strong> Azure-native, includes HSM</li>
+                    <li><strong>GCP Secret Manager:</strong> GCP-native</li>
+                    <li><strong>CyberArk Conjur:</strong> Enterprise secrets management</li>
+                </ul>
+
+                <h3>Workload Identity</h3>
+
+                <ul>
+                    <li><strong>SPIRE:</strong> Open-source SPIFFE implementation</li>
+                    <li><strong>Istio:</strong> Service mesh with built-in identity</li>
+                    <li><strong>Linkerd:</strong> Service mesh with mTLS</li>
+                    <li><strong>Cloud-native:</strong> AWS IAM roles, Azure Managed Identity, GCP Workload Identity</li>
+                </ul>
+            </section>
+
+            <div class="info-box success">
+                <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <div class="info-box-content">
+                    <h4>Key Takeaways</h4>
+                    <p>Machine identities outnumber humans 45:1 and are growing. They include certificates, API keys, service accounts, and tokens. Certificate management is critical—expired certs cause outages. Prefer short-lived, automatically rotated credentials. Use workload identity (cloud-native, SPIFFE) over static keys. Maintain inventory, track ownership, and monitor usage. Machine identity management is as important as human IAM.</p>
+                </div>
+            </div>
+
+            <nav class="page-nav">
+                <a href="devops-secrets.html" class="page-nav-link prev">
+                    <span class="page-nav-label">Previous</span>
+                    <span class="page-nav-title">← DevOps Secrets</span>
+                </a>
+                <a href="best-practices.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next</span>
+                    <span class="page-nav-title">Best Practices →</span>
+                </a>
+            </nav>
+        </div>
+
+        <footer class="footer">
+            <p>PAM & KMS Ultimate Guide — A comprehensive enterprise security documentation resource</p>
+        </footer>
+    </main>
+
+    <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+    </button>
+
+    <script src="../js/main.js"></script>
+</body>
+</html>

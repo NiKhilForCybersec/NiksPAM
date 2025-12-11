@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Authentication vs Authorization - Understanding identity verification and access control">
+    <title>Authentication vs Authorization | PAM & KMS Guide</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="scroll-progress" id="scroll-progress"></div>
+
+    <header class="header">
+        <div class="header-content">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                PAM & KMS Guide
+            </a>
+            
+            <nav class="header-nav">
+                <a href="pam-fundamentals.html" class="active">PAM</a>
+                <a href="kms-fundamentals.html">KMS</a>
+                <a href="vendors.html">Vendors</a>
+                <a href="implementation.html">Implementation</a>
+            </nav>
+            
+            <div class="header-actions">
+                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-title">Deep Dives</div>
+            <ul class="sidebar-nav">
+                <li><a href="how-pam-works.html">How PAM Actually Works</a></li>
+                <li><a href="encryption-explained.html">Encryption Explained</a></li>
+                <li><a href="attack-scenarios.html">Real-World Attacks</a></li>
+                <li><a href="authn-vs-authz.html" class="active">Authentication vs Authorization</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <main class="main-wrapper">
+        <div class="main-content">
+            <nav class="breadcrumb">
+                <a href="../index.html">Home</a>
+                <span class="breadcrumb-separator">/</span>
+                <a href="pam-fundamentals.html">PAM</a>
+                <span class="breadcrumb-separator">/</span>
+                <span>Authentication vs Authorization</span>
+            </nav>
+
+            <div class="page-header">
+                <h1>Authentication vs Authorization</h1>
+                <p class="page-description">
+                    These two concepts are the foundation of access control, yet they're constantly confused. This page will make the distinction crystal clear and show you how they work together in PAM systems.
+                </p>
+            </div>
+
+            <div class="toc">
+                <div class="toc-title">On This Page</div>
+                <ul class="toc-list">
+                    <li><a href="#the-difference"><span class="toc-number">1.</span> The Fundamental Difference</a></li>
+                    <li><a href="#authentication-deep"><span class="toc-number">2.</span> Authentication Deep Dive</a></li>
+                    <li><a href="#authorization-deep"><span class="toc-number">3.</span> Authorization Deep Dive</a></li>
+                    <li><a href="#together"><span class="toc-number">4.</span> How They Work Together</a></li>
+                    <li><a href="#in-pam"><span class="toc-number">5.</span> AuthN/AuthZ in PAM Systems</a></li>
+                    <li><a href="#mfa"><span class="toc-number">6.</span> Multi-Factor Authentication</a></li>
+                    <li><a href="#protocols"><span class="toc-number">7.</span> Common Protocols</a></li>
+                    <li><a href="#troubleshooting"><span class="toc-number">8.</span> Troubleshooting Access Issues</a></li>
+                </ul>
+            </div>
+
+            <section id="the-difference">
+                <h2>The Fundamental Difference</h2>
+                
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>The One-Sentence Summary</h4>
+                        <p><strong>Authentication</strong> answers "WHO are you?" <strong>Authorization</strong> answers "WHAT are you allowed to do?"</p>
+                    </div>
+                </div>
+
+                <h3>The Airport Analogy</h3>
+
+                <p>Think about going through an airport:</p>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Authentication (Security Checkpoint)</h4>
+                            <p>You show your ID (passport or driver's license). TSA verifies you are who you claim to be. This is <strong>authentication</strong>—proving your identity.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Authorization (Boarding Gate)</h4>
+                            <p>You show your boarding pass. The gate agent checks if you're allowed on <em>this specific flight</em>. This is <strong>authorization</strong>—checking what you're permitted to access.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <p>Notice: You could be perfectly authenticated (valid ID) but unauthorized (wrong flight). Or you could have a boarding pass but no ID—authorized for the flight but can't prove who you are.</p>
+
+                <h3>Technical Definition</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Aspect</th>
+                                <th>Authentication (AuthN)</th>
+                                <th>Authorization (AuthZ)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Question answered</strong></td>
+                                <td>Who are you?</td>
+                                <td>What can you do?</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Verifies</strong></td>
+                                <td>Identity</td>
+                                <td>Permissions</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Happens</strong></td>
+                                <td>First (must know who before deciding what)</td>
+                                <td>Second (after identity is established)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Failure means</strong></td>
+                                <td>"I don't know who you are"</td>
+                                <td>"I know who you are, but you can't do that"</td>
+                            </tr>
+                            <tr>
+                                <td><strong>HTTP status code</strong></td>
+                                <td>401 Unauthorized*</td>
+                                <td>403 Forbidden</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Common methods</strong></td>
+                                <td>Password, certificate, biometric, token</td>
+                                <td>RBAC, ABAC, ACLs, policies</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p><em>*Note: HTTP 401 is confusingly named "Unauthorized" but it's actually an authentication failure.</em></p>
+            </section>
+
+            <section id="authentication-deep">
+                <h2>Authentication Deep Dive</h2>
+
+                <p>
+                    Authentication is about proving identity. There are three fundamental ways to prove who you are:
+                </p>
+
+                <h3>The Three Authentication Factors</h3>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        </div>
+                        <div class="feature-title">Something You Know</div>
+                        <p class="feature-description">Passwords, PINs, security questions. The classic factor. Weakness: can be guessed, stolen, or shared.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                        </div>
+                        <div class="feature-title">Something You Have</div>
+                        <p class="feature-description">Phone, hardware token, smart card, security key. Physical possession required. Weakness: can be lost or stolen.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        </div>
+                        <div class="feature-title">Something You Are</div>
+                        <p class="feature-description">Fingerprint, face, retina, voice. Biometrics. Weakness: can't be changed if compromised, privacy concerns.</p>
+                    </div>
+                </div>
+
+                <h3>How Password Authentication Actually Works</h3>
+
+                <p>When you type a password, here's what happens:</p>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>You Enter Credentials</h4>
+                            <p>Username: "sarah" | Password: "MyP@ssw0rd!"</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Client Sends to Server</h4>
+                            <p>Credentials transmitted (hopefully over TLS). Server receives username and password.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Server Looks Up User</h4>
+                            <p>Server queries database: "Find user 'sarah'" Returns stored password hash + salt.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Server Hashes Input</h4>
+                            <p>Server hashes the password you sent (using same algorithm and salt). Result: a hash value.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Compare Hashes</h4>
+                            <p>If hash of your input == stored hash → <strong>Authentication successful</strong>. If not → <strong>Authentication failed</strong>.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-box warning">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Why Hashing Matters</h4>
+                        <p>The server <strong>never stores your actual password</strong>. It stores a hash. Even if attackers steal the database, they get hashes—not passwords. They'd have to crack each hash individually (which, with good algorithms like bcrypt, takes enormous time).</p>
+                    </div>
+                </div>
+
+                <h3>How Certificate Authentication Works</h3>
+
+                <p>Certificates provide stronger authentication than passwords:</p>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Certificate Issued</h4>
+                            <p>A Certificate Authority (CA) issues you a certificate containing your public key, identity info, and the CA's signature.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Connection Initiated</h4>
+                            <p>You connect to a server. Server requests client certificate authentication.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Prove Possession</h4>
+                            <p>Server sends a challenge. You sign it with your <strong>private key</strong> (which only you have).</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Server Verifies</h4>
+                            <p>Server (1) checks certificate is signed by trusted CA, (2) checks certificate isn't expired/revoked, (3) verifies your signature using the public key in the certificate.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Identity Established</h4>
+                            <p>If all checks pass, server knows: "This is really the person named in this certificate."</p>
+                        </div>
+                    </div>
+                </div>
+
+                <p><strong>Why this is stronger:</strong> No password to steal or guess. Attacker needs your actual private key file.</p>
+            </section>
+
+            <section id="authorization-deep">
+                <h2>Authorization Deep Dive</h2>
+
+                <p>
+                    Once we know WHO you are, we need to decide WHAT you can do. There are several models for making this decision.
+                </p>
+
+                <h3>Access Control List (ACL)</h3>
+
+                <p>The simplest model. Each resource has a list of who can access it.</p>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Resource</th>
+                                <th>Allowed Users</th>
+                                <th>Permissions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>/data/finance/reports</td>
+                                <td>sarah, mike, finance-team</td>
+                                <td>read, write</td>
+                            </tr>
+                            <tr>
+                                <td>/data/hr/salaries</td>
+                                <td>hr-admins</td>
+                                <td>read, write</td>
+                            </tr>
+                            <tr>
+                                <td>/servers/prod-db-01</td>
+                                <td>dba-team, sarah</td>
+                                <td>ssh, sudo</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p><strong>Pros:</strong> Simple, easy to understand. <strong>Cons:</strong> Doesn't scale well—imagine maintaining ACLs for 10,000 resources.</p>
+
+                <h3>Role-Based Access Control (RBAC)</h3>
+
+                <p>Users are assigned to roles. Roles have permissions. Most common in enterprises.</p>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Define Roles</h4>
+                            <p>"DBA", "Network-Admin", "Developer", "Security-Analyst"</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Assign Permissions to Roles</h4>
+                            <p>DBA can access: production databases, run backups, view logs. Developer can access: dev servers, code repos, test databases.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Assign Users to Roles</h4>
+                            <p>Sarah → DBA role. Mike → Developer role. Users inherit all permissions of their roles.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <p><strong>Pros:</strong> Scales well, easy to manage (change role, change all users). <strong>Cons:</strong> Can lead to role explosion, not context-aware.</p>
+
+                <h3>Attribute-Based Access Control (ABAC)</h3>
+
+                <p>Decisions based on attributes of the user, resource, and context. Most flexible but complex.</p>
+
+                <p><strong>Example policy:</strong></p>
+                <ul>
+                    <li>IF user.department == "Finance"</li>
+                    <li>AND resource.classification == "Financial"</li>
+                    <li>AND request.time BETWEEN 9AM-6PM</li>
+                    <li>AND request.location == "Corporate Network"</li>
+                    <li>THEN allow READ access</li>
+                </ul>
+
+                <p><strong>Pros:</strong> Very granular, context-aware. <strong>Cons:</strong> Complex to design and troubleshoot.</p>
+
+                <h3>The Authorization Decision Flow</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Request Received</h4>
+                            <p>"User 'sarah' wants to SSH to server 'prod-db-01'"</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Gather Context</h4>
+                            <p>Who: sarah (DBA role, Finance department). What: SSH access. Where: prod-db-01 (Tier 1 production). When: 3:00 PM Tuesday. From: Corporate laptop on VPN.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Evaluate Policies</h4>
+                            <p>Policy engine checks all applicable rules. DBA role has access to databases. prod-db-01 requires approval outside business hours (this is within hours). No geographic restrictions apply.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Decision</h4>
+                            <p><strong>ALLOW</strong> - All conditions met. Access granted. (Or DENY with reason if any condition failed.)</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="together">
+                <h2>How They Work Together</h2>
+
+                <p>
+                    Authentication and authorization always work in sequence. Let's trace a complete flow:
+                </p>
+
+                <h3>Example: Logging Into a Web Application</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">AuthN</div>
+                        <div class="step-content">
+                            <h4>Step 1: Login Page</h4>
+                            <p>User enters username and password. System authenticates user against Active Directory. MFA prompt appears—user enters code from phone. <strong>Authentication complete.</strong> System now knows: "This is Sarah from the Finance department."</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">AuthZ</div>
+                        <div class="step-content">
+                            <h4>Step 2: Access Dashboard</h4>
+                            <p>Sarah clicks "Financial Reports". Authorization check: Does Sarah have permission to view financial reports? Check: Sarah is in Finance department. Check: Sarah has "report-viewer" role. <strong>Authorization: ALLOWED.</strong></p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">AuthZ</div>
+                        <div class="step-content">
+                            <h4>Step 3: Try Admin Function</h4>
+                            <p>Sarah clicks "System Administration". Authorization check: Does Sarah have admin permissions? Check: Sarah does NOT have "admin" role. <strong>Authorization: DENIED.</strong> Sarah sees "Access Denied" page.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <p>Notice: Sarah authenticated once, but authorization happens on every action.</p>
+
+                <h3>Session and Tokens</h3>
+
+                <p>We don't want to authenticate on every click. Instead:</p>
+
+                <ol>
+                    <li><strong>Authentication</strong> happens once at login</li>
+                    <li>Server issues a <strong>session token</strong> (cookie or JWT)</li>
+                    <li>Token contains: who you are, when it expires, maybe what roles you have</li>
+                    <li>Each request includes the token</li>
+                    <li>Server validates token (fast) instead of re-authenticating (slow)</li>
+                    <li><strong>Authorization</strong> checked on each request using info from token</li>
+                </ol>
+            </section>
+
+            <section id="in-pam">
+                <h2>AuthN/AuthZ in PAM Systems</h2>
+
+                <p>
+                    PAM systems have multiple layers of authentication and authorization. Let's trace through a complete PAM access flow:
+                </p>
+
+                <h3>Layer 1: Authentication to PAM Portal</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>User Authenticates</h4>
+                            <p>Sarah opens PAM portal. Enters AD credentials. PAM authenticates against Active Directory. MFA required—enters Duo code. <strong>PAM now knows: "This is Sarah."</strong></p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Layer 2: Authorization to See Accounts</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>List Available Accounts</h4>
+                            <p>PAM checks: What accounts can Sarah see? Policy says: DBAs can see database admin accounts. Sarah is a DBA. She sees: Oracle-SYSDBA, MySQL-root, PostgreSQL-admin. She does NOT see: Domain Admin, network device accounts.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Layer 3: Authorization for Specific Access</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Request Access to Account</h4>
+                            <p>Sarah clicks "Connect" on Oracle-SYSDBA for prod-oracle-01. PAM evaluates: Is Sarah authorized for this specific account on this specific system? Does she need approval? Is this within allowed hours? Result: Access allowed (or approval workflow triggered).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Layer 4: PAM Authenticates to Target</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>PAM Retrieves Credential</h4>
+                            <p>PAM gets SYSDBA password from vault. PAM connects to Oracle database. PAM authenticates AS the SYSDBA account. Database sees: "SYSDBA logged in from PAM server."</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Layer 5: Session Authorization</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>In-Session Controls</h4>
+                            <p>Sarah runs SQL commands through PAM proxy. PAM can authorize individual commands: SELECT allowed, DROP TABLE blocked. Real-time policy enforcement during session.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>The Key PAM Insight</h4>
+                        <p>PAM separates "who is the human" from "what account do they use." Sarah authenticates as Sarah. PAM then uses the SYSDBA account on her behalf. The target system never sees Sarah—it sees SYSDBA. PAM maintains the mapping and audit trail.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="mfa">
+                <h2>Multi-Factor Authentication</h2>
+
+                <p>
+                    MFA requires multiple authentication factors. If one factor is compromised, the attacker still can't get in.
+                </p>
+
+                <h3>Why MFA Is Critical</h3>
+
+                <ul>
+                    <li><strong>Passwords alone are weak:</strong> Can be guessed, phished, stolen, reused</li>
+                    <li><strong>80%+ of breaches</strong> involve compromised credentials</li>
+                    <li><strong>MFA blocks 99.9%</strong> of automated attacks (Microsoft data)</li>
+                </ul>
+
+                <h3>MFA Methods Compared</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Method</th>
+                                <th>Security</th>
+                                <th>Usability</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>SMS code</strong></td>
+                                <td>⭐⭐</td>
+                                <td>⭐⭐⭐⭐</td>
+                                <td>Vulnerable to SIM swapping, SS7 attacks. Better than nothing.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Authenticator app (TOTP)</strong></td>
+                                <td>⭐⭐⭐</td>
+                                <td>⭐⭐⭐</td>
+                                <td>Google Authenticator, Microsoft Authenticator. Time-based codes.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Push notification</strong></td>
+                                <td>⭐⭐⭐</td>
+                                <td>⭐⭐⭐⭐</td>
+                                <td>Duo, Okta. User approves on phone. Watch for MFA fatigue attacks.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Hardware key (FIDO2)</strong></td>
+                                <td>⭐⭐⭐⭐⭐</td>
+                                <td>⭐⭐⭐</td>
+                                <td>YubiKey, Google Titan. Phishing-resistant. Best security.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Biometric</strong></td>
+                                <td>⭐⭐⭐⭐</td>
+                                <td>⭐⭐⭐⭐⭐</td>
+                                <td>Fingerprint, face. Very convenient. Can't be changed if compromised.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>MFA Fatigue Attacks</h3>
+
+                <div class="info-box warning">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>The Attack</h4>
+                        <p>Attacker has stolen a password. They repeatedly trigger MFA pushes to the victim's phone—at 2 AM, 3 AM, 4 AM. Exhausted, the user approves just to make it stop. Attacker gets in.</p>
+                        <p><strong>Defenses:</strong> Number matching (user must enter code shown on screen), rate limiting, anomaly detection, user education.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="protocols">
+                <h2>Common Protocols</h2>
+
+                <h3>Authentication Protocols</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Protocol</th>
+                                <th>Use Case</th>
+                                <th>How It Works</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Kerberos</strong></td>
+                                <td>Windows/AD environments</td>
+                                <td>Ticket-based. User gets ticket from KDC, presents ticket to services.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>LDAP</strong></td>
+                                <td>Directory lookups</td>
+                                <td>Query directory for user info. Often combined with Kerberos.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>SAML</strong></td>
+                                <td>Enterprise SSO</td>
+                                <td>XML-based. IdP issues assertions. Used for web app federation.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>OAuth 2.0</strong></td>
+                                <td>API authorization</td>
+                                <td>Issues access tokens. Actually authorization, often paired with OIDC.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>OpenID Connect</strong></td>
+                                <td>Modern SSO</td>
+                                <td>Identity layer on OAuth. Returns ID token with user info.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>RADIUS</strong></td>
+                                <td>Network access</td>
+                                <td>VPN, WiFi authentication. Centralized auth for network devices.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>SAML vs OAuth vs OIDC</h3>
+
+                <p>These are commonly confused. Here's the distinction:</p>
+
+                <ul>
+                    <li><strong>SAML:</strong> Older enterprise standard. XML-based. Great for web SSO. "I am Sarah, I work in Finance, my email is <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a0d3c1d2c1c8e0c3cfcdd0c1ced98ec3cfcd">[email&#160;protected]</a>"</li>
+                    <li><strong>OAuth 2.0:</strong> Authorization framework. "This app is allowed to read Sarah's calendar." Does NOT prove who Sarah is.</li>
+                    <li><strong>OpenID Connect (OIDC):</strong> Identity layer on top of OAuth. "This is Sarah (here's proof), AND this app can read her calendar."</li>
+                </ul>
+            </section>
+
+            <section id="troubleshooting">
+                <h2>Troubleshooting Access Issues</h2>
+
+                <p>
+                    When users can't access something, systematically check authentication and authorization separately.
+                </p>
+
+                <h3>Step 1: Is It an Authentication Problem?</h3>
+
+                <p>Symptoms of authentication failure:</p>
+                <ul>
+                    <li>Login page rejects credentials</li>
+                    <li>"Invalid username or password" error</li>
+                    <li>MFA verification fails</li>
+                    <li>Session expired, forced re-login</li>
+                </ul>
+
+                <p>Troubleshooting:</p>
+                <ul>
+                    <li>Can user log into other systems with same credentials?</li>
+                    <li>Is the account locked? (Check AD)</li>
+                    <li>Is password expired?</li>
+                    <li>Is MFA device working?</li>
+                    <li>Are authentication services (AD, IdP) healthy?</li>
+                </ul>
+
+                <h3>Step 2: Is It an Authorization Problem?</h3>
+
+                <p>Symptoms of authorization failure:</p>
+                <ul>
+                    <li>User logs in successfully BUT</li>
+                    <li>Sees "Access Denied" or "Forbidden"</li>
+                    <li>Resource doesn't appear in list</li>
+                    <li>Action is greyed out or blocked</li>
+                </ul>
+
+                <p>Troubleshooting:</p>
+                <ul>
+                    <li>What role/group is the user in?</li>
+                    <li>What permissions does that role have?</li>
+                    <li>Is there an explicit deny overriding?</li>
+                    <li>Are there time-based or location-based restrictions?</li>
+                    <li>Check policy logs for the specific deny reason</li>
+                </ul>
+
+                <h3>Common Issues in PAM</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Symptom</th>
+                                <th>Likely Cause</th>
+                                <th>Solution</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Can't log into PAM portal</td>
+                                <td>AD credentials/MFA issue</td>
+                                <td>Check AD account, reset MFA if needed</td>
+                            </tr>
+                            <tr>
+                                <td>Don't see expected accounts</td>
+                                <td>Not assigned to correct safe/group</td>
+                                <td>Check safe membership, role assignment</td>
+                            </tr>
+                            <tr>
+                                <td>Can see account but can't connect</td>
+                                <td>Missing connect permission</td>
+                                <td>Check safe permissions, approval required?</td>
+                            </tr>
+                            <tr>
+                                <td>Session fails after starting</td>
+                                <td>Password out of sync, target unreachable</td>
+                                <td>Verify password, check network to target</td>
+                            </tr>
+                            <tr>
+                                <td>"Approval required" for everything</td>
+                                <td>Policy requires approval</td>
+                                <td>By design—submit request for approval</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <div class="info-box success">
+                <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <div class="info-box-content">
+                    <h4>Key Takeaways</h4>
+                    <p><strong>Authentication</strong> proves identity (WHO). <strong>Authorization</strong> grants permissions (WHAT). They always work in sequence—authenticate first, then authorize. MFA adds security layers to authentication. RBAC/ABAC are authorization models. PAM has multiple layers of both. When troubleshooting, separate the two: can they prove who they are? If yes, do they have permission?</p>
+                </div>
+            </div>
+
+            <nav class="page-nav">
+                <a href="attack-scenarios.html" class="page-nav-link prev">
+                    <span class="page-nav-label">Previous</span>
+                    <span class="page-nav-title">← Real-World Attacks</span>
+                </a>
+                <a href="data-flows.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next</span>
+                    <span class="page-nav-title">PAM Data Flows →</span>
+                </a>
+            </nav>
+        </div>
+
+        <footer class="footer">
+            <p>PAM & KMS Ultimate Guide — A comprehensive enterprise security documentation resource</p>
+        </footer>
+    </main>
+
+    <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline point

@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Access Workflow | PAM & KMS Guide</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="scroll-progress" id="scroll-progress"></div>
+
+    <header class="header">
+        <div class="header-content">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                </div>
+                PAM & KMS Guide
+            </a>
+            <nav class="header-nav">
+                <a href="pam-fundamentals.html">PAM</a>
+                <a href="kms-fundamentals.html">KMS</a>
+                <a href="vendors.html">Vendors</a>
+                <a href="implementation.html">Implementation</a>
+            </nav>
+            <div class="header-actions">
+                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button>
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-title">Getting Started</div>
+            <ul class="sidebar-nav">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="introduction.html">Introduction</a></li>
+            </ul>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-title">PAM Fundamentals</div>
+            <ul class="sidebar-nav">
+                <li><a href="pam-fundamentals.html">What is PAM?</a></li>
+                <li><a href="pam-business-case.html">Business Case</a></li>
+                <li><a href="privileged-accounts.html">Privileged Accounts</a></li>
+            </ul>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-title">PAM Architecture</div>
+            <ul class="sidebar-nav">
+                <li><a href="pam-components.html">Core Components</a></li>
+                <li><a href="pam-architecture.html">Architecture Patterns</a></li>
+            </ul>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-title">PAM Workflows</div>
+            <ul class="sidebar-nav">
+                <li><a href="user-access-workflow.html" class="active">User Access Workflow</a></li>
+                <li><a href="session-management.html">Session Management</a></li>
+                <li><a href="jit-access.html">Just-In-Time Access</a></li>
+            </ul>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-title">KMS</div>
+            <ul class="sidebar-nav">
+                <li><a href="kms-fundamentals.html">What is KMS?</a></li>
+                <li><a href="key-lifecycle.html">Key Lifecycle</a></li>
+                <li><a href="cloud-kms.html">Cloud KMS</a></li>
+            </ul>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-title">Vendors</div>
+            <ul class="sidebar-nav">
+                <li><a href="vendors.html">Vendor Overview</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <main class="main-wrapper">
+        <div class="main-content">
+            <nav class="breadcrumb">
+                <a href="../index.html">Home</a>
+                <span class="breadcrumb-separator">/</span>
+                <a href="pam-fundamentals.html">PAM</a>
+                <span class="breadcrumb-separator">/</span>
+                <span>User Access Workflow</span>
+            </nav>
+
+            <div class="page-header">
+                <h1>User Access Workflow: Step-by-Step</h1>
+                <p class="page-description">
+                    This page walks you through exactly what happens when someone needs to access a privileged system through PAM. We'll follow every step from opening the browser to session completion.
+                </p>
+            </div>
+
+            <div class="toc">
+                <div class="toc-title">On This Page</div>
+                <ul class="toc-list">
+                    <li><a href="#overview"><span class="toc-number">1.</span> Overview: The Big Picture</a></li>
+                    <li><a href="#step1"><span class="toc-number">2.</span> Step 1: User Opens PAM Portal</a></li>
+                    <li><a href="#step2"><span class="toc-number">3.</span> Step 2: Authentication (Who Are You?)</a></li>
+                    <li><a href="#step3"><span class="toc-number">4.</span> Step 3: Finding the Target System</a></li>
+                    <li><a href="#step4"><span class="toc-number">5. </span> Step 4: Requesting Access</a></li>
+                    <li><a href="#step5"><span class="toc-number">6.</span> Step 5: Approval Process</a></li>
+                    <li><a href="#step6"><span class="toc-number">7.</span> Step 6: Session Establishment</a></li>
+                    <li><a href="#step7"><span class="toc-number">8.</span> Step 7: Working in the Session</a></li>
+                    <li><a href="#step8"><span class="toc-number">9.</span> Step 8: Session Termination</a></li>
+                    <li><a href="#step9"><span class="toc-number">10.</span> Step 9: Post-Session Actions</a></li>
+                    <li><a href="#access-methods"><span class="toc-number">11.</span> Different Access Methods</a></li>
+                </ul>
+            </div>
+
+            <!-- Overview Section -->
+            <section id="overview">
+                <h2>Overview: The Big Picture</h2>
+                
+                <p>
+                    Before we dive into details, let's understand the complete flow at a high level. When a user needs privileged access through PAM, here's what happens:
+                </p>
+
+                <div class="diagram-container">
+                    <div class="diagram-title">Complete PAM Access Flow</div>
+                    <div class="architecture-flow">
+                        <div class="arch-row">
+                            <div class="arch-box">
+                                <div class="arch-box-title">👤 User</div>
+                                <div class="arch-box-subtitle">Needs access</div>
+                            </div>
+                        </div>
+                        <div class="arch-arrow">↓</div>
+                        <div class="arch-row">
+                            <div class="arch-box primary">
+                                <div class="arch-box-title">🌐 PAM Portal</div>
+                                <div class="arch-box-subtitle">Web interface</div>
+                            </div>
+                        </div>
+                        <div class="arch-arrow">↓</div>
+                        <div class="arch-row">
+                            <div class="arch-box">
+                                <div class="arch-box-title">🔐 Authentication</div>
+                                <div class="arch-box-subtitle">SSO + MFA</div>
+                            </div>
+                        </div>
+                        <div class="arch-arrow">↓</div>
+                        <div class="arch-row">
+                            <div class="arch-box">
+                                <div class="arch-box-title">📋 Request + Approval</div>
+                                <div class="arch-box-subtitle">If required</div>
+                            </div>
+                        </div>
+                        <div class="arch-arrow">↓</div>
+                        <div class="arch-row">
+                            <div class="arch-box accent">
+                                <div class="arch-box-title">🔑 Vault</div>
+                                <div class="arch-box-subtitle">Gets credential</div>
+                            </div>
+                        </div>
+                        <div class="arch-arrow">↓</div>
+                        <div class="arch-row">
+                            <div class="arch-box primary">
+                                <div class="arch-box-title">🖥️ Session Proxy</div>
+                                <div class="arch-box-subtitle">Records everything</div>
+                            </div>
+                        </div>
+                        <div class="arch-arrow">↓</div>
+                        <div class="arch-row">
+                            <div class="arch-box">
+                                <div class="arch-box-title">🎯 Target System</div>
+                                <div class="arch-box-subtitle">Server, database, etc.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Why This Matters</h4>
+                        <p>Understanding this workflow helps you: (1) Use PAM correctly as an end user, (2) Troubleshoot access issues, (3) Design PAM policies, and (4) Explain PAM to colleagues and auditors.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Step 1 -->
+            <section id="step1">
+                <h2>Step 1: User Opens PAM Portal</h2>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>What Happens</h4>
+                            <p>The user opens their web browser and navigates to the PAM portal URL (e.g., <code>https://pam.yourcompany.com</code>).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>What the User Sees</h3>
+                <p>
+                    The PAM portal is a web-based interface. It looks like a login page initially, then after authentication shows a dashboard with available systems.
+                </p>
+
+                <div class="key-points">
+                    <div class="key-points-title">Common PAM Portal Features</div>
+                    <ul>
+                        <li><strong>Search Bar:</strong> Find systems by name, IP address, or tag</li>
+                        <li><strong>Favorites:</strong> Quick access to frequently used systems</li>
+                        <li><strong>Recent Sessions:</strong> History of your past access</li>
+                        <li><strong>Request Queue:</strong> Pending access requests and their status</li>
+                        <li><strong>Categories:</strong> Systems organized by type (servers, databases, network devices)</li>
+                    </ul>
+                </div>
+
+                <h3>Behind the Scenes</h3>
+                <p>
+                    When you access the portal, the PAM system:
+                </p>
+                <ul>
+                    <li>Serves the web interface from a secure web server</li>
+                    <li>Uses HTTPS encryption for all communications</li>
+                    <li>May check if your workstation meets security requirements</li>
+                    <li>Prepares to redirect you to authentication</li>
+                </ul>
+            </section>
+
+            <!-- Step 2 -->
+            <section id="step2">
+                <h2>Step 2: Authentication (Who Are You?)</h2>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>What Happens</h4>
+                            <p>The PAM portal redirects you to your organization's identity provider (IdP) to prove who you are. This typically involves Single Sign-On (SSO) and Multi-Factor Authentication (MFA).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Authentication Flow Explained</h3>
+
+                <div class="diagram-container">
+                    <div class="diagram-title">Authentication Process</div>
+                    <div class="architecture-flow">
+                        <div class="arch-row">
+                            <div class="arch-box">
+                                <div class="arch-box-title">PAM Portal</div>
+                                <div class="arch-box-subtitle">"I need to know who you are"</div>
+                            </div>
+                        </div>
+                        <div class="arch-arrow">↓ Redirects to</div>
+                        <div class="arch-row">
+                            <div class="arch-box primary">
+                                <div class="arch-box-title">Identity Provider</div>
+                                <div class="arch-box-subtitle">Azure AD, Okta, Ping, etc.</div>
+                            </div>
+                        </div>
+                        <div class="arch-arrow">↓ User provides</div>
+                        <div class="arch-row">
+                            <div class="arch-box">
+                                <div class="arch-box-title">Username + Password</div>
+                                <div class="arch-box-subtitle">Something you know</div>
+                            </div>
+                            <div class="arch-box accent">
+                                <div class="arch-box-title">MFA</div>
+                                <div class="arch-box-subtitle">Something you have/are</div>
+                            </div>
+                        </div>
+                        <div class="arch-arrow">↓ IdP confirms</div>
+                        <div class="arch-row">
+                            <div class="arch-box">
+                                <div class="arch-box-title">PAM Portal</div>
+                                <div class="arch-box-subtitle">"User is Sarah from IT"</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Types of Multi-Factor Authentication</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>MFA Type</th>
+                                <th>How It Works</th>
+                                <th>Security Level</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Push Notification</strong></td>
+                                <td>Approve a prompt on your phone (Microsoft Authenticator, Duo)</td>
+                                <td>High</td>
+                            </tr>
+                            <tr>
+                                <td><strong>TOTP Code</strong></td>
+                                <td>Enter a 6-digit code from an authenticator app</td>
+                                <td>High</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Hardware Token</strong></td>
+                                <td>Insert/tap a physical key (YubiKey)</td>
+                                <td>Very High</td>
+                            </tr>
+                            <tr>
+                                <td><strong>SMS Code</strong></td>
+                                <td>Enter a code texted to your phone</td>
+                                <td>Medium (not recommended)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Biometric</strong></td>
+                                <td>Fingerprint or face recognition</td>
+                                <td>High</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="info-box warning">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Why MFA is Critical for PAM</h4>
+                        <p>Privileged access is so sensitive that MFA is mandatory. Even if an attacker steals your password, they can't access PAM without the second factor. Many organizations require stronger MFA (hardware tokens) for accessing the most critical systems.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Step 3 -->
+            <section id="step3">
+                <h2>Step 3: Finding the Target System</h2>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>What Happens</h4>
+                            <p>After authentication, the PAM portal shows you a list of systems you're authorized to access. You search for or browse to find the system you need.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>What You Can See</h3>
+                <p>
+                    The PAM portal only shows you systems your role is allowed to access. A database administrator sees database servers; a network engineer sees routers and switches. This is called <strong>role-based access control (RBAC)</strong>.
+                </p>
+
+                <h3>Information Displayed for Each System</h3>
+
+                <div class="key-points">
+                    <div class="key-points-title">Typical System Information</div>
+                    <ul>
+                        <li><strong>System Name:</strong> Hostname or friendly name (e.g., "PROD-DB-01")</li>
+                        <li><strong>IP Address:</strong> Network address of the system</li>
+                        <li><strong>Platform:</strong> Windows, Linux, database type, etc.</li>
+                        <li><strong>Account Options:</strong> Which privileged accounts you can use (admin, root, sa)</li>
+                        <li><strong>Connection Type:</strong> RDP, SSH, database client, web</li>
+                        <li><strong>Environment:</strong> Production, staging, development</li>
+                        <li><strong>Approval Required:</strong> Whether you need approval to access</li>
+                    </ul>
+                </div>
+
+                <h3>Search and Filter Options</h3>
+                <p>
+                    Most PAM portals let you:
+                </p>
+                <ul>
+                    <li>Search by name, IP, or keyword</li>
+                    <li>Filter by platform (Windows, Linux, Network)</li>
+                    <li>Filter by environment (Production, Non-Production)</li>
+                    <li>Filter by location or data center</li>
+                    <li>Save favorites for quick access</li>
+                </ul>
+            </section>
+
+            <!-- Step 4 -->
+            <section id="step4">
+                <h2>Step 4: Requesting Access</h2>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>What Happens</h4>
+                            <p>You click on the target system and select the type of access you need. You may need to provide a reason or ticket number for the access.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Types of Access Requests</h3>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                        </div>
+                        <div class="feature-title">Interactive Session</div>
+                        <p class="feature-description">Connect directly to the system (RDP, SSH) to perform work interactively. Most common for administrators.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
+                        </div>
+                        <div class="feature-title">Show Password</div>
+                        <p class="feature-description">Reveal the password so you can use it in a native client. Used when PAM session proxy isn't supported.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                        </div>
+                        <div class="feature-title">Copy Password</div>
+                        <p class="feature-description">Copy credential to clipboard for pasting into an application. Clipboard is typically cleared after a short time.</p>
+                    </div>
+                </div>
+
+                <h3>Information Required for Access Request</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Field</th>
+                                <th>Description</th>
+                                <th>Required?</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Target System</strong></td>
+                                <td>The server/device you want to access</td>
+                                <td>Always</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Account</strong></td>
+                                <td>Which privileged account to use (e.g., Administrator, root)</td>
+                                <td>Always</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Connection Type</strong></td>
+                                <td>How you want to connect (RDP, SSH, etc.)</td>
+                                <td>Usually</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Ticket Number</strong></td>
+                                <td>Reference to change/incident ticket (e.g., INC-12345)</td>
+                                <td>Often</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Business Reason</strong></td>
+                                <td>Why you need access (free text)</td>
+                                <td>Often</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Duration</strong></td>
+                                <td>How long you need access (e.g., 4 hours)</td>
+                                <td>Sometimes</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Why Request Justification Matters</h4>
+                        <p>Requiring a ticket number and reason creates accountability. It links privileged access to authorized work, making it easy to audit later. If an incident occurs, investigators can see exactly why access was granted.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Step 5 -->
+            <section id="step5">
+                <h2>Step 5: Approval Process</h2>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>What Happens</h4>
+                            <p>Depending on the system's sensitivity and your role, your request may be auto-approved or may require one or more approvers to review and approve it.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Approval Scenarios</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Scenario</th>
+                                <th>Approval Type</th>
+                                <th>Example</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Low-Risk Access</strong></td>
+                                <td>Auto-Approved</td>
+                                <td>Developer accessing dev server during business hours</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Normal Access</strong></td>
+                                <td>Manager Approval</td>
+                                <td>Admin accessing production server with ticket</td>
+                            </tr>
+                            <tr>
+                                <td><strong>High-Risk Access</strong></td>
+                                <td>Multiple Approvers</td>
+                                <td>Accessing financial database requires manager + security</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Emergency Access</strong></td>
+                                <td>Break-Glass (post-audit)</td>
+                                <td>Critical outage requiring immediate access</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Approval Workflow Steps</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">A</div>
+                        <div class="step-content">
+                            <h4>Request Submitted</h4>
+                            <p>Your request enters the approval queue with all the information you provided.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">B</div>
+                        <div class="step-content">
+                            <h4>Approver Notified</h4>
+                            <p>Approver(s) receive email/notification with request details. They can approve from email or the PAM portal.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">C</div>
+                        <div class="step-content">
+                            <h4>Review and Decision</h4>
+                            <p>Approver reviews the reason, ticket, and context. They approve, reject, or request more information.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">D</div>
+                        <div class="step-content">
+                            <h4>You're Notified</h4>
+                            <p>You receive notification that access was approved or denied. If approved, you can now connect.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-box success">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    <div class="info-box-content">
+                        <h4>Time-Bound Approvals</h4>
+                        <p>Approvals typically have an expiration. If you request 4 hours of access, you have 4 hours from approval to use it. After that, you'd need to request again. This prevents "stale" approvals from being used days later.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Step 6 -->
+            <section id="step6">
+                <h2>Step 6: Session Establishment</h2>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <h4>What Happens</h4>
+                            <p>Once approved, you click "Connect" and PAM establishes a secure session to the target system. The credentials are retrieved from the vault and injected without you seeing them.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Technical Flow of Session Establishment</h3>
+
+                <div class="diagram-container">
+                    <div class="diagram-title">Session Establishment Process</div>
+                    <div class="architecture-flow">
+                        <div class="arch-row">
+                            <div class="arch-box">
+                                <div class="arch-box-title">1. You Click "Connect"</div>
+                            </div>
+                        </div>
+                        <div class="arch-arrow">↓</div>
+                        <div class="arch-row">
+                            <div class="arch-box primary">
+                                <div class="arch-box-title">2. PAM Retrieves Credential</div>
+                                <div class="arch-box-subtitle">From encrypted vault</div>
+                            </div>
+                        </div>
+                        <div class="arch-arrow">↓</div>
+                        <div class="arch-row">
+                            <div class="arch-box accent">
+                                <div class="arch-box-title">3. Session Proxy Starts</div>
+                                <div class="arch-box-subtitle">Recording begins</div>
+                            </div>
+                        </div>
+                        <div class="arch-arrow">↓</div>
+                        <div class="arch-row">
+                            <div class="arch-box">
+                                <div class="arch-box-title">4. Proxy Connects to Target</div>
+                                <div class="arch-box-subtitle">Using retrieved credential</div>
+                            </div>
+                        </div>
+                        <div class="arch-arrow">↓</div>
+                        <div class="arch-row">
+                            <div class="arch-box primary">
+                                <div class="arch-box-title">5. Session Window Opens</div>
+                                <div class="arch-box-subtitle">In your browser or client</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Connection Methods</h3>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                        </div>
+                        <div class="feature-title">Browser-Based (HTML5)</div>
+                        <p class="feature-description">Session runs in your web browser. Most secure option—nothing installed locally, all traffic through PAM.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                        </div>
+                        <div class="feature-title">Native Client</div>
+                        <p class="feature-description">PAM launches your local RDP/SSH client with credentials. Better performance but requires agent installation.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+                        </div>
+                        <div class="feature-title">Transparent Proxy</div>
+                        <p class="feature-description">Connect normally but traffic routes through PAM. Users may not even realize PAM is involved.</p>
+                    </div>
+                </div>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>You Never See the Password</h4>
+                        <p>In a properly configured PAM session, you never see or handle the actual privileged credential. PAM retrieves it from the vault and injects it directly into the connection. This means even if your workstation is compromised, the attacker doesn't capture the privileged password.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Step 7 -->
+            <section id="step7">
+                <h2>Step 7: Working in the Session</h2>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">7</div>
+                        <div class="step-content">
+                            <h4>What Happens</h4>
+                            <p>You're now connected to the target system with full administrative access. You perform your work while PAM records everything you do.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>What Gets Recorded</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Recording Type</th>
+                                <th>What It Captures</th>
+                                <th>Use Case</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Video Recording</strong></td>
+                                <td>Screen capture like a video, can be played back</td>
+                                <td>See exactly what the user saw and did</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Keystroke Logging</strong></td>
+                                <td>Every key pressed, searchable text</td>
+                                <td>Find specific commands or actions</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Command Capture</strong></td>
+                                <td>SSH commands and output</td>
+                                <td>Audit exactly what commands ran</td>
+                            </tr>
+                            <tr>
+                                <td><strong>File Transfer Log</strong></td>
+                                <td>Files uploaded or downloaded</td>
+                                <td>Detect data exfiltration</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Window Titles</strong></td>
+                                <td>Names of applications/windows opened</td>
+                                <td>Quick overview of activity</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Session Controls and Restrictions</h3>
+
+                <p>
+                    PAM can enforce policies during your session:
+                </p>
+
+                <ul>
+                    <li><strong>Command Restrictions:</strong> Block dangerous commands (e.g., <code>rm -rf /</code>)</li>
+                    <li><strong>Application Whitelisting:</strong> Only allow specific applications</li>
+                    <li><strong>File Transfer Limits:</strong> Block or limit uploads/downloads</li>
+                    <li><strong>Clipboard Control:</strong> Prevent copy/paste from session</li>
+                    <li><strong>Time Limits:</strong> Auto-disconnect after maximum session time</li>
+                    <li><strong>Idle Timeout:</strong> Disconnect after period of inactivity</li>
+                </ul>
+
+                <h3>Live Monitoring</h3>
+
+                <p>
+                    For high-risk sessions, security team members can:
+                </p>
+
+                <ul>
+                    <li>Watch the session in real-time</li>
+                    <li>Receive alerts on suspicious commands</li>
+                    <li>Send messages to the user</li>
+                    <li>Forcibly terminate the session if needed</li>
+                </ul>
+
+                <div class="info-box warning">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Assume You're Being Watched</h4>
+                        <p>When using PAM, always assume your session is being recorded and could be reviewed. This isn't about distrust—it's about accountability. Only do things you'd be comfortable explaining to an auditor or your manager.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Step 8 -->
+            <section id="step8">
+                <h2>Step 8: Session Termination</h2>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">8</div>
+                        <div class="step-content">
+                            <h4>What Happens</h4>
+                            <p>When you're done, you close the session (log out or close the window). PAM detects the session has ended and completes the recording.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Ways a Session Can End</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Termination Type</th>
+                                <th>How It Happens</th>
+                                <th>Recording Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Normal Logout</strong></td>
+                                <td>User logs out properly</td>
+                                <td>Complete recording saved</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Window Close</strong></td>
+                                <td>User closes browser/client window</td>
+                                <td>Complete recording saved</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Idle Timeout</strong></td>
+                                <td>No activity for X minutes</td>
+                                <td>Complete recording saved</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Time Limit Reached</strong></td>
+                                <td>Maximum session duration exceeded</td>
+                                <td>Complete recording saved</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Admin Termination</strong></td>
+                                <td>Security team ends session manually</td>
+                                <td>Recording notes forced termination</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Network Failure</strong></td>
+                                <td>Connection lost unexpectedly</td>
+                                <td>Recording up to disconnect point</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Step 9 -->
+            <section id="step9">
+                <h2>Step 9: Post-Session Actions</h2>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">9</div>
+                        <div class="step-content">
+                            <h4>What Happens</h4>
+                            <p>After your session ends, PAM performs automatic housekeeping: rotating the password, indexing the recording, and updating audit logs.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Automatic Password Rotation</h3>
+
+                <div class="diagram-container">
+                    <div class="diagram-title">Password Rotation After Session</div>
+                    <div class="architecture-flow">
+                        <div class="arch-row">
+                            <div class="arch-box">
+                                <div class="arch-box-title">Session Ends</div>
+                            </div>
+                        </div>
+                        <div class="arch-arrow">↓</div>
+                        <div class="arch-row">
+                            <div class="arch-box primary">
+                                <div class="arch-box-title">PAM Generates New Password</div>
+                                <div class="arch-box-subtitle">Random, complex, unique</div>
+                            </div>
+                        </div>
+                        <div class="arch-arrow">↓</div>
+                        <div class="arch-row">
+                            <div class="arch-box accent">
+                                <div class="arch-box-title">PAM Changes Password on Target</div>
+                                <div class="arch-box-subtitle">Connects and updates</div>
+                            </div>
+                        </div>
+                        <div class="arch-arrow">↓</div>
+                        <div class="arch-row">
+                            <div class="arch-box">
+                                <div class="arch-box-title">New Password Stored in Vault</div>
+                                <div class="arch-box-subtitle">Old password now useless</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Why This Matters</h3>
+
+                <p>
+                    Automatic rotation after use means:
+                </p>
+
+                <ul>
+                    <li><strong>Intercepted Credentials Are Useless:</strong> If an attacker captured the password during your session, it's already changed</li>
+                    <li><strong>No Credential Sharing:</strong> Even if you wanted to share the password, you don't know it</li>
+                    <li><strong>Reduced Attack Window:</strong> Credentials are valid only for the session duration</li>
+                    <li><strong>Compliance Satisfied:</strong> Meets requirements for regular password changes</li>
+                </ul>
+
+                <h3>Recording Storage and Retention</h3>
+
+                <p>
+                    Session recordings are stored for audit and compliance purposes:
+                </p>
+
+                <ul>
+                    <li><strong>Typical Retention:</strong> 1-7 years depending on compliance requirements</li>
+                    <li><strong>Storage:</strong> Encrypted and tamper-proof</li>
+                    <li><strong>Indexing:</strong> Searchable by user, date, system, and commands</li>
+                    <li><strong>Access Control:</strong> Only authorized reviewers can watch recordings</li>
+                </ul>
+            </section>
+
+            <!-- Different Access Methods -->
+            <section id="access-methods">
+                <h2>Different Access Methods</h2>
+
+                <p>
+                    Not all access goes through interactive sessions. Here are the different ways credentials can be accessed through PAM:
+                </p>
+
+                <h3>1. Interactive Session (What We Covered)</h3>
+                <p>User connects through PAM portal, session is brokered and recorded.</p>
+
+                <h3>2. Show Password / Copy Password</h3>
+                <p>
+                    Sometimes you need the actual password (e.g., for an application that can't go through PAM proxy). In this case:
+                </p>
+                <ul>
+                    <li>You request access and get approval</li>
+                    <li>PAM displays the password on screen or copies to clipboard</li>
+                    <li>Password is automatically rotated after a short time</li>
+                    <li>This is logged but there's no session recording</li>
+                </ul>
+
+                <h3>3. API/Application Access</h3>
+                <p>
+                    Applications can retrieve credentials programmatically:
+                </p>
+                <ul>
+                    <li>Application authenticates to PAM via API</li>
+                    <li>PAM validates the application identity</li>
+                    <li>Credential is returned securely</li>
+                    <li>Application uses credential to connect to target</li>
+                </ul>
+
+                <h3>4. SSH Key Checkout</h3>
+                <p>
+                    For systems using SSH key authentication:
+                </p>
+                <ul>
+                    <li>PAM stores SSH private keys in the vault</li>
+                    <li>User requests SSH session</li>
+                    <li>PAM uses the private key to establish connection</li>
+                    <li>User never sees the private key material</li>
+                </ul>
+
+                <div class="info-box success">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    <div class="info-box-content">
+                        <h4>You've Mastered the PAM Access Workflow!</h4>
+                        <p>You now understand the complete journey from opening a browser to session completion. This knowledge helps you use PAM effectively, troubleshoot issues, and explain the process to others.</p>
+                    </div>
+                </div>
+            </section>
+
+            <nav class="page-nav">
+                <a href="pam-components.html" class="page-nav-link prev">
+                    <span class="page-nav-label">Previous</span>
+                    <span class="page-nav-title">← PAM Components</span>
+                </a>
+                <a href="session-management.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next</span>
+                    <span class="page-nav-title">Session Management →</span>
+                </a>
+            </nav>
+        </div>
+
+        <footer class="footer">
+            <p>PAM & KMS Ultimate Guide — A comprehensive enterprise security documentation resource</p>
+        </footer>
+    </main>
+
+    <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"></polyline></svg>
+    </button>
+
+    <script src="../js/main.js"></script>
+</body>
+</html>

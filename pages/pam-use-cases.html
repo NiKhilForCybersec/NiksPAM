@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PAM Use Cases - Real-world scenarios showing how organizations use Privileged Access Management">
+    <title>PAM Use Cases | PAM & KMS Guide</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="scroll-progress" id="scroll-progress"></div>
+
+    <header class="header">
+        <div class="header-content">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                PAM & KMS Guide
+            </a>
+            
+            <nav class="header-nav">
+                <a href="pam-fundamentals.html" class="active">PAM</a>
+                <a href="kms-fundamentals.html">KMS</a>
+                <a href="vendors.html">Vendors</a>
+                <a href="implementation.html">Implementation</a>
+            </nav>
+            
+            <div class="header-actions">
+                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-title">Getting Started</div>
+            <ul class="sidebar-nav">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="introduction.html">Introduction</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">PAM Topics</div>
+            <ul class="sidebar-nav">
+                <li><a href="pam-fundamentals.html">PAM Fundamentals</a></li>
+                <li><a href="pam-use-cases.html" class="active">PAM Use Cases</a></li>
+                <li><a href="how-pam-works.html">How PAM Actually Works</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <main class="main-wrapper">
+        <div class="main-content">
+            <nav class="breadcrumb">
+                <a href="../index.html">Home</a>
+                <span class="breadcrumb-separator">/</span>
+                <a href="pam-fundamentals.html">PAM</a>
+                <span class="breadcrumb-separator">/</span>
+                <span>PAM Use Cases</span>
+            </nav>
+
+            <div class="page-header">
+                <h1>PAM Use Cases</h1>
+                <p class="page-description">
+                    Real-world scenarios showing how organizations actually use PAM. Each use case explains the problem, how PAM solves it, and what to consider during implementation.
+                </p>
+            </div>
+
+            <div class="toc">
+                <div class="toc-title">On This Page</div>
+                <ul class="toc-list">
+                    <li><a href="#windows-admin"><span class="toc-number">1.</span> Windows Server Administration</a></li>
+                    <li><a href="#database-access"><span class="toc-number">2.</span> Database Administrator Access</a></li>
+                    <li><a href="#vendor-access"><span class="toc-number">3.</span> Third-Party Vendor Access</a></li>
+                    <li><a href="#cloud-console"><span class="toc-number">4.</span> Cloud Console Access</a></li>
+                    <li><a href="#devops"><span class="toc-number">5.</span> DevOps & CI/CD Pipelines</a></li>
+                    <li><a href="#network-devices"><span class="toc-number">6.</span> Network Device Management</a></li>
+                    <li><a href="#service-accounts"><span class="toc-number">7.</span> Service Account Management</a></li>
+                    <li><a href="#emergency-access"><span class="toc-number">8.</span> Emergency Break-Glass Access</a></li>
+                </ul>
+            </div>
+
+            <section id="windows-admin">
+                <h2>Use Case 1: Windows Server Administration</h2>
+                
+                <h3>The Scenario</h3>
+                <p>
+                    Your company has 500 Windows servers across multiple data centers. Twenty IT staff need administrative access for patching, troubleshooting, and configuration. Currently, everyone knows the local Administrator password (which is the same on all servers), and people RDP directly to servers using their personal privileged accounts.
+                </p>
+
+                <h3>The Problems</h3>
+                <ul>
+                    <li>Same password on all 500 servers—one compromised means all compromised</li>
+                    <li>No record of who did what on which server</li>
+                    <li>When someone leaves, password might not be changed</li>
+                    <li>Credentials cached on admin workstations (Mimikatz risk)</li>
+                    <li>No visibility into admin activity</li>
+                </ul>
+
+                <h3>PAM Solution</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Onboard All Local Admin Accounts</h4>
+                            <p>PAM discovers and takes ownership of the local Administrator account on each server. Each server gets a unique, randomly generated 25-character password.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Configure Session Proxy</h4>
+                            <p>Admins connect through PAM's RDP proxy. They never see or type the local admin password. PAM injects credentials automatically.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Enable Session Recording</h4>
+                            <p>Every RDP session is recorded. You can see exactly what each admin did—every click, every command.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Set Rotation Policy</h4>
+                            <p>Passwords rotate daily or after each use. Even if someone somehow captures a password, it's invalid within hours.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Results</h3>
+                <ul>
+                    <li><strong>Lateral movement blocked:</strong> Compromise of one server doesn't spread</li>
+                    <li><strong>Complete audit trail:</strong> Every session recorded and searchable</li>
+                    <li><strong>Credentials protected:</strong> Never on admin workstations</li>
+                    <li><strong>Offboarding simplified:</strong> Disable PAM access; credentials already rotated</li>
+                </ul>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Implementation Tip</h4>
+                        <p>Start with a pilot group of non-critical servers. Let admins adjust to the new workflow before rolling out to production. The biggest challenge is often cultural—admins are used to knowing passwords.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="database-access">
+                <h2>Use Case 2: Database Administrator Access</h2>
+                
+                <h3>The Scenario</h3>
+                <p>
+                    You have 50 production databases (Oracle, SQL Server, PostgreSQL) containing customer data, financial records, and PII. Six DBAs need access for maintenance, performance tuning, and troubleshooting. Compliance requires you to prove who accessed what data and when.
+                </p>
+
+                <h3>The Problems</h3>
+                <ul>
+                    <li>DBAs know all database passwords (sa, sys, postgres)</li>
+                    <li>No way to know which queries a DBA ran</li>
+                    <li>Compliance auditors ask "who accessed customer data?" and you can't answer</li>
+                    <li>DBAs can access any data, anytime, with no oversight</li>
+                    <li>Shared credentials mean no accountability</li>
+                </ul>
+
+                <h3>PAM Solution</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Vault Database Credentials</h4>
+                            <p>All privileged database accounts (sa, sys, oracle, etc.) are onboarded to PAM. Unique, complex passwords are set and rotated.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Deploy Database Session Proxy</h4>
+                            <p>DBAs connect through PAM's database proxy. PAM supports native database clients (SQL Developer, SSMS) through the proxy.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Enable SQL Recording</h4>
+                            <p>Every SQL statement is captured. You can see exactly which tables were queried, what data was selected, what was modified.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Set Access Policies</h4>
+                            <p>Production database access requires manager approval. Sessions limited to 4-hour windows. Automatic disconnect after idle timeout.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Advanced: SQL Command Filtering</h3>
+                <p>Some PAM solutions can filter SQL commands in real-time:</p>
+                <ul>
+                    <li><strong>Block:</strong> <code>DROP TABLE</code>, <code>TRUNCATE</code>, <code>DELETE FROM ... WHERE 1=1</code></li>
+                    <li><strong>Alert:</strong> <code>SELECT * FROM customers</code> (bulk data access)</li>
+                    <li><strong>Allow:</strong> Normal maintenance commands</li>
+                </ul>
+
+                <h3>Results</h3>
+                <ul>
+                    <li><strong>Full query audit:</strong> Every SQL statement logged with DBA identity</li>
+                    <li><strong>Compliance ready:</strong> "Show me all queries against customer table in Q4" is now possible</li>
+                    <li><strong>Dangerous commands blocked:</strong> Accidental or malicious bulk deletes prevented</li>
+                    <li><strong>Data access visibility:</strong> Know exactly who accessed what data</li>
+                </ul>
+            </section>
+
+            <section id="vendor-access">
+                <h2>Use Case 3: Third-Party Vendor Access</h2>
+                
+                <h3>The Scenario</h3>
+                <p>
+                    You use a third-party vendor to manage your SAP system. Their consultants need occasional administrative access for upgrades, patches, and troubleshooting. You also have managed service providers who handle your network devices and an external security firm for penetration testing.
+                </p>
+
+                <h3>The Problems</h3>
+                <ul>
+                    <li>Vendors have VPN access 24/7 even though they rarely need it</li>
+                    <li>You gave them credentials that haven't been changed in years</li>
+                    <li>No visibility into what vendors do on your systems</li>
+                    <li>If the vendor is breached, attackers can use their access to your systems</li>
+                    <li>Audit asks "who accessed SAP?" and you have to say "someone at the vendor, we don't know who"</li>
+                </ul>
+
+                <h3>PAM Solution</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Individual Vendor Accounts</h4>
+                            <p>Each vendor consultant gets their own PAM account (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="23494c4b4d0d504e4a574b6355464d474c510d404c4e">[email&#160;protected]</a>). No shared "vendor" accounts. You know exactly who is accessing your systems.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Just-in-Time Access</h4>
+                            <p>Vendors have no standing access. They must request access for each engagement. Request includes: what system, why, how long needed.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Approval Workflow</h4>
+                            <p>Your internal team (system owner) approves each request. You can see who from the vendor is requesting and why before granting access.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Session Recording + Time Limits</h4>
+                            <p>All vendor sessions are recorded. Access automatically expires after the approved window (e.g., 4 hours, 1 day). No VPN needed—vendors access through PAM's web portal.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Results</h3>
+                <ul>
+                    <li><strong>Zero standing privilege:</strong> Vendors have no access until approved</li>
+                    <li><strong>Individual accountability:</strong> Know exactly which person did what</li>
+                    <li><strong>No VPN exposure:</strong> PAM provides secure access without network-level VPN</li>
+                    <li><strong>Automatic expiration:</strong> Access removed when work is done</li>
+                    <li><strong>Supply chain protection:</strong> If vendor is breached, attackers find no standing access</li>
+                </ul>
+
+                <div class="info-box warning">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Watch For This</h4>
+                        <p>Some vendors will push back on individual accounts and session recording. They may claim confidentiality concerns or "proprietary processes." Stand firm—this is your system, your data, your risk. Professional vendors understand and accept these requirements.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="cloud-console">
+                <h2>Use Case 4: Cloud Console Access</h2>
+                
+                <h3>The Scenario</h3>
+                <p>
+                    Your organization uses AWS, Azure, and GCP. Cloud admins access the consoles daily to manage infrastructure. Some developers also need console access for specific tasks. The AWS root account credentials are in a shared document.
+                </p>
+
+                <h3>The Problems</h3>
+                <ul>
+                    <li>Root/Global Admin accounts are the "keys to the kingdom"</li>
+                    <li>If cloud console credentials are phished, attackers get everything</li>
+                    <li>Hard to track who did what in cloud consoles</li>
+                    <li>Developers may have more access than needed</li>
+                    <li>No session recording for cloud web consoles</li>
+                </ul>
+
+                <h3>PAM Solution</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Federated Access Through PAM</h4>
+                            <p>Users authenticate to PAM, then PAM provides federated access to cloud consoles. No direct cloud passwords—PAM handles authentication via SAML/OIDC.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Root Account Protection</h4>
+                            <p>Cloud root/Global Admin credentials are vaulted in PAM. Access requires dual approval. Credentials rotate after use. MFA hardware token is physically secured.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Role-Based Cloud Access</h4>
+                            <p>PAM assigns users to appropriate cloud roles via federation. Developers get Developer role (limited). Admins get specific admin roles. Nobody gets Global Admin for day-to-day work.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>JIT Elevation for High-Privilege</h4>
+                            <p>Need Global Admin? Request through PAM. Temporary elevation approved, used, then automatically removed. Session is recorded.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Cloud Console Session Recording</h3>
+                <p>For cloud web consoles, PAM can:</p>
+                <ul>
+                    <li>Record the browser session (video of what the user sees)</li>
+                    <li>Capture clicks and actions</li>
+                    <li>Integrate with cloud audit logs for complete picture</li>
+                </ul>
+
+                <h3>Results</h3>
+                <ul>
+                    <li><strong>No direct cloud passwords:</strong> Users authenticate through PAM; no passwords to phish</li>
+                    <li><strong>Root accounts protected:</strong> Require multiple approvers, dual control</li>
+                    <li><strong>Least privilege:</strong> Users get exactly the cloud role they need</li>
+                    <li><strong>Session visibility:</strong> Know what happened in cloud console sessions</li>
+                </ul>
+            </section>
+
+            <section id="devops">
+                <h2>Use Case 5: DevOps & CI/CD Pipelines</h2>
+                
+                <h3>The Scenario</h3>
+                <p>
+                    Your development team uses Jenkins for CI/CD, deploys to Kubernetes, and stores code in GitHub. Pipelines need credentials to access databases, cloud APIs, and artifact repositories. Currently, secrets are stored in Jenkins credential manager, environment variables, and config files.
+                </p>
+
+                <h3>The Problems</h3>
+                <ul>
+                    <li>Secrets scattered across multiple places</li>
+                    <li>Jenkins credentials aren't rotated</li>
+                    <li>Developers can see production credentials</li>
+                    <li>If Jenkins is compromised, all secrets are exposed</li>
+                    <li>No audit trail of which pipeline used which credential</li>
+                </ul>
+
+                <h3>PAM/Secrets Management Solution</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Centralize Secrets in Vault</h4>
+                            <p>All secrets moved to a secrets manager (HashiCorp Vault, CyberArk Conjur, AWS Secrets Manager). Jenkins/pipelines retrieve secrets at runtime via API.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Pipeline Authentication</h4>
+                            <p>Each pipeline authenticates to secrets manager using its own identity (service account, IAM role). Pipeline identity determines which secrets it can access.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Dynamic Secrets</h4>
+                            <p>Instead of static database credentials, secrets manager generates temporary credentials for each pipeline run. Credentials expire after the pipeline completes.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Separation of Environments</h4>
+                            <p>Development pipelines can only access dev secrets. Production pipelines access prod secrets. Developers can't retrieve production credentials.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Example: Jenkins Pipeline with Vault</h3>
+                <p>Instead of:</p>
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto;">
+# BAD: Hardcoded in Jenkinsfile
+DB_PASSWORD = "SuperSecret123"
+                </pre>
+
+                <p>The pipeline does:</p>
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto;">
+# GOOD: Retrieved at runtime
+DB_PASSWORD = vault.read("secret/prod/database").password
+# Password exists only in memory during pipeline execution
+                </pre>
+
+                <h3>Results</h3>
+                <ul>
+                    <li><strong>No secrets in code:</strong> Nothing sensitive in repos or config files</li>
+                    <li><strong>Automatic rotation:</strong> Dynamic secrets are always fresh</li>
+                    <li><strong>Environment separation:</strong> Dev can't accidentally use prod credentials</li>
+                    <li><strong>Audit trail:</strong> Know which pipeline accessed which secret, when</li>
+                    <li><strong>Breach containment:</strong> If Jenkins is compromised, attacker finds no stored secrets</li>
+                </ul>
+            </section>
+
+            <section id="network-devices">
+                <h2>Use Case 6: Network Device Management</h2>
+                
+                <h3>The Scenario</h3>
+                <p>
+                    You have 200 network devices: Cisco routers and switches, Palo Alto firewalls, F5 load balancers. Network engineers need CLI access for configuration changes. Currently, everyone knows the enable password (which is the same on most devices).
+                </p>
+
+                <h3>The Problems</h3>
+                <ul>
+                    <li>Shared enable passwords across many devices</li>
+                    <li>No record of what commands were executed</li>
+                    <li>Passwords rarely changed (device reboots needed for some changes)</li>
+                    <li>Some devices still use Telnet (credentials in plaintext)</li>
+                    <li>TACACS/RADIUS helps but doesn't provide session recording</li>
+                </ul>
+
+                <h3>PAM Solution</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Vault All Device Credentials</h4>
+                            <p>Enable passwords, admin accounts, and SSH keys for all network devices are onboarded to PAM. Unique passwords per device.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>SSH/Telnet Proxy</h4>
+                            <p>Engineers connect through PAM's terminal proxy. PAM handles SSH/Telnet connection to the device. Engineers never see the actual device password.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Command Recording</h4>
+                            <p>Every command is captured. You can see exactly what configuration changes were made, by whom, when.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Command Filtering (Optional)</h4>
+                            <p>Block dangerous commands in real-time: <code>write erase</code>, <code>reload</code>, <code>format</code>. Alert on sensitive commands.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Handling Legacy Protocols</h3>
+                <p>For devices that only support Telnet (credentials in plaintext):</p>
+                <ul>
+                    <li>PAM proxies the Telnet connection</li>
+                    <li>Telnet only happens on the secure PAM-to-device segment</li>
+                    <li>User connects to PAM via SSH (encrypted)</li>
+                    <li>Plaintext credentials never cross untrusted networks</li>
+                </ul>
+
+                <h3>Results</h3>
+                <ul>
+                    <li><strong>Individual accountability:</strong> Know exactly who made each change</li>
+                    <li><strong>Change tracking:</strong> Every command logged and searchable</li>
+                    <li><strong>Credential protection:</strong> Engineers don't know device passwords</li>
+                    <li><strong>Legacy protection:</strong> Even Telnet devices are accessible securely</li>
+                </ul>
+            </section>
+
+            <section id="service-accounts">
+                <h2>Use Case 7: Service Account Management</h2>
+                
+                <h3>The Scenario</h3>
+                <p>
+                    Your environment has 300+ service accounts running Windows services, scheduled tasks, and application pools. Nobody knows exactly which service accounts exist, what they're used for, or when their passwords were last changed. Some service accounts are members of Domain Admins "because it was easier."
+                </p>
+
+                <h3>The Problems</h3>
+                <ul>
+                    <li>No inventory of service accounts</li>
+                    <li>Many are over-privileged (Domain Admin for a backup job?)</li>
+                    <li>Passwords never changed (fear of breaking things)</li>
+                    <li>No ownership—the person who created it left years ago</li>
+                    <li>Attackers target service accounts (Kerberoasting)</li>
+                </ul>
+
+                <h3>PAM Solution</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Discovery</h4>
+                            <p>PAM scans Active Directory and local systems to find all service accounts. Build inventory: account name, what it's running, where it's used, group memberships.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Assign Ownership</h4>
+                            <p>Each service account is assigned an owner (application team, system owner). Owner is responsible for the account and must justify its permissions.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Right-Size Permissions</h4>
+                            <p>Review and reduce permissions. That backup service account doesn't need Domain Admin—it needs backup operator rights on specific servers.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Onboard to PAM</h4>
+                            <p>Service account passwords are vaulted. PAM sets complex random passwords. Applications retrieve credentials from PAM via API (or PAM coordinates rotation with the service).</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Automated Rotation</h4>
+                            <p>Passwords rotate on schedule (30-90 days). PAM coordinates: update password in AD → update service configuration → restart service → verify running.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>The Rotation Challenge</h3>
+                <p>Service account rotation is tricky because you must update the password everywhere it's used:</p>
+                <ul>
+                    <li>Active Directory (the account itself)</li>
+                    <li>Windows Service configuration</li>
+                    <li>Scheduled Task configuration</li>
+                    <li>IIS Application Pool</li>
+                    <li>Application config files</li>
+                </ul>
+
+                <p>PAM solutions handle this through:</p>
+                <ul>
+                    <li><strong>Service mapping:</strong> Know everywhere the account is used</li>
+                    <li><strong>Coordinated rotation:</strong> Update all locations in sequence</li>
+                    <li><strong>Verification:</strong> Confirm services restart successfully</li>
+                    <li><strong>Rollback:</strong> If something fails, restore previous password</li>
+                </ul>
+
+                <h3>Results</h3>
+                <ul>
+                    <li><strong>Complete inventory:</strong> Know every service account and its purpose</li>
+                    <li><strong>Least privilege:</strong> Accounts have only necessary permissions</li>
+                    <li><strong>Regular rotation:</strong> No more "this password hasn't changed since 2015"</li>
+                    <li><strong>Kerberoasting defense:</strong> Long random passwords can't be cracked</li>
+                </ul>
+            </section>
+
+            <section id="emergency-access">
+                <h2>Use Case 8: Emergency Break-Glass Access</h2>
+                
+                <h3>The Scenario</h3>
+                <p>
+                    It's 3 AM on Sunday. Your primary authentication systems are down. The on-call admin needs to access critical infrastructure to fix the outage, but they can't authenticate normally. You need a secure emergency access path that doesn't compromise security.
+                </p>
+
+                <h3>The Problems</h3>
+                <ul>
+                    <li>If PAM is down, how do admins access systems?</li>
+                    <li>Emergency accounts that bypass normal controls are risky</li>
+                    <li>If emergency credentials are too easy to use, they'll be abused</li>
+                    <li>If they're too hard to use, emergencies become crises</li>
+                </ul>
+
+                <h3>PAM Solution: Break-Glass Procedures</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Dedicated Emergency Accounts</h4>
+                            <p>Create emergency accounts that are never used for normal operations. These accounts exist specifically for break-glass scenarios.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Secure Credential Storage</h4>
+                            <p>Emergency credentials stored outside PAM (so they work when PAM is down): physical safe, split-knowledge (two halves held by different people), or sealed envelope with tamper evidence.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Detection and Alerting</h4>
+                            <p>Any use of emergency accounts triggers immediate alerts to security team, management, and audit. This ensures accountability even without PAM.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Post-Use Rotation</h4>
+                            <p>After any emergency account use, credentials are immediately rotated. Full incident review: was the use justified? What was done?</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Break-Glass Models</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Model</th>
+                                <th>How It Works</th>
+                                <th>Pros/Cons</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Physical Safe</strong></td>
+                                <td>Passwords in sealed envelopes in a physical safe</td>
+                                <td>Simple, works offline. Requires physical presence.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Split Knowledge</strong></td>
+                                <td>Password split between two people (e.g., first half + second half)</td>
+                                <td>Requires two people. Protects against single person going rogue.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>M-of-N</strong></td>
+                                <td>3 of 5 keyholders must combine their parts to reconstruct password</td>
+                                <td>High security. More complex coordination.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Secondary PAM</strong></td>
+                                <td>Separate PAM instance for emergency access only</td>
+                                <td>Modern approach. Requires HA for secondary PAM.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Results</h3>
+                <ul>
+                    <li><strong>Resilience:</strong> Critical systems accessible even when PAM is down</li>
+                    <li><strong>Accountability:</strong> Emergency use is detected and investigated</li>
+                    <li><strong>Security:</strong> Emergency credentials are not a backdoor for attackers</li>
+                    <li><strong>Testing:</strong> Regular drills ensure the procedure works</li>
+                </ul>
+
+                <div class="info-box warning">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Critical: Test Your Break-Glass</h4>
+                        <p>A break-glass procedure you've never tested is a procedure that might not work. Conduct quarterly drills: Can you actually access the safe? Do the credentials still work? Do alerts fire? How long does it take? Discovering problems during an actual emergency is too late.</p>
+                    </div>
+                </div>
+            </section>
+
+            <div class="info-box success">
+                <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <div class="info-box-content">
+                    <h4>Summary</h4>
+                    <p>These use cases show PAM's versatility: from Windows server management to database access, vendor control to cloud security, DevOps pipelines to network devices. The common thread is <strong>controlled, monitored, accountable access</strong> to privileged resources. Start with your highest-risk use case, prove value, then expand.</p>
+                </div>
+            </div>
+
+            <nav class="page-nav">
+                <a href="pam-fundamentals.html" class="page-nav-link prev">
+                    <span class="page-nav-label">Previous</span>
+                    <span class="page-nav-title">← PAM Fundamentals</span>
+                </a>
+                <a href="how-pam-works.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next</span>
+                    <span class="page-nav-title">How PAM Actually Works →</span>
+                </a>
+            </nav>
+        </div>
+
+        <footer class="footer">
+            <p>PAM & KMS Ultimate Guide — A comprehensive enterprise security documentation resource</p>
+        </footer>
+    </main>
+
+    <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline p

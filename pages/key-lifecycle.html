@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Key Lifecycle Management - Generation, storage, rotation, and destruction of cryptographic keys">
+    <title>Key Lifecycle Management | PAM & KMS Guide</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="scroll-progress" id="scroll-progress"></div>
+
+    <header class="header">
+        <div class="header-content">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                PAM & KMS Guide
+            </a>
+            
+            <nav class="header-nav">
+                <a href="pam-fundamentals.html">PAM</a>
+                <a href="kms-fundamentals.html" class="active">KMS</a>
+                <a href="vendors.html">Vendors</a>
+                <a href="implementation.html">Implementation</a>
+            </nav>
+            
+            <div class="header-actions">
+                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-title">Getting Started</div>
+            <ul class="sidebar-nav">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="introduction.html">Introduction</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">PAM Fundamentals</div>
+            <ul class="sidebar-nav">
+                <li><a href="pam-fundamentals.html">What is PAM?</a></li>
+                <li><a href="pam-business-case.html">Business Case</a></li>
+                <li><a href="privileged-accounts.html">Privileged Accounts</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">KMS Fundamentals</div>
+            <ul class="sidebar-nav">
+                <li><a href="kms-fundamentals.html">What is KMS?</a></li>
+                <li><a href="cryptographic-basics.html">Cryptographic Basics</a></li>
+                <li><a href="key-lifecycle.html" class="active">Key Lifecycle</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">KMS Architecture</div>
+            <ul class="sidebar-nav">
+                <li><a href="kms-components.html">KMS Components</a></li>
+                <li><a href="hsm.html">HSM Deep Dive</a></li>
+                <li><a href="cloud-kms.html">Cloud KMS</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">Vendors</div>
+            <ul class="sidebar-nav">
+                <li><a href="vendors.html">Vendor Overview</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <main class="main-wrapper">
+        <div class="main-content">
+            <nav class="breadcrumb">
+                <a href="../index.html">Home</a>
+                <span class="breadcrumb-separator">/</span>
+                <a href="kms-fundamentals.html">KMS Fundamentals</a>
+                <span class="breadcrumb-separator">/</span>
+                <span>Key Lifecycle</span>
+            </nav>
+
+            <div class="page-header">
+                <h1>Key Lifecycle Management</h1>
+                <p class="page-description">
+                    Cryptographic keys have a lifecycle from creation to destruction. Proper management at each stage is essential for security. This page covers the complete key lifecycle and best practices for each phase.
+                </p>
+            </div>
+
+            <div class="toc">
+                <div class="toc-title">On This Page</div>
+                <ul class="toc-list">
+                    <li><a href="#overview"><span class="toc-number">1.</span> Lifecycle Overview</a></li>
+                    <li><a href="#generation"><span class="toc-number">2.</span> Key Generation</a></li>
+                    <li><a href="#storage"><span class="toc-number">3.</span> Key Storage</a></li>
+                    <li><a href="#distribution"><span class="toc-number">4.</span> Key Distribution</a></li>
+                    <li><a href="#usage"><span class="toc-number">5.</span> Key Usage</a></li>
+                    <li><a href="#rotation"><span class="toc-number">6.</span> Key Rotation</a></li>
+                    <li><a href="#archival"><span class="toc-number">7.</span> Key Archival</a></li>
+                    <li><a href="#destruction"><span class="toc-number">8.</span> Key Destruction</a></li>
+                    <li><a href="#automation"><span class="toc-number">9.</span> Lifecycle Automation</a></li>
+                </ul>
+            </div>
+
+            <section id="overview">
+                <h2>Lifecycle Overview</h2>
+                
+                <p>
+                    Every cryptographic key goes through distinct phases from creation to destruction. Understanding and managing each phase is critical for maintaining security and compliance.
+                </p>
+
+                <div class="diagram-container">
+                    <div class="diagram-title">Key Lifecycle Stages</div>
+                    <div class="architecture-flow">
+                        <div class="arch-row">
+                            <div class="arch-box">
+                                <div class="arch-box-title">1. Generation</div>
+                                <div class="arch-box-subtitle">Create key</div>
+                            </div>
+                            <div class="arch-arrow">→</div>
+                            <div class="arch-box primary">
+                                <div class="arch-box-title">2. Storage</div>
+                                <div class="arch-box-subtitle">Secure storage</div>
+                            </div>
+                            <div class="arch-arrow">→</div>
+                            <div class="arch-box accent">
+                                <div class="arch-box-title">3. Distribution</div>
+                                <div class="arch-box-subtitle">Deliver safely</div>
+                            </div>
+                            <div class="arch-arrow">→</div>
+                            <div class="arch-box secondary">
+                                <div class="arch-box-title">4. Usage</div>
+                                <div class="arch-box-subtitle">Active use</div>
+                            </div>
+                        </div>
+                        <div style="margin: var(--space-4) 0; text-align: center; color: var(--text-secondary);">⬇️ Periodic rotation during active use ⬇️</div>
+                        <div class="arch-row">
+                            <div class="arch-box">
+                                <div class="arch-box-title">5. Rotation</div>
+                                <div class="arch-box-subtitle">Replace key</div>
+                            </div>
+                            <div class="arch-arrow">→</div>
+                            <div class="arch-box primary">
+                                <div class="arch-box-title">6. Archival</div>
+                                <div class="arch-box-subtitle">Retain if needed</div>
+                            </div>
+                            <div class="arch-arrow">→</div>
+                            <div class="arch-box accent">
+                                <div class="arch-box-title">7. Destruction</div>
+                                <div class="arch-box-subtitle">Secure erasure</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Why Lifecycle Management Matters</h3>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                        </div>
+                        <div class="feature-title">Limit Exposure</div>
+                        <p class="feature-description">Keys used too long increase risk of compromise. Rotation limits the window an attacker could exploit a stolen key.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                        </div>
+                        <div class="feature-title">Compliance</div>
+                        <p class="feature-description">Regulations like PCI-DSS require documented key management procedures and periodic rotation.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                        </div>
+                        <div class="feature-title">Cryptographic Hygiene</div>
+                        <p class="feature-description">Well-managed keys maintain their cryptographic strength. Poor management leads to weak or compromised keys.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
+                        </div>
+                        <div class="feature-title">Incident Response</div>
+                        <p class="feature-description">Clear lifecycle processes enable rapid key revocation and replacement during security incidents.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="generation">
+                <h2>Key Generation</h2>
+
+                <p>
+                    Key generation is the foundation of cryptographic security. A poorly generated key undermines all subsequent protections.
+                </p>
+
+                <h3>Generation Requirements</h3>
+
+                <div class="key-points">
+                    <div class="key-points-title">Secure Key Generation</div>
+                    <ul>
+                        <li><strong>True Randomness:</strong> Keys must be generated using a Cryptographically Secure Pseudo-Random Number Generator (CSPRNG) or hardware random number generator (HRNG)</li>
+                        <li><strong>Sufficient Key Length:</strong> Use appropriate key sizes—AES-256, RSA-2048 minimum (4096 recommended), ECC P-256 minimum</li>
+                        <li><strong>HSM Generation:</strong> For high-value keys, generate inside an HSM where the key never exists in plaintext outside the hardware</li>
+                        <li><strong>Avoid Predictability:</strong> Never use deterministic seeds, timestamps, or other predictable inputs</li>
+                    </ul>
+                </div>
+
+                <h3>Generation Methods</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Method</th>
+                                <th>Security Level</th>
+                                <th>Use Case</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>HSM Generation</strong></td>
+                                <td><span class="badge badge-success">Highest</span></td>
+                                <td>Master keys, CA keys, payment keys, signing keys</td>
+                            </tr>
+                            <tr>
+                                <td><strong>KMS API Generation</strong></td>
+                                <td><span class="badge badge-success">High</span></td>
+                                <td>Application encryption keys, data encryption keys</td>
+                            </tr>
+                            <tr>
+                                <td><strong>OS CSPRNG</strong></td>
+                                <td><span class="badge badge-info">Good</span></td>
+                                <td>Session keys, temporary keys, development</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Software Libraries</strong></td>
+                                <td><span class="badge badge-warning">Variable</span></td>
+                                <td>Depends on library quality—use vetted libraries only</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="info-box warning">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Common Generation Mistakes</h4>
+                        <ul style="margin-top: var(--space-2); margin-bottom: 0;">
+                            <li>Using Math.random() or similar non-cryptographic RNG</li>
+                            <li>Seeding with predictable values (time, process ID)</li>
+                            <li>Generating keys on systems with low entropy</li>
+                            <li>Reusing keys across different purposes or environments</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section id="storage">
+                <h2>Key Storage</h2>
+
+                <p>
+                    Once generated, keys must be stored securely. The storage location and protection mechanisms should match the key's sensitivity.
+                </p>
+
+                <h3>Storage Options</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Storage Type</th>
+                                <th>Protection</th>
+                                <th>Best For</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>HSM</strong></td>
+                                <td>Hardware tamper protection, key never exported</td>
+                                <td>Master keys, root CA, payment HSM</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Cloud KMS</strong></td>
+                                <td>Cloud-managed HSM backing, API access control</td>
+                                <td>Cloud workload encryption keys</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Key Vault/Secrets Manager</strong></td>
+                                <td>Encrypted storage, access policies, audit logging</td>
+                                <td>Application secrets, API keys, certificates</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Encrypted Database</strong></td>
+                                <td>DEK protected by KEK in HSM/KMS</td>
+                                <td>Large volumes of data keys</td>
+                            </tr>
+                            <tr>
+                                <td><strong>File System (Encrypted)</strong></td>
+                                <td>OS-level encryption, file permissions</td>
+                                <td>Development, low-sensitivity keys only</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Storage Best Practices</h3>
+
+                <div class="key-points">
+                    <div class="key-points-title">Secure Storage Principles</div>
+                    <ul>
+                        <li><strong>Never Store Keys in Code:</strong> No hard-coded keys in source code, config files in repositories, or container images</li>
+                        <li><strong>Encrypt Keys at Rest:</strong> Keys should be encrypted by a higher-level key (key hierarchy)</li>
+                        <li><strong>Access Control:</strong> Minimum necessary access—separate duties between key administrators and key users</li>
+                        <li><strong>Audit Logging:</strong> Log all key access and operations</li>
+                        <li><strong>Backup Securely:</strong> Key backups need same protection as originals; consider HSM key backup mechanisms</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="distribution">
+                <h2>Key Distribution</h2>
+
+                <p>
+                    Keys often need to be shared between systems or parties. Distribution must protect the key in transit and ensure it reaches only authorized recipients.
+                </p>
+
+                <h3>Distribution Methods</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Key Wrapping</h4>
+                            <p>Encrypt the key with another key (Key Encryption Key or KEK) before transmission. The wrapped key can only be unwrapped by the recipient's KEK.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Key Agreement Protocols</h4>
+                            <p>Use Diffie-Hellman or ECDH to establish a shared secret without transmitting the actual key. Both parties derive the same key independently.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Asymmetric Encryption</h4>
+                            <p>Encrypt the key with the recipient's public key. Only the recipient's private key can decrypt it.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Secure API</h4>
+                            <p>Applications retrieve keys via authenticated, encrypted API calls to KMS. Key delivered over TLS with strong authentication.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Out-of-Band Distribution</h4>
+                            <p>For initial key ceremony or high-security scenarios: split key into components, distribute via separate channels (physical, different networks).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-box danger">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Never Do This</h4>
+                        <ul style="margin-top: var(--space-2); margin-bottom: 0;">
+                            <li>Email keys in plaintext</li>
+                            <li>Share keys via chat applications</li>
+                            <li>Store keys in shared drives or wikis</li>
+                            <li>Transmit keys over unencrypted channels</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section id="usage">
+                <h2>Key Usage</h2>
+
+                <p>
+                    During active use, keys perform cryptographic operations. Proper usage controls protect the key and ensure it's used appropriately.
+                </p>
+
+                <h3>Usage Controls</h3>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                        </div>
+                        <div class="feature-title">Key Usage Attributes</div>
+                        <p class="feature-description">Define what operations the key can perform: encrypt only, decrypt only, sign, verify, wrap/unwrap. Prevent misuse.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                        </div>
+                        <div class="feature-title">Validity Period</div>
+                        <p class="feature-description">Keys have defined activation and expiration dates. KMS enforces these—expired keys cannot be used.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        </div>
+                        <div class="feature-title">Access Policies</div>
+                        <p class="feature-description">Define which applications, users, or roles can use the key. Principle of least privilege.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                        </div>
+                        <div class="feature-title">Usage Logging</div>
+                        <p class="feature-description">Every cryptographic operation logged: who, when, what key, what operation. Essential for audit and incident response.</p>
+                    </div>
+                </div>
+
+                <h3>Cryptoperiod Guidelines</h3>
+
+                <p>
+                    The <strong>cryptoperiod</strong> is the time span during which a key is authorized for use. Different key types have different recommended periods:
+                </p>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Key Type</th>
+                                <th>Recommended Cryptoperiod</th>
+                                <th>Rationale</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Symmetric Master Keys</strong></td>
+                                <td>1-2 years</td>
+                                <td>High value, infrequent direct use</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Data Encryption Keys</strong></td>
+                                <td>1 year or less</td>
+                                <td>Limits data exposure if compromised</td>
+                            </tr>
+                            <tr>
+                                <td><strong>TLS Session Keys</strong></td>
+                                <td>Hours to days</td>
+                                <td>Ephemeral, forward secrecy</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Signing Keys (CA)</strong></td>
+                                <td>5-10 years</td>
+                                <td>Long-lived certificates; strong protection required</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Code Signing Keys</strong></td>
+                                <td>1-3 years</td>
+                                <td>Balance between security and software validity</td>
+                            </tr>
+                            <tr>
+                                <td><strong>SSH Keys</strong></td>
+                                <td>1 year</td>
+                                <td>Annual rotation common practice</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="rotation">
+                <h2>Key Rotation</h2>
+
+                <p>
+                    <strong>Key rotation</strong> replaces an existing key with a new one. This limits the impact of key compromise and ensures cryptographic freshness.
+                </p>
+
+                <h3>Why Rotate Keys?</h3>
+
+                <ul>
+                    <li><strong>Limit Cryptanalytic Exposure:</strong> Less ciphertext encrypted with any single key reduces risk of cryptanalysis</li>
+                    <li><strong>Limit Breach Impact:</strong> If a key is compromised, only data encrypted during that key's period is affected</li>
+                    <li><strong>Compliance:</strong> Many standards (PCI-DSS, HIPAA) require periodic rotation</li>
+                    <li><strong>Personnel Changes:</strong> Rotate keys when key custodians leave the organization</li>
+                    <li><strong>Algorithm Updates:</strong> Rotate when moving to stronger algorithms</li>
+                </ul>
+
+                <h3>Rotation Strategies</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Automatic Rotation</h4>
+                            <p>KMS automatically generates new key version on schedule. Old versions remain available for decryption. New encryptions use new version. Cloud KMS services support this natively.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Re-encryption</h4>
+                            <p>After rotating, decrypt data with old key and re-encrypt with new key. More secure (old key no longer needed) but operationally intensive for large datasets.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Dual-Key Period</h4>
+                            <p>During rotation, both old and new keys are active. Applications transition gradually. Once all systems are updated, old key is retired.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Key Versioning</h4>
+                        <p>Modern KMS platforms support key versioning. The key ID stays the same, but the underlying key material changes. Applications always use the "current" version for encryption, while any version can be used for decryption. This simplifies rotation significantly.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="archival">
+                <h2>Key Archival</h2>
+
+                <p>
+                    After a key is no longer used for new operations, it may still be needed to decrypt historical data. Archival preserves keys securely for this purpose.
+                </p>
+
+                <h3>When to Archive</h3>
+
+                <ul>
+                    <li>Key is rotated but old data encrypted with it still exists</li>
+                    <li>Regulatory requirements mandate data retention (and thus key retention)</li>
+                    <li>Legal hold requires preserving ability to decrypt specific data</li>
+                    <li>Disaster recovery requires historical key access</li>
+                </ul>
+
+                <h3>Archival Best Practices</h3>
+
+                <div class="key-points">
+                    <div class="key-points-title">Secure Key Archival</div>
+                    <ul>
+                        <li><strong>Same Protection Level:</strong> Archived keys need same security as active keys</li>
+                        <li><strong>Clear Retention Policy:</strong> Define how long archived keys are kept and when they can be destroyed</li>
+                        <li><strong>Restricted Access:</strong> Archived keys should have tighter access controls than active keys</li>
+                        <li><strong>Offline Storage:</strong> For highest security, archive keys in offline HSM or air-gapped storage</li>
+                        <li><strong>Audit Access:</strong> Log all access to archived keys</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="destruction">
+                <h2>Key Destruction</h2>
+
+                <p>
+                    When a key is no longer needed—and all data encrypted with it is either destroyed or re-encrypted—the key must be securely destroyed.
+                </p>
+
+                <h3>Destruction Requirements</h3>
+
+                <div class="info-box danger">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Before Destroying a Key</h4>
+                        <ul style="margin-top: var(--space-2); margin-bottom: 0;">
+                            <li>Verify no data still requires the key for decryption</li>
+                            <li>Confirm no legal holds or compliance requirements mandate retention</li>
+                            <li>Document the destruction decision and approvals</li>
+                            <li>Destroy ALL copies—including backups, replicas, and escrow copies</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>Destruction Methods</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Storage Type</th>
+                                <th>Destruction Method</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>HSM</strong></td>
+                                <td>Use HSM's secure delete function—key material is zeroized</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Cloud KMS</strong></td>
+                                <td>Schedule key destruction (usually has waiting period for safety)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Software Storage</strong></td>
+                                <td>Cryptographic erasure—overwrite with random data multiple times</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Physical Media</strong></td>
+                                <td>Physical destruction of storage media (shredding, degaussing)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Crypto-Shredding</h3>
+
+                <p>
+                    <strong>Crypto-shredding</strong> is a technique where destroying the encryption key effectively destroys all data encrypted with it. Even if the encrypted data remains on storage, it's unrecoverable without the key. This is useful for:
+                </p>
+
+                <ul>
+                    <li>Secure data disposal without physical destruction of storage</li>
+                    <li>Right to erasure (GDPR) compliance</li>
+                    <li>Rapid secure decommissioning</li>
+                </ul>
+            </section>
+
+            <section id="automation">
+                <h2>Lifecycle Automation</h2>
+
+                <p>
+                    Manual key management doesn't scale and is error-prone. Modern KMS platforms automate lifecycle operations.
+                </p>
+
+                <h3>What to Automate</h3>
+
+                <div class="key-points">
+                    <div class="key-points-title">Automation Opportunities</div>
+                    <ul>
+                        <li><strong>Scheduled Rotation:</strong> Automatic key rotation on defined schedule</li>
+                        <li><strong>Expiration Alerts:</strong> Notify before keys expire</li>
+                        <li><strong>Policy Enforcement:</strong> Prevent keys from being used outside their defined purpose</li>
+                        <li><strong>Provisioning:</strong> Automatically provision keys for new applications/environments</li>
+                        <li><strong>Cleanup:</strong> Archive or destroy keys that haven't been used within defined period</li>
+                        <li><strong>Compliance Reporting:</strong> Automated reports on key inventory, rotation status, access patterns</li>
+                    </ul>
+                </div>
+            </section>
+
+            <div class="info-box success">
+                <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <div class="info-box-content">
+                    <h4>Key Takeaways</h4>
+                    <p>Key lifecycle management spans generation through destruction. Each stage has security requirements: generate with proper randomness, store with appropriate protection, distribute securely, control usage, rotate periodically, archive when needed, and destroy completely. Automation reduces human error and ensures consistency.</p>
+                </div>
+            </div>
+
+            <nav class="page-nav">
+                <a href="cryptographic-basics.html" class="page-nav-link prev">
+                    <span class="page-nav-label">Previous</span>
+                    <span class="page-nav-title">← Cryptographic Basics</span>
+                </a>
+                <a href="hsm.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next</span>
+                    <span class="page-nav-title">HSM Deep Dive →</span>
+                </a>
+            </nav>
+        </div>
+
+        <footer class="footer">
+            <p>PAM & KMS Ultimate Guide — A comprehensive enterprise security documentation resource</p>
+        </footer>
+    </main>
+
+    <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+    </button>
+
+    <script src="../js/main.js"></script>
+</body>
+</html>

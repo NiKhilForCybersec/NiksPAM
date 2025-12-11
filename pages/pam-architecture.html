@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PAM Architecture Patterns - Deployment models, network architecture, and integration patterns">
+    <title>PAM Architecture Patterns | PAM & KMS Guide</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="scroll-progress" id="scroll-progress"></div>
+
+    <header class="header">
+        <div class="header-content">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                PAM & KMS Guide
+            </a>
+            
+            <nav class="header-nav">
+                <a href="pam-fundamentals.html" class="active">PAM</a>
+                <a href="kms-fundamentals.html">KMS</a>
+                <a href="vendors.html">Vendors</a>
+                <a href="implementation.html">Implementation</a>
+            </nav>
+            
+            <div class="header-actions">
+                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-title">Getting Started</div>
+            <ul class="sidebar-nav">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="introduction.html">Introduction</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">PAM Fundamentals</div>
+            <ul class="sidebar-nav">
+                <li><a href="pam-fundamentals.html">What is PAM?</a></li>
+                <li><a href="pam-business-case.html">Business Case</a></li>
+                <li><a href="privileged-accounts.html">Privileged Accounts</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">PAM Architecture</div>
+            <ul class="sidebar-nav">
+                <li><a href="pam-components.html">Core Components</a></li>
+                <li><a href="pam-architecture.html" class="active">Architecture Patterns</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">PAM Workflows</div>
+            <ul class="sidebar-nav">
+                <li><a href="user-access-workflow.html">User Access Workflow</a></li>
+                <li><a href="session-management.html">Session Management</a></li>
+                <li><a href="jit-access.html">Just-In-Time Access</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">Vendors</div>
+            <ul class="sidebar-nav">
+                <li><a href="vendors.html">Vendor Overview</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <main class="main-wrapper">
+        <div class="main-content">
+            <nav class="breadcrumb">
+                <a href="../index.html">Home</a>
+                <span class="breadcrumb-separator">/</span>
+                <a href="pam-fundamentals.html">PAM</a>
+                <span class="breadcrumb-separator">/</span>
+                <span>Architecture Patterns</span>
+            </nav>
+
+            <div class="page-header">
+                <h1>PAM Architecture Patterns</h1>
+                <p class="page-description">
+                    PAM solutions can be deployed in various configurations depending on your environment, security requirements, and scale. This page covers common deployment models, network architectures, and integration patterns.
+                </p>
+            </div>
+
+            <div class="toc">
+                <div class="toc-title">On This Page</div>
+                <ul class="toc-list">
+                    <li><a href="#deployment-models"><span class="toc-number">1.</span> Deployment Models</a></li>
+                    <li><a href="#network-architecture"><span class="toc-number">2.</span> Network Architecture</a></li>
+                    <li><a href="#high-availability"><span class="toc-number">3.</span> High Availability</a></li>
+                    <li><a href="#hybrid-cloud"><span class="toc-number">4.</span> Hybrid & Multi-Cloud</a></li>
+                    <li><a href="#tiered-architecture"><span class="toc-number">5.</span> Tiered Architecture</a></li>
+                    <li><a href="#integration-patterns"><span class="toc-number">6.</span> Integration Patterns</a></li>
+                    <li><a href="#sizing"><span class="toc-number">7.</span> Sizing Considerations</a></li>
+                </ul>
+            </div>
+
+            <section id="deployment-models">
+                <h2>Deployment Models</h2>
+                
+                <p>
+                    PAM solutions are available in several deployment models, each with different trade-offs for control, complexity, and cost.
+                </p>
+
+                <h3>On-Premises</h3>
+
+                <div class="key-points">
+                    <div class="key-points-title">On-Premises Deployment</div>
+                    <ul>
+                        <li><strong>Description:</strong> PAM software deployed on your own infrastructure</li>
+                        <li><strong>Examples:</strong> CyberArk Self-Hosted, BeyondTrust on-prem, Delinea Secret Server</li>
+                        <li><strong>Pros:</strong> Full control, data stays on-premises, can operate air-gapped</li>
+                        <li><strong>Cons:</strong> Infrastructure costs, maintenance burden, longer deployment time</li>
+                        <li><strong>Best for:</strong> Highly regulated industries, government, air-gapped environments</li>
+                    </ul>
+                </div>
+
+                <h3>SaaS / Cloud-Hosted</h3>
+
+                <div class="key-points">
+                    <div class="key-points-title">SaaS Deployment</div>
+                    <ul>
+                        <li><strong>Description:</strong> Vendor operates PAM in their cloud, you access via web</li>
+                        <li><strong>Examples:</strong> CyberArk Privilege Cloud, Delinea Secret Server Cloud, 1Password Business</li>
+                        <li><strong>Pros:</strong> Fastest deployment, no infrastructure to manage, automatic updates</li>
+                        <li><strong>Cons:</strong> Data in vendor cloud, depends on internet connectivity, less customization</li>
+                        <li><strong>Best for:</strong> Cloud-first organizations, faster time to value, smaller teams</li>
+                    </ul>
+                </div>
+
+                <h3>Private Cloud / IaaS</h3>
+
+                <div class="key-points">
+                    <div class="key-points-title">Private Cloud Deployment</div>
+                    <ul>
+                        <li><strong>Description:</strong> Deploy PAM on cloud infrastructure you control (AWS, Azure, GCP)</li>
+                        <li><strong>Examples:</strong> CyberArk on AWS/Azure, HashiCorp Vault on Kubernetes</li>
+                        <li><strong>Pros:</strong> Cloud elasticity, you control the environment, can be isolated in VPC</li>
+                        <li><strong>Cons:</strong> You manage infrastructure, cloud costs, networking complexity</li>
+                        <li><strong>Best for:</strong> Cloud-heavy organizations wanting control, hybrid environments</li>
+                    </ul>
+                </div>
+
+                <h3>Hybrid</h3>
+
+                <div class="key-points">
+                    <div class="key-points-title">Hybrid Deployment</div>
+                    <ul>
+                        <li><strong>Description:</strong> Combination of on-premises and cloud components</li>
+                        <li><strong>Examples:</strong> SaaS vault with on-premises connectors/jump servers</li>
+                        <li><strong>Pros:</strong> Best of both worlds, reach on-premises targets from cloud platform</li>
+                        <li><strong>Cons:</strong> Most complex, multiple components to manage</li>
+                        <li><strong>Best for:</strong> Organizations with significant on-premises infrastructure moving to cloud</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="network-architecture">
+                <h2>Network Architecture</h2>
+
+                <p>
+                    Proper network placement of PAM components is critical for security and functionality.
+                </p>
+
+                <h3>Component Placement</h3>
+
+                <div class="diagram-container">
+                    <div class="diagram-title">Typical Network Zones</div>
+                    <div class="architecture-flow">
+                        <div class="arch-row">
+                            <div class="arch-box">
+                                <div class="arch-box-title">User Zone</div>
+                                <div class="arch-box-subtitle">Workstations, browsers</div>
+                            </div>
+                            <div class="arch-arrow">HTTPS →</div>
+                            <div class="arch-box primary">
+                                <div class="arch-box-title">DMZ / Access Zone</div>
+                                <div class="arch-box-subtitle">Web portal, load balancer</div>
+                            </div>
+                            <div class="arch-arrow">→</div>
+                            <div class="arch-box accent">
+                                <div class="arch-box-title">PAM Zone</div>
+                                <div class="arch-box-subtitle">Vault, PSM, CPM</div>
+                            </div>
+                        </div>
+                        <div style="margin: var(--space-4) 0; text-align: center; color: var(--text-secondary);">⬇️ Outbound connections to targets ⬇️</div>
+                        <div class="arch-row">
+                            <div class="arch-box secondary">
+                                <div class="arch-box-title">Server Zone</div>
+                                <div class="arch-box-subtitle">Windows, Linux servers</div>
+                            </div>
+                            <div class="arch-box secondary">
+                                <div class="arch-box-title">Database Zone</div>
+                                <div class="arch-box-subtitle">SQL, Oracle, etc.</div>
+                            </div>
+                            <div class="arch-box secondary">
+                                <div class="arch-box-title">Network Zone</div>
+                                <div class="arch-box-subtitle">Routers, switches, FW</div>
+                            </div>
+                            <div class="arch-box secondary">
+                                <div class="arch-box-title">Cloud</div>
+                                <div class="arch-box-subtitle">AWS, Azure, GCP</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Firewall Rules</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Source</th>
+                                <th>Destination</th>
+                                <th>Port</th>
+                                <th>Purpose</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Users</td>
+                                <td>PAM Web Portal</td>
+                                <td>443 (HTTPS)</td>
+                                <td>User access to PAM interface</td>
+                            </tr>
+                            <tr>
+                                <td>PAM Web</td>
+                                <td>PAM Vault</td>
+                                <td>1858 (varies)</td>
+                                <td>Vault communication</td>
+                            </tr>
+                            <tr>
+                                <td>PAM PSM</td>
+                                <td>Target Servers</td>
+                                <td>3389, 22, 23</td>
+                                <td>RDP, SSH, Telnet sessions</td>
+                            </tr>
+                            <tr>
+                                <td>PAM CPM</td>
+                                <td>Target Servers</td>
+                                <td>Various</td>
+                                <td>Password rotation</td>
+                            </tr>
+                            <tr>
+                                <td>PAM</td>
+                                <td>Active Directory</td>
+                                <td>389, 636, 88</td>
+                                <td>LDAP, Kerberos authentication</td>
+                            </tr>
+                            <tr>
+                                <td>PAM</td>
+                                <td>SIEM</td>
+                                <td>514, 6514</td>
+                                <td>Syslog forwarding</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="info-box warning">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Principle: Users Never Connect Directly to Targets</h4>
+                        <p>In a proper PAM architecture, users never have direct network access to privileged systems. All access flows through PAM. This may require network changes—blocking direct RDP/SSH from user networks to server networks.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="high-availability">
+                <h2>High Availability</h2>
+
+                <p>
+                    PAM is a critical security control. If PAM is unavailable, administrators can't access systems (except via break-glass). High availability is essential.
+                </p>
+
+                <h3>HA Components</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Component</th>
+                                <th>HA Approach</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Vault / Database</strong></td>
+                                <td>Active/Passive cluster, database replication</td>
+                                <td>Most critical—contains all secrets</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Web Portal</strong></td>
+                                <td>Multiple instances behind load balancer</td>
+                                <td>Stateless, easy to scale</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Session Proxy (PSM)</strong></td>
+                                <td>Multiple instances, load balanced</td>
+                                <td>Scale based on concurrent sessions</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Password Manager (CPM)</strong></td>
+                                <td>Multiple instances, work distribution</td>
+                                <td>Active/Active for rotation tasks</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Disaster Recovery</h3>
+
+                <div class="key-points">
+                    <div class="key-points-title">DR Considerations</div>
+                    <ul>
+                        <li><strong>Vault replication:</strong> Replicate vault data to DR site (sync or async)</li>
+                        <li><strong>RTO/RPO:</strong> Define recovery time and recovery point objectives</li>
+                        <li><strong>DR site components:</strong> Full PAM stack at DR site or minimal (vault only)</li>
+                        <li><strong>DNS failover:</strong> Update DNS to point to DR site during failover</li>
+                        <li><strong>Regular testing:</strong> Test DR failover at least annually</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="hybrid-cloud">
+                <h2>Hybrid & Multi-Cloud Architecture</h2>
+
+                <p>
+                    Modern organizations have infrastructure across on-premises data centers and multiple clouds. PAM must reach all environments.
+                </p>
+
+                <h3>Hybrid Cloud Pattern</h3>
+
+                <div class="diagram-container">
+                    <div class="diagram-title">Hybrid Cloud PAM Architecture</div>
+                    <div class="architecture-flow">
+                        <div class="arch-row">
+                            <div class="arch-box primary">
+                                <div class="arch-box-title">Central PAM</div>
+                                <div class="arch-box-subtitle">Vault, Web Portal</div>
+                            </div>
+                        </div>
+                        <div style="margin: var(--space-4) 0; text-align: center; color: var(--text-secondary);">⬇️ Distributed connectors ⬇️</div>
+                        <div class="arch-row">
+                            <div class="arch-box">
+                                <div class="arch-box-title">On-Premises</div>
+                                <div class="arch-box-subtitle">Local PSM, CPM</div>
+                            </div>
+                            <div class="arch-box">
+                                <div class="arch-box-title">AWS VPC</div>
+                                <div class="arch-box-subtitle">Connector/Gateway</div>
+                            </div>
+                            <div class="arch-box">
+                                <div class="arch-box-title">Azure VNet</div>
+                                <div class="arch-box-subtitle">Connector/Gateway</div>
+                            </div>
+                            <div class="arch-box">
+                                <div class="arch-box-title">GCP VPC</div>
+                                <div class="arch-box-subtitle">Connector/Gateway</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Connector/Gateway Pattern</h3>
+
+                <p>
+                    Most PAM solutions use <strong>connectors</strong> or <strong>gateways</strong> deployed in each environment to:
+                </p>
+
+                <ul>
+                    <li>Proxy sessions to local targets (avoiding hairpinning traffic through central site)</li>
+                    <li>Perform password rotation against local systems</li>
+                    <li>Discover local privileged accounts</li>
+                    <li>Communicate securely back to central vault</li>
+                </ul>
+
+                <h3>Cloud-Native Considerations</h3>
+
+                <ul>
+                    <li><strong>Cloud IAM:</strong> Integrate with AWS IAM, Azure AD, GCP IAM for cloud resource access</li>
+                    <li><strong>Managed services:</strong> Some cloud resources don't support traditional credential management</li>
+                    <li><strong>Dynamic infrastructure:</strong> Auto-scaling instances need dynamic PAM enrollment</li>
+                    <li><strong>Containers/Kubernetes:</strong> Secrets injection for containerized workloads</li>
+                </ul>
+            </section>
+
+            <section id="tiered-architecture">
+                <h2>Tiered Architecture (AD Tiering)</h2>
+
+                <p>
+                    Microsoft's <strong>Administrative Tier Model</strong> segments privileged access to prevent credential theft from propagating across the environment. PAM should align with this model.
+                </p>
+
+                <h3>The Three Tiers</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tier</th>
+                                <th>Assets</th>
+                                <th>Example Accounts</th>
+                                <th>PAM Treatment</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="badge badge-danger">Tier 0</span></td>
+                                <td>Domain Controllers, AD, PKI, PAM itself</td>
+                                <td>Domain Admins, Enterprise Admins</td>
+                                <td>Highest protection, JIT only, multi-person approval</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge badge-warning">Tier 1</span></td>
+                                <td>Servers, applications, databases</td>
+                                <td>Server admins, DBA, app admins</td>
+                                <td>Vaulted credentials, session recording</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge badge-info">Tier 2</span></td>
+                                <td>Workstations, end-user devices</td>
+                                <td>Help desk, local admin</td>
+                                <td>LAPS or vaulted, may be less strict</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Key Principles</h3>
+
+                <div class="key-points">
+                    <div class="key-points-title">Tier Isolation Rules</div>
+                    <ul>
+                        <li><strong>No downward authentication:</strong> Tier 0 accounts never log into Tier 1 or Tier 2 systems</li>
+                        <li><strong>No upward access:</strong> Tier 2 systems can't access Tier 0 or Tier 1</li>
+                        <li><strong>Separate admin accounts:</strong> Different accounts for each tier</li>
+                        <li><strong>Privileged Access Workstations (PAWs):</strong> Dedicated hardened workstations for Tier 0 administration</li>
+                    </ul>
+                </div>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>PAM Enables Tiering</h4>
+                        <p>Without PAM, enforcing tiering is very difficult. Users tend to use the same admin account everywhere. PAM enforces tiering by: providing different credentials for different tiers, routing sessions through appropriate jump servers, and detecting cross-tier credential usage.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="integration-patterns">
+                <h2>Integration Patterns</h2>
+
+                <p>
+                    PAM doesn't operate in isolation. It integrates with many enterprise systems.
+                </p>
+
+                <h3>Common Integrations</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>System</th>
+                                <th>Integration Purpose</th>
+                                <th>Protocol/Method</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Active Directory / LDAP</strong></td>
+                                <td>User authentication, group membership</td>
+                                <td>LDAP, LDAPS, Kerberos</td>
+                            </tr>
+                            <tr>
+                                <td><strong>SAML/OIDC IdP</strong></td>
+                                <td>SSO, federated authentication</td>
+                                <td>SAML 2.0, OpenID Connect</td>
+                            </tr>
+                            <tr>
+                                <td><strong>MFA Provider</strong></td>
+                                <td>Multi-factor authentication</td>
+                                <td>RADIUS, API, SAML</td>
+                            </tr>
+                            <tr>
+                                <td><strong>SIEM</strong></td>
+                                <td>Security event correlation</td>
+                                <td>Syslog, CEF, API</td>
+                            </tr>
+                            <tr>
+                                <td><strong>ITSM (ServiceNow, etc.)</strong></td>
+                                <td>Ticket-based access requests</td>
+                                <td>REST API, webhooks</td>
+                            </tr>
+                            <tr>
+                                <td><strong>SOAR</strong></td>
+                                <td>Automated response actions</td>
+                                <td>REST API</td>
+                            </tr>
+                            <tr>
+                                <td><strong>IGA (SailPoint, etc.)</strong></td>
+                                <td>Access certification, provisioning</td>
+                                <td>SCIM, REST API</td>
+                            </tr>
+                            <tr>
+                                <td><strong>CI/CD Pipelines</strong></td>
+                                <td>Secrets for deployment</td>
+                                <td>REST API, plugins</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>SIEM Integration Pattern</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Configure Log Forwarding</h4>
+                            <p>PAM sends events via Syslog (UDP/TCP) or API to SIEM.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Parse and Normalize</h4>
+                            <p>SIEM parses PAM logs into structured fields (user, action, target, result).</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Create Correlation Rules</h4>
+                            <p>Build detection rules: failed auth attempts, after-hours access, credential theft indicators.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Build Dashboards</h4>
+                            <p>Visualize PAM activity: session counts, top users, credential checkouts, alerts.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>CI/CD Integration Pattern</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Pipeline Authenticates to PAM</h4>
+                            <p>CI/CD tool authenticates using service account, certificate, or cloud identity.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Request Secrets</h4>
+                            <p>Pipeline calls PAM API to retrieve deployment credentials (DB passwords, API keys).</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Use Secrets</h4>
+                            <p>Credentials used for deployment, then discarded (not stored in pipeline config).</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Audit Trail</h4>
+                            <p>PAM logs which pipeline retrieved which secrets, enabling troubleshooting and security review.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="sizing">
+                <h2>Sizing Considerations</h2>
+
+                <p>
+                    PAM infrastructure should be sized based on your environment's scale and usage patterns.
+                </p>
+
+                <h3>Key Sizing Factors</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Factor</th>
+                                <th>Impact</th>
+                                <th>Component Affected</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Number of accounts</strong></td>
+                                <td>Vault storage, rotation load</td>
+                                <td>Vault, CPM</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Concurrent sessions</strong></td>
+                                <td>Session proxy capacity</td>
+                                <td>PSM</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Session recording</strong></td>
+                                <td>Storage for recordings</td>
+                                <td>Storage, PSM</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Rotation frequency</strong></td>
+                                <td>CPM workload</td>
+                                <td>CPM</td>
+                            </tr>
+                            <tr>
+                                <td><strong>API request volume</strong></td>
+                                <td>Web server capacity</td>
+                                <td>Web portal, API server</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Geographic distribution</strong></td>
+                                <td>Number of connector sites</td>
+                                <td>Connectors, network</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Typical Sizing Guidelines</h3>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>General Guidelines</h4>
+                        <p><strong>Small:</strong> &lt;5,000 accounts, &lt;50 concurrent sessions — Single vault, 1-2 PSMs, 1-2 CPMs.<br>
+                        <strong>Medium:</strong> 5,000-50,000 accounts, 50-200 sessions — Clustered vault, 2-4 PSMs, 2-4 CPMs.<br>
+                        <strong>Large:</strong> &gt;50,000 accounts, 200+ sessions — Multi-site deployment, scaled PSM/CPM, dedicated recording storage.</p>
+                    </div>
+                </div>
+            </section>
+
+            <div class="info-box success">
+                <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <div class="info-box-content">
+                    <h4>Key Takeaways</h4>
+                    <p>PAM architecture depends on your deployment model (on-prem, SaaS, hybrid), network design (proper segmentation, no direct user-to-target access), high availability requirements, and integrations. Align PAM with tiered administration for Windows environments. Size appropriately for your account count and session volume.</p>
+                </div>
+            </div>
+
+            <nav class="page-nav">
+                <a href="pam-components.html" class="page-nav-link prev">
+                    <span class="page-nav-label">Previous</span>
+                    <span class="page-nav-title">← Core Components</span>
+                </a>
+                <a href="user-access-workflow.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next</span>
+                    <span class="page-nav-title">User Access Workflow →</span>
+                </a>
+            </nav>
+        </div>
+
+        <footer class="footer">
+            <p>PAM & KMS Ultimate Guide — A comprehensive enterprise security documentation resource</p>
+        </footer>
+    </main>
+
+    <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+    </button>
+
+    <script src="../js/main.js"></script>
+</body>
+</html>

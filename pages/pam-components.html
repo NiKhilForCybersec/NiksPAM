@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PAM Core Components - Understanding Vault, Session Manager, Policy Manager, and other essential PAM architecture elements">
+    <title>PAM Core Components | PAM & KMS Guide</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="scroll-progress" id="scroll-progress"></div>
+
+    <header class="header">
+        <div class="header-content">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                PAM & KMS Guide
+            </a>
+            
+            <nav class="header-nav">
+                <a href="pam-fundamentals.html">PAM</a>
+                <a href="kms-fundamentals.html">KMS</a>
+                <a href="vendors.html">Vendors</a>
+                <a href="implementation.html">Implementation</a>
+            </nav>
+            
+            <div class="header-actions">
+                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-title">Getting Started</div>
+            <ul class="sidebar-nav">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="introduction.html">Introduction</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">PAM Fundamentals</div>
+            <ul class="sidebar-nav">
+                <li><a href="pam-fundamentals.html">What is PAM?</a></li>
+                <li><a href="pam-business-case.html">Business Case</a></li>
+                <li><a href="privileged-accounts.html">Privileged Accounts</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">PAM Architecture</div>
+            <ul class="sidebar-nav">
+                <li><a href="pam-components.html" class="active">Core Components</a></li>
+                <li><a href="pam-architecture.html">Architecture Patterns</a></li>
+                <li><a href="pam-data-flows.html">Data Flows</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">PAM Workflows</div>
+            <ul class="sidebar-nav">
+                <li><a href="user-access-workflow.html">User Access Workflow</a></li>
+                <li><a href="session-management.html">Session Management</a></li>
+                <li><a href="jit-access.html">Just-In-Time Access</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">KMS Fundamentals</div>
+            <ul class="sidebar-nav">
+                <li><a href="kms-fundamentals.html">What is KMS?</a></li>
+                <li><a href="cryptographic-basics.html">Cryptographic Basics</a></li>
+                <li><a href="key-lifecycle.html">Key Lifecycle</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">Vendors</div>
+            <ul class="sidebar-nav">
+                <li><a href="vendors.html">Vendor Overview</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <main class="main-wrapper">
+        <div class="main-content">
+            <nav class="breadcrumb">
+                <a href="../index.html">Home</a>
+                <span class="breadcrumb-separator">/</span>
+                <a href="pam-components.html">PAM Architecture</a>
+                <span class="breadcrumb-separator">/</span>
+                <span>Core Components</span>
+            </nav>
+
+            <div class="page-header">
+                <h1>PAM Core Components</h1>
+                <p class="page-description">
+                    A PAM solution is made up of several interconnected components, each serving a specific purpose. Understanding these components helps you design, implement, and troubleshoot PAM deployments effectively.
+                </p>
+            </div>
+
+            <div class="toc">
+                <div class="toc-title">On This Page</div>
+                <ul class="toc-list">
+                    <li><a href="#overview"><span class="toc-number">1.</span> Component Overview</a></li>
+                    <li><a href="#credential-vault"><span class="toc-number">2.</span> Credential Vault</a></li>
+                    <li><a href="#web-portal"><span class="toc-number">3.</span> Web Portal / Access Interface</a></li>
+                    <li><a href="#session-manager"><span class="toc-number">4.</span> Privileged Session Manager</a></li>
+                    <li><a href="#password-manager"><span class="toc-number">5.</span> Central Password Manager</a></li>
+                    <li><a href="#discovery-engine"><span class="toc-number">6.</span> Discovery Engine</a></li>
+                    <li><a href="#analytics-engine"><span class="toc-number">7.</span> Privileged Threat Analytics</a></li>
+                    <li><a href="#connector-framework"><span class="toc-number">8.</span> Connector Framework</a></li>
+                    <li><a href="#how-they-work"><span class="toc-number">9.</span> How Components Work Together</a></li>
+                </ul>
+            </div>
+
+            <section id="overview">
+                <h2>Component Overview</h2>
+                
+                <p>
+                    Every enterprise PAM solution, regardless of vendor, contains variations of these core components. The names may differ (CyberArk calls their vault "Digital Vault," Delinea calls theirs "Secret Server," etc.), but the functions are similar.
+                </p>
+
+                <div class="diagram-container">
+                    <div class="diagram-title">PAM Component Architecture</div>
+                    <div class="architecture-flow">
+                        <div class="arch-row">
+                            <div class="arch-box">
+                                <div class="arch-box-title">👤 Users</div>
+                                <div class="arch-box-subtitle">Admins, Operators</div>
+                            </div>
+                            <div class="arch-arrow">→</div>
+                            <div class="arch-box primary">
+                                <div class="arch-box-title">🌐 Web Portal</div>
+                                <div class="arch-box-subtitle">User Interface</div>
+                            </div>
+                        </div>
+                        <div class="arch-arrow" style="transform: rotate(90deg); margin: var(--space-2) 0;">↓</div>
+                        <div class="arch-row">
+                            <div class="arch-box accent">
+                                <div class="arch-box-title">🗄️ Credential Vault</div>
+                                <div class="arch-box-subtitle">Encrypted Storage</div>
+                            </div>
+                            <div class="arch-box secondary">
+                                <div class="arch-box-title">🖥️ Session Manager</div>
+                                <div class="arch-box-subtitle">Session Proxy</div>
+                            </div>
+                            <div class="arch-box secondary">
+                                <div class="arch-box-title">🔄 Password Manager</div>
+                                <div class="arch-box-subtitle">Rotation Engine</div>
+                            </div>
+                        </div>
+                        <div class="arch-arrow" style="transform: rotate(90deg); margin: var(--space-2) 0;">↓</div>
+                        <div class="arch-row">
+                            <div class="arch-box">
+                                <div class="arch-box-title">🔌 Connectors</div>
+                                <div class="arch-box-subtitle">Target Integrations</div>
+                            </div>
+                            <div class="arch-arrow">→</div>
+                            <div class="arch-box">
+                                <div class="arch-box-title">🖥️ Target Systems</div>
+                                <div class="arch-box-subtitle">Servers, DBs, Network</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Vendor Terminology</h4>
+                        <p>Throughout this page, we'll use generic terms. Here's how they map to common vendors: <strong>Vault</strong> = CyberArk Digital Vault, Delinea Secret Server, BeyondTrust Password Safe. <strong>Session Manager</strong> = CyberArk PSM, BeyondTrust Session Manager, Delinea Connection Manager. <strong>Password Manager</strong> = CyberArk CPM, auto-rotation engines in other products.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="credential-vault">
+                <h2>Credential Vault</h2>
+
+                <p>
+                    The <strong>Credential Vault</strong> (also called Digital Vault, Password Vault, or Secret Server) is the heart of any PAM solution. It's a hardened, encrypted repository that stores all privileged credentials.
+                </p>
+
+                <h3>What It Does</h3>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        </div>
+                        <div class="feature-title">Encrypted Storage</div>
+                        <p class="feature-description">Stores credentials encrypted at rest using strong algorithms (typically AES-256). Even database administrators can't read the passwords.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                        </div>
+                        <div class="feature-title">Access Control</div>
+                        <p class="feature-description">Enforces fine-grained policies determining who can access which credentials, when, and under what conditions.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                        </div>
+                        <div class="feature-title">Audit Logging</div>
+                        <p class="feature-description">Records every access attempt, successful or failed, with timestamps, user identity, and source IP.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+                        </div>
+                        <div class="feature-title">High Availability</div>
+                        <p class="feature-description">Typically deployed in clustered or replicated configuration to ensure credentials are always accessible.</p>
+                    </div>
+                </div>
+
+                <h3>Key Technical Details</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Aspect</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Encryption</strong></td>
+                                <td>AES-256 for data at rest; TLS 1.2/1.3 for data in transit. Master key often protected by HSM.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Database Backend</strong></td>
+                                <td>Usually proprietary format or hardened SQL database. Some use file-based encrypted storage.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Access Protocol</strong></td>
+                                <td>Proprietary protocol or REST API. All access authenticated and encrypted.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Hardening</strong></td>
+                                <td>Minimal attack surface—no unnecessary services, firewall rules restrict access to other PAM components only.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Disaster Recovery</strong></td>
+                                <td>Replication to secondary site, encrypted backups, documented recovery procedures.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="info-box warning">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>The Vault Is Your Crown Jewels</h4>
+                        <p>The vault contains credentials to your most sensitive systems. Its security is paramount. Best practices include: dedicated hardened server, network isolation, HSM for master key protection, strict change control, and regular security assessments.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="web-portal">
+                <h2>Web Portal / Access Interface</h2>
+
+                <p>
+                    The <strong>Web Portal</strong> (also called PVWA, Web Console, or Access Portal) is the primary interface through which users interact with PAM. It's where users log in, search for systems, request access, and launch sessions.
+                </p>
+
+                <h3>Key Functions</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>User Authentication</h4>
+                            <p>Integrates with identity providers (SAML, OIDC) for SSO and enforces MFA requirements. Validates user identity before allowing any access.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Resource Discovery & Search</h4>
+                            <p>Provides a searchable catalog of systems and accounts the user is authorized to access. Users can filter by platform, location, or custom tags.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Access Request Workflow</h4>
+                            <p>Guides users through requesting access, collecting justification, ticket numbers, and routing to approvers when required by policy.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Session Launch</h4>
+                            <p>Initiates connections to target systems through the session manager. May launch browser-based sessions or native clients.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Administration</h4>
+                            <p>Provides interfaces for PAM administrators to manage accounts, safes, policies, and review audit logs.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Deployment Considerations</h3>
+
+                <ul>
+                    <li><strong>Load Balancing:</strong> Multiple web portal instances behind a load balancer for high availability</li>
+                    <li><strong>SSL/TLS:</strong> Always HTTPS with valid certificates; consider certificate pinning for sensitive deployments</li>
+                    <li><strong>Network Placement:</strong> Typically in a DMZ or internal network segment accessible to users</li>
+                    <li><strong>Session Timeout:</strong> Configurable idle and absolute session timeouts for security</li>
+                </ul>
+            </section>
+
+            <section id="session-manager">
+                <h2>Privileged Session Manager (PSM)</h2>
+
+                <p>
+                    The <strong>Privileged Session Manager</strong> is perhaps the most powerful component of PAM. It acts as a proxy between users and target systems, enabling credential injection and session recording without users ever seeing passwords.
+                </p>
+
+                <h3>How It Works</h3>
+
+                <div class="diagram-container">
+                    <div class="diagram-title">Session Manager Data Flow</div>
+                    <div class="architecture-flow">
+                        <div class="arch-row">
+                            <div class="arch-box">
+                                <div class="arch-box-title">User's Machine</div>
+                                <div class="arch-box-subtitle">RDP/SSH Client</div>
+                            </div>
+                            <div class="arch-arrow">→</div>
+                            <div class="arch-box primary">
+                                <div class="arch-box-title">Session Manager</div>
+                                <div class="arch-box-subtitle">Records & Proxies</div>
+                            </div>
+                            <div class="arch-arrow">→</div>
+                            <div class="arch-box accent">
+                                <div class="arch-box-title">Target Server</div>
+                                <div class="arch-box-subtitle">Receives connection</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Key Capabilities</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Capability</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Credential Injection</strong></td>
+                                <td>Automatically enters username and password into the login prompt so users never see credentials</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Session Recording</strong></td>
+                                <td>Captures video-like recording of the entire session for audit and forensics</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Keystroke Logging</strong></td>
+                                <td>Records all keystrokes as searchable text, enabling command-based searches</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Live Monitoring</strong></td>
+                                <td>Security team can watch sessions in real-time and terminate if suspicious</td>
+                            </tr>
+                            <tr>
+                                <td><strong>File Transfer Control</strong></td>
+                                <td>Controls and logs file uploads/downloads during sessions</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Clipboard Control</strong></td>
+                                <td>Prevents or logs copy/paste operations to prevent data exfiltration</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Protocol Support</strong></td>
+                                <td>RDP, SSH, Telnet, HTTP/HTTPS (web apps), database protocols, custom applications</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Session Types</h3>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                        </div>
+                        <div class="feature-title">RDP Sessions (Windows)</div>
+                        <p class="feature-description">Remote Desktop connections to Windows servers. PSM acts as an RDP gateway, connecting to targets on behalf of users.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+                        </div>
+                        <div class="feature-title">SSH Sessions (Linux/Unix)</div>
+                        <p class="feature-description">Secure Shell connections to Linux, Unix, and network devices. Captures command-line activity.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                        </div>
+                        <div class="feature-title">Web Application Sessions</div>
+                        <p class="feature-description">Browser-based access to web consoles (vSphere, AWS Console, network device GUIs) with credential injection.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+                        </div>
+                        <div class="feature-title">Database Sessions</div>
+                        <p class="feature-description">Connections to databases (SQL Server, Oracle, MySQL) with query logging and data masking options.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="password-manager">
+                <h2>Central Password Manager (CPM)</h2>
+
+                <p>
+                    The <strong>Central Password Manager</strong> (also called Password Rotation Engine or Credential Manager) is responsible for automatically changing passwords on target systems. This is what makes PAM "active" rather than just a password vault.
+                </p>
+
+                <h3>What It Does</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Scheduled Rotation</h4>
+                            <p>Automatically changes passwords based on schedule (daily, weekly, monthly) to meet compliance requirements and limit credential exposure time.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Post-Use Rotation</h4>
+                            <p>Changes passwords immediately after a user session ends, ensuring the credential they used is no longer valid.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Password Generation</h4>
+                            <p>Creates strong, random passwords that meet complexity requirements for each target platform.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Verification</h4>
+                            <p>After rotation, verifies the new password works by testing authentication to the target system.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Reconciliation</h4>
+                            <p>If a password gets out of sync (changed manually outside PAM), can use a reconciliation account to reset it.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Platform Support</h3>
+
+                <p>
+                    CPM uses platform-specific plugins (connectors) to change passwords on different types of systems:
+                </p>
+
+                <ul>
+                    <li><strong>Windows:</strong> Local accounts, domain accounts, service accounts, scheduled task accounts</li>
+                    <li><strong>Linux/Unix:</strong> Local accounts, SSH keys, sudoers</li>
+                    <li><strong>Databases:</strong> SQL Server, Oracle, MySQL, PostgreSQL, MongoDB</li>
+                    <li><strong>Network Devices:</strong> Cisco, Juniper, Palo Alto, F5, Checkpoint</li>
+                    <li><strong>Cloud Platforms:</strong> AWS IAM, Azure AD, GCP service accounts</li>
+                    <li><strong>Applications:</strong> SAP, Oracle EBS, custom applications via SDK</li>
+                </ul>
+            </section>
+
+            <section id="discovery-engine">
+                <h2>Discovery Engine</h2>
+
+                <p>
+                    The <strong>Discovery Engine</strong> scans your environment to find privileged accounts that should be managed by PAM. You can't protect what you don't know exists.
+                </p>
+
+                <h3>Discovery Methods</h3>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        </div>
+                        <div class="feature-title">Network Scanning</div>
+                        <p class="feature-description">Scans IP ranges to discover systems and identify local administrator accounts on Windows, root on Linux/Unix.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        </div>
+                        <div class="feature-title">Directory Integration</div>
+                        <p class="feature-description">Queries Active Directory to find members of privileged groups (Domain Admins, Enterprise Admins, etc.).</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
+                        </div>
+                        <div class="feature-title">Cloud Discovery</div>
+                        <p class="feature-description">Connects to cloud platforms (AWS, Azure, GCP) to discover IAM users, roles, and service accounts with elevated permissions.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+                        </div>
+                        <div class="feature-title">Database Scanning</div>
+                        <p class="feature-description">Connects to database servers to discover database accounts with DBA or elevated privileges.</p>
+                    </div>
+                </div>
+
+                <h3>Continuous vs One-Time Discovery</h3>
+
+                <p>
+                    Discovery should be ongoing, not just a one-time activity. New systems are deployed, new accounts are created, and privileged access changes over time.
+                </p>
+
+                <ul>
+                    <li><strong>Initial Discovery:</strong> Full scan of the environment during PAM deployment</li>
+                    <li><strong>Scheduled Scans:</strong> Regular scans (daily/weekly) to find new accounts</li>
+                    <li><strong>Event-Driven:</strong> Integration with provisioning systems to onboard accounts as they're created</li>
+                    <li><strong>Alerting:</strong> Notifications when new privileged accounts are discovered outside PAM</li>
+                </ul>
+            </section>
+
+            <section id="analytics-engine">
+                <h2>Privileged Threat Analytics (PTA)</h2>
+
+                <p>
+                    The <strong>Privileged Threat Analytics</strong> engine uses behavioral analysis and machine learning to detect suspicious privileged activity that might indicate a compromised account or insider threat.
+                </p>
+
+                <h3>What It Detects</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Detection Type</th>
+                                <th>Example Scenarios</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Unusual Access Times</strong></td>
+                                <td>A user who normally works 9-5 accessing systems at 3 AM</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Unusual Locations</strong></td>
+                                <td>Access from a new country or IP address never seen before</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Unusual Targets</strong></td>
+                                <td>A user accessing systems they've never accessed before</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Unusual Commands</strong></td>
+                                <td>Running reconnaissance commands, downloading hacking tools</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Credential Theft Indicators</strong></td>
+                                <td>Dumping password hashes, accessing credential stores</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Privilege Escalation</strong></td>
+                                <td>Attempts to gain higher privileges than authorized</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Data Exfiltration</strong></td>
+                                <td>Large file transfers, access to unusual volumes of data</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>How It Works</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Baseline Creation</h4>
+                            <p>Learns normal behavior patterns for each user and account over time—what systems they access, when, from where.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Real-Time Analysis</h4>
+                            <p>Monitors ongoing activity against the baseline, scoring each action for risk.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Alert Generation</h4>
+                            <p>When risk scores exceed thresholds, generates alerts for security team investigation.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>SIEM Integration</h4>
+                            <p>Sends alerts and risk scores to SIEM for correlation with other security data.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="connector-framework">
+                <h2>Connector Framework</h2>
+
+                <p>
+                    The <strong>Connector Framework</strong> provides the integration layer that allows PAM to communicate with different types of target systems. Each target platform requires a specific connector (also called a plugin or platform).
+                </p>
+
+                <h3>What Connectors Do</h3>
+
+                <ul>
+                    <li><strong>Authentication:</strong> Know how to log in to the target platform</li>
+                    <li><strong>Password Change:</strong> Know the specific commands/APIs to change passwords</li>
+                    <li><strong>Verification:</strong> Can test that credentials work</li>
+                    <li><strong>Discovery:</strong> Can enumerate accounts on the platform</li>
+                    <li><strong>Session Support:</strong> Enable session manager to connect to the platform</li>
+                </ul>
+
+                <h3>Common Connector Categories</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Examples</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Operating Systems</strong></td>
+                                <td>Windows (local/domain), Linux, Unix (AIX, Solaris, HP-UX), macOS</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Databases</strong></td>
+                                <td>SQL Server, Oracle, MySQL, PostgreSQL, MongoDB, DB2, Sybase</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Network Devices</strong></td>
+                                <td>Cisco IOS/NX-OS, Juniper, Palo Alto, F5, Checkpoint, Arista</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Cloud Platforms</strong></td>
+                                <td>AWS IAM, Azure AD, GCP IAM, Oracle Cloud</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Virtualization</strong></td>
+                                <td>VMware vSphere, Microsoft Hyper-V, Nutanix</td>
+                            </tr>
+                            <tr>
+                                <td><strong>SaaS Applications</strong></td>
+                                <td>Salesforce, ServiceNow, Workday, custom web applications</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Security Devices</strong></td>
+                                <td>Firewalls, load balancers, HSMs, PKI systems</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Custom Connectors</h4>
+                        <p>Most PAM vendors provide SDKs for building custom connectors when out-of-box connectors don't exist for your specific platforms. This is common for legacy systems or proprietary applications.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="how-they-work">
+                <h2>How Components Work Together</h2>
+
+                <p>
+                    Let's trace through a complete scenario to see how all these components interact.
+                </p>
+
+                <h3>Scenario: User Accesses Production Database</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>User → Web Portal</h4>
+                            <p>DBA opens browser, navigates to PAM portal, authenticates via SSO (redirected to identity provider), completes MFA.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Web Portal → Vault</h4>
+                            <p>Portal queries vault for accounts the user is authorized to access. Vault returns list based on access policies.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>User Selects Database</h4>
+                            <p>User searches for and selects the production Oracle database, clicks "Connect." Portal records the request with justification.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Web Portal → Session Manager</h4>
+                            <p>Portal instructs session manager to create a session. Session manager requests credential from vault.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Session Manager → Target</h4>
+                            <p>Session manager uses Oracle connector to establish database connection, injecting the retrieved password.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <h4>Session Recording</h4>
+                            <p>Session manager begins recording all SQL commands and query results. User works through SQL Developer launched via PAM.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">7</div>
+                        <div class="step-content">
+                            <h4>Analytics Monitoring</h4>
+                            <p>Analytics engine monitors the session in real-time, comparing activity to user's baseline behavior. No anomalies detected.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">8</div>
+                        <div class="step-content">
+                            <h4>Session Ends</h4>
+                            <p>User closes SQL Developer. Session manager finalizes recording and stores it.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">9</div>
+                        <div class="step-content">
+                            <h4>Password Manager → Target</h4>
+                            <p>Based on policy, CPM connects to Oracle database using the Oracle connector and changes the DBA password to a new random value.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">10</div>
+                        <div class="step-content">
+                            <h4>Password Manager → Vault</h4>
+                            <p>CPM stores the new password in the vault, encrypted. The old password is no longer valid anywhere.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="info-box success">
+                <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <div class="info-box-content">
+                    <h4>Key Takeaways</h4>
+                    <p>You now understand the core components of a PAM solution—vault, web portal, session manager, password manager, discovery engine, analytics, and connectors—and how they work together to secure privileged access. This knowledge will help you evaluate vendors, design architectures, and troubleshoot issues.</p>
+                </div>
+            </div>
+
+            <nav class="page-nav">
+                <a href="privileged-accounts.html" class="page-nav-link prev">
+                    <span class="page-nav-label">Previous</span>
+                    <span class="page-nav-title">← Privileged Accounts</span>
+                </a>
+                <a href="pam-architecture.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next</span>
+                    <span class="page-nav-title">Architecture Patterns →</span>
+                </a>
+            </nav>
+        </div>
+
+        <footer class="footer">
+            <p>PAM & KMS Ultimate Guide — A comprehensive enterprise security documentation resource</p>
+        </footer>
+    </main>
+
+    <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+    </button>
+
+    <script src="../js/main.js"></script>
+</body>
+</html>

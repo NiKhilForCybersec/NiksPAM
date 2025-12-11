@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PAM and KMS Certification Roadmap - Career paths, certifications, and training resources for privileged access and key management professionals">
+    <title>Certification Roadmap | PAM & KMS Guide</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="scroll-progress" id="scroll-progress"></div>
+
+    <header class="header">
+        <div class="header-content">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                PAM & KMS Guide
+            </a>
+            
+            <nav class="header-nav">
+                <a href="pam-fundamentals.html">PAM</a>
+                <a href="kms-fundamentals.html">KMS</a>
+                <a href="vendors.html">Vendors</a>
+                <a href="implementation.html" class="active">Implementation</a>
+            </nav>
+            
+            <div class="header-actions">
+                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-title">Career</div>
+            <ul class="sidebar-nav">
+                <li><a href="interview-prep.html">Interview Prep</a></li>
+                <li><a href="certifications.html" class="active">Certifications</a></li>
+                <li><a href="labs.html">Hands-On Labs</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <main class="main-wrapper">
+        <div class="main-content">
+            <nav class="breadcrumb">
+                <a href="../index.html">Home</a>
+                <span class="breadcrumb-separator">/</span>
+                <a href="interview-prep.html">Career</a>
+                <span class="breadcrumb-separator">/</span>
+                <span>Certifications</span>
+            </nav>
+
+            <div class="page-header">
+                <h1>Certification Roadmap</h1>
+                <p class="page-description">
+                    A strategic guide to certifications that demonstrate PAM, KMS, and identity security expertise. Choose certifications based on your career goals, current employer's stack, and market demand.
+                </p>
+            </div>
+
+            <div class="toc">
+                <div class="toc-title">On This Page</div>
+                <ul class="toc-list">
+                    <li><a href="#strategy"><span class="toc-number">1.</span> Certification Strategy</a></li>
+                    <li><a href="#vendor-certs"><span class="toc-number">2.</span> Vendor Certifications</a></li>
+                    <li><a href="#cloud-certs"><span class="toc-number">3.</span> Cloud Security Certifications</a></li>
+                    <li><a href="#general-certs"><span class="toc-number">4.</span> General Security Certifications</a></li>
+                    <li><a href="#roadmaps"><span class="toc-number">5.</span> Role-Based Roadmaps</a></li>
+                    <li><a href="#resources"><span class="toc-number">6.</span> Training Resources</a></li>
+                </ul>
+            </div>
+
+            <section id="strategy">
+                <h2>Certification Strategy</h2>
+                
+                <p>
+                    Not all certifications are equal. Choose based on your specific situation:
+                </p>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Your Situation</th>
+                                <th>Best Certification Focus</th>
+                                <th>Why</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Current employer uses CyberArk</strong></td>
+                                <td>CyberArk Defender → Sentry</td>
+                                <td>Immediate job value, promotion potential</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Want to move to cloud security</strong></td>
+                                <td>AWS Security Specialty or Azure AZ-500</td>
+                                <td>Cloud skills are highest demand</td>
+                            </tr>
+                            <tr>
+                                <td><strong>DevOps/SRE background</strong></td>
+                                <td>HashiCorp Vault Associate</td>
+                                <td>Natural fit, DevOps cred</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Moving into management</strong></td>
+                                <td>CISSP or CISM</td>
+                                <td>Required for many senior roles</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Consulting/Multi-vendor</strong></td>
+                                <td>CISSP + multiple vendor certs</td>
+                                <td>Flexibility across clients</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Just starting security career</strong></td>
+                                <td>Security+ → Cloud cert</td>
+                                <td>Build foundation first</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Certification ROI Reality</h4>
+                        <p>Certifications open doors but don't guarantee jobs. Hands-on experience matters most. Best approach: get certified in what you use daily, then build lab experience for what you want to do next. Certifications + portfolio + interview skills = job offers.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="vendor-certs">
+                <h2>Vendor Certifications</h2>
+
+                <h3>CyberArk Certifications</h3>
+
+                <p>The most recognized PAM certifications in the market:</p>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>CyberArk Trustee (Entry Level)</h4>
+                            <p><strong>Audience:</strong> Anyone starting with PAM concepts</p>
+                            <p><strong>Topics:</strong> PAM fundamentals, CyberArk product overview, basic terminology</p>
+                            <p><strong>Prep Time:</strong> 1-2 weeks</p>
+                            <p><strong>Cost:</strong> ~$150</p>
+                            <p><strong>Value:</strong> Good starting point, demonstrates interest</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>CyberArk Defender (Administrator)</h4>
+                            <p><strong>Audience:</strong> PAM administrators, operations staff</p>
+                            <p><strong>Topics:</strong> Installation, configuration, day-to-day operations, user management, basic troubleshooting</p>
+                            <p><strong>Prereq:</strong> Trustee recommended, CyberArk Defender training course</p>
+                            <p><strong>Prep Time:</strong> 4-6 weeks with hands-on practice</p>
+                            <p><strong>Cost:</strong> ~$300 (exam) + training costs</p>
+                            <p><strong>Value:</strong> High - most common requirement for CyberArk admin roles</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>CyberArk Sentry (Advanced Administrator)</h4>
+                            <p><strong>Audience:</strong> Senior PAM engineers, technical leads</p>
+                            <p><strong>Topics:</strong> Advanced configuration, complex deployments, troubleshooting, performance tuning, DR</p>
+                            <p><strong>Prereq:</strong> Defender certification, 6-12 months experience</p>
+                            <p><strong>Prep Time:</strong> 6-8 weeks</p>
+                            <p><strong>Cost:</strong> ~$300 (exam) + training</p>
+                            <p><strong>Value:</strong> Very high - distinguishes you from basic admins</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>CyberArk Guardian (Architect)</h4>
+                            <p><strong>Audience:</strong> Architects, consultants, technical leaders</p>
+                            <p><strong>Topics:</strong> Architecture design, enterprise deployments, integration patterns, security best practices</p>
+                            <p><strong>Prereq:</strong> Sentry certification, significant project experience</p>
+                            <p><strong>Prep Time:</strong> 8-12 weeks</p>
+                            <p><strong>Cost:</strong> ~$400 (exam) + training</p>
+                            <p><strong>Value:</strong> Highest CyberArk credential - commands premium rates</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>HashiCorp Certifications</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Certification</th>
+                                <th>Focus</th>
+                                <th>Difficulty</th>
+                                <th>Prep Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Vault Associate</strong></td>
+                                <td>Core Vault concepts, secrets engines, auth methods, policies</td>
+                                <td>Intermediate</td>
+                                <td>4-6 weeks</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Vault Professional</strong></td>
+                                <td>Production operations, enterprise features, advanced patterns</td>
+                                <td>Advanced</td>
+                                <td>8-12 weeks</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Terraform Associate</strong></td>
+                                <td>IaC fundamentals (useful for PAM automation)</td>
+                                <td>Intermediate</td>
+                                <td>3-4 weeks</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Other Vendor Certifications</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Vendor</th>
+                                <th>Certifications</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Delinea</strong></td>
+                                <td>Secret Server Certified Administrator</td>
+                                <td>Less common than CyberArk but valued by Delinea shops</td>
+                            </tr>
+                            <tr>
+                                <td><strong>BeyondTrust</strong></td>
+                                <td>Product-specific certifications</td>
+                                <td>Available through BeyondTrust University</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Thales</strong></td>
+                                <td>CipherTrust Manager certifications</td>
+                                <td>KMS/HSM focused, enterprise encryption</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Venafi</strong></td>
+                                <td>Machine Identity certifications</td>
+                                <td>Certificate and machine identity management</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="cloud-certs">
+                <h2>Cloud Security Certifications</h2>
+
+                <p>Essential for modern PAM/KMS roles involving cloud:</p>
+
+                <h3>AWS Security Certifications</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Certification</th>
+                                <th>Level</th>
+                                <th>PAM/KMS Relevance</th>
+                                <th>Prep Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>AWS Cloud Practitioner</strong></td>
+                                <td>Foundation</td>
+                                <td>Basic AWS knowledge foundation</td>
+                                <td>2-4 weeks</td>
+                            </tr>
+                            <tr>
+                                <td><strong>AWS Solutions Architect Associate</strong></td>
+                                <td>Associate</td>
+                                <td>IAM, KMS, Secrets Manager basics</td>
+                                <td>6-8 weeks</td>
+                            </tr>
+                            <tr>
+                                <td><strong>AWS Security Specialty</strong></td>
+                                <td>Specialty</td>
+                                <td>Deep IAM, KMS, CloudHSM, security services</td>
+                                <td>8-12 weeks</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h4>AWS Security Specialty Topics</h4>
+
+                <ul>
+                    <li><strong>Identity & Access Management:</strong> IAM policies, roles, permission boundaries, SCPs, federation</li>
+                    <li><strong>Key Management:</strong> KMS, CloudHSM, key policies, envelope encryption, key rotation</li>
+                    <li><strong>Secrets Management:</strong> Secrets Manager, Parameter Store, rotation</li>
+                    <li><strong>Detection & Response:</strong> CloudTrail, GuardDuty, Security Hub, Detective</li>
+                    <li><strong>Infrastructure Protection:</strong> VPC security, WAF, Shield, Network Firewall</li>
+                </ul>
+
+                <h3>Microsoft Azure Security</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Certification</th>
+                                <th>Code</th>
+                                <th>PAM/KMS Relevance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Azure Fundamentals</strong></td>
+                                <td>AZ-900</td>
+                                <td>Foundation, basic security concepts</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Azure Security Engineer</strong></td>
+                                <td>AZ-500</td>
+                                <td>Key Vault, Entra ID, PIM, RBAC (highly relevant)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Identity & Access Administrator</strong></td>
+                                <td>SC-300</td>
+                                <td>Entra ID, conditional access, PIM (very relevant)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Security Operations Analyst</strong></td>
+                                <td>SC-200</td>
+                                <td>Sentinel, Defender (SIEM integration knowledge)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h4>AZ-500 Key Topics</h4>
+
+                <ul>
+                    <li><strong>Manage identity and access:</strong> Entra ID, RBAC, PIM, conditional access</li>
+                    <li><strong>Secure networking:</strong> NSGs, firewalls, private endpoints</li>
+                    <li><strong>Secure compute, storage, databases:</strong> Key Vault, disk encryption, TDE</li>
+                    <li><strong>Security operations:</strong> Defender for Cloud, Sentinel, policy</li>
+                </ul>
+
+                <h3>Google Cloud Security</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Certification</th>
+                                <th>PAM/KMS Relevance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Cloud Digital Leader</strong></td>
+                                <td>Foundation level</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Associate Cloud Engineer</strong></td>
+                                <td>IAM basics, resource management</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Professional Cloud Security Engineer</strong></td>
+                                <td>IAM, Cloud KMS, Secret Manager (highly relevant)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="general-certs">
+                <h2>General Security Certifications</h2>
+
+                <h3>CISSP (Certified Information Systems Security Professional)</h3>
+
+                <p><strong>Issued by:</strong> (ISC)²</p>
+
+                <ul>
+                    <li><strong>Audience:</strong> Security managers, architects, senior engineers</li>
+                    <li><strong>Prereq:</strong> 5 years security experience (4 with degree)</li>
+                    <li><strong>Domains:</strong> 8 domains including Identity & Access Management</li>
+                    <li><strong>Format:</strong> CAT exam, 100-150 questions, 3 hours</li>
+                    <li><strong>Cost:</strong> ~$750</li>
+                    <li><strong>Value:</strong> Gold standard for security professionals, often required for senior roles</li>
+                    <li><strong>Prep Time:</strong> 3-6 months</li>
+                </ul>
+
+                <h4>CISSP Domain 5: Identity and Access Management</h4>
+
+                <ul>
+                    <li>Physical and logical access to assets</li>
+                    <li>Identification and authentication</li>
+                    <li>Federated identity with third-party services</li>
+                    <li>Authorization mechanisms</li>
+                    <li>Identity and access provisioning lifecycle</li>
+                    <li>Access control attacks and countermeasures</li>
+                </ul>
+
+                <h3>CISM (Certified Information Security Manager)</h3>
+
+                <p><strong>Issued by:</strong> ISACA</p>
+
+                <ul>
+                    <li><strong>Audience:</strong> Security managers, directors</li>
+                    <li><strong>Focus:</strong> Security management, governance, risk</li>
+                    <li><strong>Value:</strong> Excellent for management track</li>
+                    <li><strong>Prep Time:</strong> 2-4 months</li>
+                </ul>
+
+                <h3>CompTIA Certifications</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Certification</th>
+                                <th>Level</th>
+                                <th>Value for PAM/KMS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Security+</strong></td>
+                                <td>Entry</td>
+                                <td>Foundation, covers access control basics</td>
+                            </tr>
+                            <tr>
+                                <td><strong>CySA+</strong></td>
+                                <td>Intermediate</td>
+                                <td>Security operations, detection</td>
+                            </tr>
+                            <tr>
+                                <td><strong>CASP+</strong></td>
+                                <td>Advanced</td>
+                                <td>Enterprise security, covers IAM/PKI</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Other Relevant Certifications</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Certification</th>
+                                <th>Issuer</th>
+                                <th>Relevance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>CCSP</strong></td>
+                                <td>(ISC)²</td>
+                                <td>Cloud security, includes IAM and key management</td>
+                            </tr>
+                            <tr>
+                                <td><strong>CCSK</strong></td>
+                                <td>CSA</td>
+                                <td>Cloud security knowledge, foundation level</td>
+                            </tr>
+                            <tr>
+                                <td><strong>CISA</strong></td>
+                                <td>ISACA</td>
+                                <td>Audit focus, good for compliance roles</td>
+                            </tr>
+                            <tr>
+                                <td><strong>CRISC</strong></td>
+                                <td>ISACA</td>
+                                <td>Risk management, governance focus</td>
+                            </tr>
+                            <tr>
+                                <td><strong>OSCP</strong></td>
+                                <td>Offensive Security</td>
+                                <td>Penetration testing, understand attacker perspective</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="roadmaps">
+                <h2>Role-Based Roadmaps</h2>
+
+                <h3>PAM Administrator Track</h3>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+Year 1: Foundation
+├── Security+ (if no security background)
+├── CyberArk Trustee
+├── CyberArk Defender
+└── Build home lab, document everything
+
+Year 2: Specialization  
+├── CyberArk Sentry
+├── Cloud cert (AWS SAA or AZ-500 based on employer)
+└── Start contributing to team documentation, automation
+
+Year 3+: Advancement
+├── CyberArk Guardian (if staying technical)
+├── CISSP (if moving toward architecture/management)
+├── Additional cloud certs for multi-cloud
+└── Consider HashiCorp Vault if DevOps integration growing
+                </pre>
+
+                <h3>Cloud Security Engineer Track</h3>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+Year 1: Cloud Foundation
+├── AWS Cloud Practitioner or AZ-900
+├── AWS Solutions Architect Associate or AZ-104
+├── Security+ (if needed)
+└── Hands-on: Deploy and secure cloud workloads
+
+Year 2: Security Specialization
+├── AWS Security Specialty or AZ-500
+├── HashiCorp Vault Associate
+├── SC-300 (if Azure focus)
+└── Build cloud security projects for portfolio
+
+Year 3+: Expert Level
+├── CCSP or additional cloud certs
+├── CISSP
+├── CyberArk (if enterprise PAM integration needed)
+└── Contribute to open source, speak at meetups
+                </pre>
+
+                <h3>Security Architect Track</h3>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+Year 1-2: Build Breadth
+├── CISSP (primary goal)
+├── One major cloud cert (AWS Security or AZ-500)
+├── One PAM cert (CyberArk Defender or Vault Associate)
+└── Understand multiple domains deeply
+
+Year 3-4: Establish Authority
+├── CyberArk Guardian or Sentry
+├── Additional cloud certs (multi-cloud expertise)
+├── CCSP
+└── Lead architecture reviews, mentor juniors
+
+Year 5+: Thought Leadership
+├── CISM or CRISC (if management interest)
+├── Specialized certifications based on focus area
+├── Industry presentations, publications
+└── Advisory board participation
+                </pre>
+
+                <h3>DevSecOps Track</h3>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+Year 1: DevOps + Security Foundation
+├── AWS SAA or AZ-104
+├── HashiCorp Terraform Associate
+├── HashiCorp Vault Associate
+└── Build CI/CD pipelines with security integration
+
+Year 2: Security Depth
+├── AWS Security Specialty or AZ-500
+├── Kubernetes security (CKS if K8s heavy)
+├── Security+ or CySA+
+└── Automate security controls, policy as code
+
+Year 3+: Expert
+├── CISSP
+├── HashiCorp Vault Professional
+├── Additional DevOps certs (Kubernetes, GitOps)
+└── Architect secure pipelines, mentor developers
+                </pre>
+            </section>
+
+            <section id="resources">
+                <h2>Training Resources</h2>
+
+                <h3>Official Vendor Training</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Vendor</th>
+                                <th>Platform</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>CyberArk</strong></td>
+                                <td>CyberArk University</td>
+                                <td>Official training, required for some certs, $$</td>
+                            </tr>
+                            <tr>
+                                <td><strong>HashiCorp</strong></td>
+                                <td>HashiCorp Learn</td>
+                                <td>Free tutorials, excellent quality</td>
+                            </tr>
+                            <tr>
+                                <td><strong>AWS</strong></td>
+                                <td>AWS Skill Builder</td>
+                                <td>Free tier available, official courses</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Microsoft</strong></td>
+                                <td>Microsoft Learn</td>
+                                <td>Free, comprehensive, hands-on labs</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Google</strong></td>
+                                <td>Google Cloud Skills Boost</td>
+                                <td>Free tier, Qwiklabs hands-on</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Third-Party Training</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Platform</th>
+                                <th>Best For</th>
+                                <th>Cost</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>A Cloud Guru / Pluralsight</strong></td>
+                                <td>Cloud certs, broad coverage</td>
+                                <td>$$/month subscription</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Linux Academy (now ACG)</strong></td>
+                                <td>Hands-on labs</td>
+                                <td>Included with ACG</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Udemy</strong></td>
+                                <td>Budget-friendly, variable quality</td>
+                                <td>$ per course (sales often)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Cybrary</strong></td>
+                                <td>Security certifications</td>
+                                <td>Free tier + premium</td>
+                            </tr>
+                            <tr>
+                                <td><strong>SANS</strong></td>
+                                <td>Deep technical training</td>
+                                <td>$$$$$ (employer funded)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>INE</strong></td>
+                                <td>Security, networking</td>
+                                <td>$$/month subscription</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Free Resources</h3>
+
+                <ul>
+                    <li><strong>HashiCorp Learn:</strong> learn.hashicorp.com - Excellent Vault tutorials</li>
+                    <li><strong>AWS Free Tier:</strong> 12 months free services for hands-on practice</li>
+                    <li><strong>Azure Free Account:</strong> $200 credit for learning</li>
+                    <li><strong>(ISC)² Free Courses:</strong> Entry-level security courses</li>
+                    <li><strong>YouTube:</strong> Search "CyberArk tutorial", "Vault tutorial", etc.</li>
+                    <li><strong>Documentation:</strong> Vendor docs are often the best resource</li>
+                </ul>
+
+                <h3>Books</h3>
+
+                <ul>
+                    <li><strong>CISSP:</strong> "CISSP All-in-One Exam Guide" by Shon Harris</li>
+                    <li><strong>AWS Security:</strong> "AWS Certified Security Study Guide"</li>
+                    <li><strong>General:</strong> "Identity Attack Vectors" by Grimes & Johansson</li>
+                    <li><strong>Cryptography:</strong> "Serious Cryptography" by Jean-Philippe Aumasson</li>
+                </ul>
+            </section>
+
+            <div class="info-box success">
+                <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <div class="info-box-content">
+                    <h4>Key Advice</h4>
+                    <p><strong>Quality over quantity:</strong> 2-3 relevant certifications + hands-on experience beats 10 random certs. <strong>Employer alignment:</strong> Get certified in what you use daily first. <strong>Document everything:</strong> Build a portfolio alongside certifications. <strong>Network:</strong> Join communities, attend meetups—jobs often come through connections. <strong>Stay current:</strong> Certifications expire; continuous learning is required.</p>
+                </div>
+            </div>
+
+            <nav class="page-nav">
+                <a href="interview-prep.html" class="page-nav-link prev">
+                    <span class="page-nav-label">Previous</span>
+                    <span class="page-nav-title">← Interview Prep</span>
+                </a>
+                <a href="labs.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next</span>
+                    <span class="page-nav-title">Hands-On Labs →</span>
+                </a>
+            </nav>
+        </div>
+
+        <footer class="footer">
+            <p>PAM & KMS Ultimate Guide — A comprehensive enterprise security documentation resource</p>
+        </footer>
+    </main>
+
+    <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+    </button>
+
+    <script src="../js/main.js"></script>
+</body>
+</html>

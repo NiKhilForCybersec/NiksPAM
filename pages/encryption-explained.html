@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Encryption Explained - Understanding cryptography without the math">
+    <title>Encryption Explained | PAM & KMS Guide</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="scroll-progress" id="scroll-progress"></div>
+
+    <header class="header">
+        <div class="header-content">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                PAM & KMS Guide
+            </a>
+            
+            <nav class="header-nav">
+                <a href="pam-fundamentals.html">PAM</a>
+                <a href="kms-fundamentals.html" class="active">KMS</a>
+                <a href="vendors.html">Vendors</a>
+                <a href="implementation.html">Implementation</a>
+            </nav>
+            
+            <div class="header-actions">
+                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-title">Getting Started</div>
+            <ul class="sidebar-nav">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="introduction.html">Introduction</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">Deep Dives</div>
+            <ul class="sidebar-nav">
+                <li><a href="how-pam-works.html">How PAM Actually Works</a></li>
+                <li><a href="encryption-explained.html" class="active">Encryption Explained</a></li>
+                <li><a href="attack-scenarios.html">Real-World Attacks</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <main class="main-wrapper">
+        <div class="main-content">
+            <nav class="breadcrumb">
+                <a href="../index.html">Home</a>
+                <span class="breadcrumb-separator">/</span>
+                <a href="kms-fundamentals.html">KMS</a>
+                <span class="breadcrumb-separator">/</span>
+                <span>Encryption Explained</span>
+            </nav>
+
+            <div class="page-header">
+                <h1>Encryption Explained</h1>
+                <p class="page-description">
+                    Cryptography can seem intimidating, but the core concepts are surprisingly intuitive. This page explains encryption in plain language, with analogies that make the concepts stick.
+                </p>
+            </div>
+
+            <div class="toc">
+                <div class="toc-title">On This Page</div>
+                <ul class="toc-list">
+                    <li><a href="#what-is-encryption"><span class="toc-number">1.</span> What Is Encryption, Really?</a></li>
+                    <li><a href="#symmetric"><span class="toc-number">2.</span> Symmetric Encryption</a></li>
+                    <li><a href="#asymmetric"><span class="toc-number">3.</span> Asymmetric Encryption</a></li>
+                    <li><a href="#hashing"><span class="toc-number">4.</span> Hashing Explained</a></li>
+                    <li><a href="#signatures"><span class="toc-number">5.</span> Digital Signatures</a></li>
+                    <li><a href="#envelope"><span class="toc-number">6.</span> Envelope Encryption</a></li>
+                    <li><a href="#tls"><span class="toc-number">7.</span> How TLS Works</a></li>
+                    <li><a href="#real-world"><span class="toc-number">8.</span> Real-World Applications</a></li>
+                </ul>
+            </div>
+
+            <section id="what-is-encryption">
+                <h2>What Is Encryption, Really?</h2>
+                
+                <p>
+                    At its core, encryption is <strong>scrambling information so only authorized parties can unscramble it</strong>. Think of it as a lock: the data is locked, and only someone with the key can unlock it.
+                </p>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>The Fundamental Guarantee</h4>
+                        <p>Good encryption means: even if an attacker gets your encrypted data, they can't read it without the key. They could have the world's fastest computer and try for a billion years—they still won't crack it. This isn't an exaggeration; it's how modern cryptography works.</p>
+                    </div>
+                </div>
+
+                <h3>Key Terminology</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Term</th>
+                                <th>Meaning</th>
+                                <th>Analogy</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Plaintext</strong></td>
+                                <td>The original, readable data</td>
+                                <td>A letter written in English</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Ciphertext</strong></td>
+                                <td>The encrypted, scrambled data</td>
+                                <td>The letter translated into an unreadable code</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Key</strong></td>
+                                <td>The secret that controls encryption/decryption</td>
+                                <td>The codebook that lets you translate</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Encrypt</strong></td>
+                                <td>Transform plaintext → ciphertext</td>
+                                <td>Lock the box</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Decrypt</strong></td>
+                                <td>Transform ciphertext → plaintext</td>
+                                <td>Unlock the box</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Algorithm</strong></td>
+                                <td>The mathematical method used</td>
+                                <td>The type of lock mechanism</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="symmetric">
+                <h2>Symmetric Encryption</h2>
+
+                <p>
+                    <strong>Symmetric encryption</strong> uses the <strong>same key</strong> to encrypt and decrypt. It's called "symmetric" because both sides use identical keys.
+                </p>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>The House Key Analogy</h4>
+                        <p>Symmetric encryption is like a house key. You lock the door with a key, and you unlock it with the same key. If you want someone else to enter, you need to give them a copy of your key. The challenge: how do you safely give them the key?</p>
+                    </div>
+                </div>
+
+                <h3>How It Works (Conceptually)</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>You Have Data</h4>
+                            <p>Your plaintext: "The secret meeting is at noon"</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>You Have a Key</h4>
+                            <p>A 256-bit random number (looks like: 7f3a9c2b...)</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Encryption Happens</h4>
+                            <p>The algorithm (like AES) takes your data and key, performs mathematical operations, and outputs ciphertext: "x9Kp2mNv..."</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Decryption Reverses It</h4>
+                            <p>With the same key, the algorithm reverses the operations, turning "x9Kp2mNv..." back into "The secret meeting is at noon"</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>The Pros and Cons</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Pros</th>
+                                <th>Cons</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Very fast</strong> - can encrypt gigabytes per second</td>
+                                <td><strong>Key distribution problem</strong> - how do you share the key securely?</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Efficient</strong> - low CPU usage</td>
+                                <td><strong>Key management</strong> - need separate key for each pair of communicators</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Well-understood</strong> - AES is heavily analyzed</td>
+                                <td><strong>Both parties need the same key</strong> - if one is compromised, both are</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Common Algorithms</h3>
+
+                <ul>
+                    <li><strong>AES (Advanced Encryption Standard):</strong> The gold standard. AES-256 is used everywhere.</li>
+                    <li><strong>ChaCha20:</strong> Modern alternative, often used in mobile (faster on devices without AES hardware)</li>
+                    <li><strong>3DES:</strong> Legacy, being phased out—don't use for new systems</li>
+                </ul>
+
+                <h3>When It's Used</h3>
+
+                <ul>
+                    <li>Encrypting files on disk</li>
+                    <li>Database encryption</li>
+                    <li>Encrypting the actual data in TLS (after keys are exchanged)</li>
+                    <li>VPN tunnels</li>
+                </ul>
+            </section>
+
+            <section id="asymmetric">
+                <h2>Asymmetric Encryption</h2>
+
+                <p>
+                    <strong>Asymmetric encryption</strong> uses <strong>two different keys</strong>: a public key and a private key. What one encrypts, only the other can decrypt.
+                </p>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>The Mailbox Analogy</h4>
+                        <p>Think of a mailbox with a slot. Anyone can drop a letter in (using the public key to encrypt). But only you have the key to open the mailbox and read the letters (using your private key to decrypt). You can give everyone your address (public key) without giving them access to your mail (private key).</p>
+                    </div>
+                </div>
+
+                <h3>The Key Pair</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Key</th>
+                                <th>Who Has It</th>
+                                <th>What It Does</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Public Key</strong></td>
+                                <td>Everyone (it's public!)</td>
+                                <td>Encrypts data that only the private key can decrypt</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Private Key</strong></td>
+                                <td>Only you (keep it SECRET)</td>
+                                <td>Decrypts data that was encrypted with your public key</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>How It Solves Key Distribution</h3>
+
+                <p>Remember symmetric encryption's problem—how do you share the key? Asymmetric solves this:</p>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>I Generate a Key Pair</h4>
+                            <p>I create a public key and private key. They're mathematically linked.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>I Publish My Public Key</h4>
+                            <p>I can put this on my website, in a directory, email it—doesn't matter if attackers see it.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>You Encrypt With My Public Key</h4>
+                            <p>You want to send me a secret? Encrypt it with my public key.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Only I Can Decrypt It</h4>
+                            <p>Even though everyone has my public key, only my private key can decrypt messages encrypted with it.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>The Trade-off</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Pros</th>
+                                <th>Cons</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>No key distribution problem</strong> - public keys are public</td>
+                                <td><strong>Slow</strong> - 100-1000x slower than symmetric</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Enables signatures</strong> - prove who sent something</td>
+                                <td><strong>Larger keys</strong> - RSA needs 2048+ bits vs 256 for AES</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Scalable</strong> - one key pair works with everyone</td>
+                                <td><strong>Can only encrypt small amounts</strong> - data size limited</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Common Algorithms</h3>
+
+                <ul>
+                    <li><strong>RSA:</strong> The classic. RSA-2048 or RSA-4096 for modern use.</li>
+                    <li><strong>Elliptic Curve (ECC):</strong> Modern, smaller keys, same security. P-256, P-384.</li>
+                    <li><strong>Ed25519:</strong> Popular for SSH keys and signatures.</li>
+                </ul>
+            </section>
+
+            <section id="hashing">
+                <h2>Hashing Explained</h2>
+
+                <p>
+                    <strong>Hashing</strong> is different from encryption. It's a <strong>one-way function</strong>: you can turn data into a hash, but you can't turn the hash back into data.
+                </p>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>The Fingerprint Analogy</h4>
+                        <p>A hash is like a fingerprint for data. A fingerprint uniquely identifies a person, but you can't reconstruct the person from their fingerprint. Similarly, a hash uniquely identifies data, but you can't reconstruct the data from the hash.</p>
+                    </div>
+                </div>
+
+                <h3>Hash Properties</h3>
+
+                <ul>
+                    <li><strong>Deterministic:</strong> Same input always produces same output</li>
+                    <li><strong>One-way:</strong> Can't reverse the hash to get the original data</li>
+                    <li><strong>Fixed size:</strong> Output is always the same length (e.g., SHA-256 = 256 bits)</li>
+                    <li><strong>Avalanche effect:</strong> Tiny change in input = completely different output</li>
+                    <li><strong>Collision resistant:</strong> Practically impossible to find two inputs with the same hash</li>
+                </ul>
+
+                <h3>Example</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Input</th>
+                                <th>SHA-256 Hash</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>"Hello"</td>
+                                <td><code>185f8db32271fe2...9bd046c4ee15</code></td>
+                            </tr>
+                            <tr>
+                                <td>"hello"</td>
+                                <td><code>2cf24dba5fb0a30...e8b3c67898c</code></td>
+                            </tr>
+                            <tr>
+                                <td>"Hello!"</td>
+                                <td><code>33b59daa8a24e0f...1b2e6c4f2ae</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p>Notice: Just changing a capital letter or adding one character produces a completely different hash.</p>
+
+                <h3>What Hashing Is Used For</h3>
+
+                <ul>
+                    <li><strong>Password storage:</strong> Store hash of password, not the password itself. When user logs in, hash their input and compare.</li>
+                    <li><strong>Data integrity:</strong> Hash a file. Later, hash it again. If hashes match, file wasn't modified.</li>
+                    <li><strong>Digital signatures:</strong> Hash the document, then sign the hash (much faster than signing the whole document)</li>
+                    <li><strong>Deduplication:</strong> Two files have the same hash? They're identical.</li>
+                </ul>
+
+                <h3>Common Algorithms</h3>
+
+                <ul>
+                    <li><strong>SHA-256, SHA-384, SHA-512:</strong> The workhorses. Use SHA-256 for most purposes.</li>
+                    <li><strong>SHA-3:</strong> Newer standard, different design, equally secure.</li>
+                    <li><strong>MD5, SHA-1:</strong> BROKEN for security. Don't use for anything security-related.</li>
+                </ul>
+
+                <div class="info-box warning">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Password Hashing Is Special</h4>
+                        <p>For passwords, don't use plain SHA-256. Use specialized password hashing functions (bcrypt, scrypt, Argon2) that are intentionally slow and use salt. This protects against brute force attacks. Regular hashes are too fast—attackers can try billions per second.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="signatures">
+                <h2>Digital Signatures</h2>
+
+                <p>
+                    <strong>Digital signatures</strong> prove two things: <strong>who</strong> sent a message (authentication) and that the message <strong>wasn't tampered with</strong> (integrity).
+                </p>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>The Wax Seal Analogy</h4>
+                        <p>In medieval times, important letters were sealed with wax imprinted with the sender's unique ring. The seal proved who sent it (only they have that ring) and that it wasn't opened (the seal would be broken). Digital signatures work the same way but are mathematically unforgeable.</p>
+                    </div>
+                </div>
+
+                <h3>How Digital Signatures Work</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Hash the Message</h4>
+                            <p>Take your document/data and create a hash of it. This hash represents the document.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Encrypt Hash with Private Key</h4>
+                            <p>Use your <strong>private key</strong> to encrypt the hash. This encrypted hash IS the signature.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Send Document + Signature</h4>
+                            <p>Recipient gets your original document plus the signature.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Recipient Verifies</h4>
+                            <p>Recipient (1) hashes the document themselves, (2) decrypts your signature using your <strong>public key</strong>, (3) compares the two hashes. If they match, the signature is valid.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Why This Works</h3>
+
+                <ul>
+                    <li><strong>Authentication:</strong> Only you have your private key, so only you could create that signature</li>
+                    <li><strong>Integrity:</strong> If anyone changes the document, the hash changes, and the signature won't match</li>
+                    <li><strong>Non-repudiation:</strong> You can't deny signing it—your private key was required</li>
+                </ul>
+
+                <h3>Where Signatures Are Used</h3>
+
+                <ul>
+                    <li>Software code signing (proving software came from legitimate developer)</li>
+                    <li>Document signing (contracts, agreements)</li>
+                    <li>SSL/TLS certificates (proving website identity)</li>
+                    <li>Email signing (S/MIME, PGP)</li>
+                    <li>Blockchain transactions</li>
+                </ul>
+            </section>
+
+            <section id="envelope">
+                <h2>Envelope Encryption</h2>
+
+                <p>
+                    <strong>Envelope encryption</strong> is the clever technique that combines the best of symmetric and asymmetric encryption. It's how most real-world systems work.
+                </p>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>The Key in the Envelope Analogy</h4>
+                        <p>Imagine you want to send a large locked box (your data) to someone. You lock the box with a random key (data encryption key). Then you put that key inside a small envelope and lock the envelope with their padlock (their public key). They receive the box + envelope. They open the envelope with their key, get the box key, and open the box.</p>
+                    </div>
+                </div>
+
+                <h3>The Problem Envelope Encryption Solves</h3>
+
+                <ul>
+                    <li><strong>Symmetric is fast</strong> but has key distribution problems</li>
+                    <li><strong>Asymmetric solves key distribution</strong> but is slow and limited in data size</li>
+                    <li><strong>Envelope encryption:</strong> Use asymmetric for the small key, symmetric for the large data. Best of both worlds!</li>
+                </ul>
+
+                <h3>How It Works</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Generate a Data Encryption Key (DEK)</h4>
+                            <p>Create a random symmetric key (e.g., AES-256) just for this data.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Encrypt the Data with DEK</h4>
+                            <p>Use the DEK to encrypt your actual data (fast, efficient).</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Encrypt the DEK with Master Key</h4>
+                            <p>Use your master key (often in KMS/HSM) to encrypt the DEK. The DEK is small, so this is fast.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Store Encrypted Data + Encrypted DEK Together</h4>
+                            <p>The encrypted DEK is stored alongside (or with) the encrypted data.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>To Decrypt</h3>
+
+                <ol>
+                    <li>Retrieve the encrypted DEK</li>
+                    <li>Use master key to decrypt the DEK</li>
+                    <li>Use the DEK to decrypt the data</li>
+                </ol>
+
+                <h3>Why This Is Brilliant</h3>
+
+                <ul>
+                    <li><strong>Master key stays protected:</strong> It only touches small DEKs, never bulk data</li>
+                    <li><strong>Easy rotation:</strong> To rotate master key, just re-encrypt the DEKs (don't re-encrypt all data)</li>
+                    <li><strong>Scalable:</strong> One master key can protect millions of DEKs</li>
+                    <li><strong>Fast:</strong> Bulk data encrypted with fast symmetric encryption</li>
+                </ul>
+
+                <p>This is exactly how AWS KMS, Azure Key Vault, and most cloud encryption works.</p>
+            </section>
+
+            <section id="tls">
+                <h2>How TLS Works</h2>
+
+                <p>
+                    <strong>TLS (Transport Layer Security)</strong> is what puts the "S" in HTTPS. It's a real-world example showing how all these cryptographic pieces work together.
+                </p>
+
+                <h3>The TLS Handshake (Simplified)</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Client Hello</h4>
+                            <p>Your browser says "Hi server, I want to connect securely. I support these encryption methods..."</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Server Hello + Certificate</h4>
+                            <p>Server responds: "Great, let's use this encryption method. Here's my certificate (containing my public key) signed by a trusted authority."</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Client Verifies Certificate</h4>
+                            <p>Browser checks: Is this certificate valid? Is it signed by a trusted CA? Does it match the domain? (This uses digital signatures)</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Key Exchange</h4>
+                            <p>Browser and server use asymmetric cryptography (or Diffie-Hellman) to agree on a shared secret. Only they know this secret.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Derive Session Keys</h4>
+                            <p>Both sides use the shared secret to derive symmetric keys for this session.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <h4>Encrypted Communication</h4>
+                            <p>All data now flows encrypted with fast symmetric encryption (AES). An eavesdropper sees only gibberish.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>What's Used Where</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Cryptographic Primitive</th>
+                                <th>Role in TLS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Asymmetric (RSA/ECC)</strong></td>
+                                <td>Server authentication (certificate), key exchange</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Digital Signatures</strong></td>
+                                <td>Certificate signing (proves certificate is legitimate)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Key Exchange (DH/ECDH)</strong></td>
+                                <td>Derive shared secret without transmitting it</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Symmetric (AES)</strong></td>
+                                <td>Encrypt all actual data after handshake</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Hashing (SHA-256)</strong></td>
+                                <td>Message integrity (HMAC), key derivation</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="real-world">
+                <h2>Real-World Applications</h2>
+
+                <p>Let's connect the concepts to everyday security scenarios:</p>
+
+                <h3>When You Log Into a Website</h3>
+
+                <ol>
+                    <li>TLS encrypts the connection (your password never travels in plaintext)</li>
+                    <li>Server receives your password</li>
+                    <li>Server hashes your password with a password hashing function</li>
+                    <li>Server compares hash to stored hash</li>
+                    <li>If match, you're authenticated</li>
+                </ol>
+
+                <h3>When PAM Stores a Password</h3>
+
+                <ol>
+                    <li>Password is encrypted with a Data Encryption Key (envelope encryption)</li>
+                    <li>DEK is encrypted with the Vault Key</li>
+                    <li>Vault Key is protected by HSM Master Key</li>
+                    <li>Master Key never leaves the HSM</li>
+                </ol>
+
+                <h3>When You Sign a PDF</h3>
+
+                <ol>
+                    <li>PDF software hashes the document</li>
+                    <li>Your private key encrypts the hash (creating signature)</li>
+                    <li>Signature is embedded in the PDF</li>
+                    <li>Anyone can verify using your public key</li>
+                </ol>
+
+                <h3>When Software Is Code-Signed</h3>
+
+                <ol>
+                    <li>Developer computes hash of the executable</li>
+                    <li>Developer signs hash with their code signing certificate's private key</li>
+                    <li>Signature is attached to the software</li>
+                    <li>When you run it, OS verifies signature proves it came from that developer and wasn't modified</li>
+                </ol>
+            </section>
+
+            <div class="info-box success">
+                <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <div class="info-box-content">
+                    <h4>Key Takeaways</h4>
+                    <p><strong>Symmetric encryption</strong> (AES) is fast but has key distribution challenges. <strong>Asymmetric encryption</strong> (RSA, ECC) solves key distribution but is slow. <strong>Hashing</strong> is one-way and used for integrity and passwords. <strong>Digital signatures</strong> prove authenticity and integrity. <strong>Envelope encryption</strong> combines symmetric and asymmetric for the best of both. <strong>TLS</strong> shows how all these work together in practice.</p>
+                </div>
+            </div>
+
+            <nav class="page-nav">
+                <a href="how-pam-works.html" class="page-nav-link prev">
+                    <span class="page-nav-label">Previous</span>
+                    <span class="page-nav-title">← How PAM Actually Works</span>
+                </a>
+                <a href="attack-scenarios.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next</span>
+                    <span class="page-nav-title">Real-World Attacks →</span>
+                </a>
+            </nav>
+        </div>
+
+        <footer class="footer">
+            <p>PAM & KMS Ultimate Guide — A comprehensive enterprise security documentation resource</p>
+        </footer>
+    </main>
+
+    <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+    </button>
+
+    <script src="../js/main.js"></script>
+</body>
+</html>

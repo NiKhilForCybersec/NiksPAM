@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="How PAM Actually Works - Understanding the mechanics behind Privileged Access Management">
+    <title>How PAM Actually Works | PAM & KMS Guide</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="scroll-progress" id="scroll-progress"></div>
+
+    <header class="header">
+        <div class="header-content">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                PAM & KMS Guide
+            </a>
+            
+            <nav class="header-nav">
+                <a href="pam-fundamentals.html" class="active">PAM</a>
+                <a href="kms-fundamentals.html">KMS</a>
+                <a href="vendors.html">Vendors</a>
+                <a href="implementation.html">Implementation</a>
+            </nav>
+            
+            <div class="header-actions">
+                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-title">Getting Started</div>
+            <ul class="sidebar-nav">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="introduction.html">Introduction</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">Deep Dives</div>
+            <ul class="sidebar-nav">
+                <li><a href="how-pam-works.html" class="active">How PAM Actually Works</a></li>
+                <li><a href="encryption-explained.html">Encryption Explained</a></li>
+                <li><a href="attack-scenarios.html">Real-World Attacks</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <main class="main-wrapper">
+        <div class="main-content">
+            <nav class="breadcrumb">
+                <a href="../index.html">Home</a>
+                <span class="breadcrumb-separator">/</span>
+                <a href="pam-fundamentals.html">PAM</a>
+                <span class="breadcrumb-separator">/</span>
+                <span>How PAM Actually Works</span>
+            </nav>
+
+            <div class="page-header">
+                <h1>How PAM Actually Works</h1>
+                <p class="page-description">
+                    This page goes beyond feature lists to explain the actual mechanics of how PAM systems work. Understanding these fundamentals will help you troubleshoot, design, and explain PAM to others.
+                </p>
+            </div>
+
+            <div class="toc">
+                <div class="toc-title">On This Page</div>
+                <ul class="toc-list">
+                    <li><a href="#mental-model"><span class="toc-number">1.</span> The Mental Model</a></li>
+                    <li><a href="#vault-mechanics"><span class="toc-number">2.</span> How the Vault Actually Works</a></li>
+                    <li><a href="#session-proxy"><span class="toc-number">3.</span> The Session Proxy Magic</a></li>
+                    <li><a href="#password-rotation"><span class="toc-number">4.</span> Password Rotation Mechanics</a></li>
+                    <li><a href="#credential-injection"><span class="toc-number">5.</span> Credential Injection Explained</a></li>
+                    <li><a href="#discovery"><span class="toc-number">6.</span> How Discovery Works</a></li>
+                    <li><a href="#putting-together"><span class="toc-number">7.</span> Putting It All Together</a></li>
+                </ul>
+            </div>
+
+            <section id="mental-model">
+                <h2>The Mental Model</h2>
+                
+                <p>
+                    Before diving into mechanics, let's establish a mental model. Think of PAM as a <strong>secure middleman</strong> that sits between users and sensitive systems.
+                </p>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>The Hotel Concierge Analogy</h4>
+                        <p>Imagine a luxury hotel where guests never get room keys directly. Instead, they go to the concierge (PAM), who verifies their identity, checks they're authorized for that room, escorts them there, watches what they do, and changes the lock after they leave. The guest never touches the actual key.</p>
+                    </div>
+                </div>
+
+                <h3>Without PAM</h3>
+
+                <p>In a traditional environment:</p>
+
+                <ol>
+                    <li>Admin knows the password (or it's in a spreadsheet, or everyone uses the same one)</li>
+                    <li>Admin opens RDP/SSH client on their workstation</li>
+                    <li>Admin types the password directly</li>
+                    <li>Admin does their work</li>
+                    <li>Password stays the same until someone remembers to change it</li>
+                    <li>No record of what happened during the session</li>
+                </ol>
+
+                <p><strong>Problems:</strong> Passwords are known, shared, rarely changed, and sessions are invisible.</p>
+
+                <h3>With PAM</h3>
+
+                <ol>
+                    <li>Admin authenticates to PAM (not to the target server)</li>
+                    <li>PAM verifies authorization and possibly requires approval</li>
+                    <li>PAM retrieves the password from the vault (admin never sees it)</li>
+                    <li>PAM establishes a proxied session, injecting the credential</li>
+                    <li>PAM records everything during the session</li>
+                    <li>When done, PAM can rotate the password immediately</li>
+                </ol>
+
+                <p><strong>Result:</strong> Passwords are unknown, unique, constantly changing, and every action is recorded.</p>
+            </section>
+
+            <section id="vault-mechanics">
+                <h2>How the Vault Actually Works</h2>
+
+                <p>
+                    The "vault" sounds mysterious, but it's fundamentally a <strong>secure, encrypted database</strong> with strict access controls. Let's demystify it.
+                </p>
+
+                <h3>What's Actually Stored</h3>
+
+                <p>For each managed account, the vault stores:</p>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Example</th>
+                                <th>How It's Protected</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Account identifier</strong></td>
+                                <td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5716333a3e393e242325362338251724322521322567667934382527793b3834363b">[email&#160;protected]</a></td>
+                                <td>Indexed for lookup</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Credential</strong></td>
+                                <td>xK9#mP2$vL7@nQ4...</td>
+                                <td>Encrypted with master key</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Connection info</strong></td>
+                                <td>IP, port, protocol</td>
+                                <td>Encrypted</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Metadata</strong></td>
+                                <td>Last rotation, last use, owner</td>
+                                <td>Encrypted</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Policy references</strong></td>
+                                <td>Which safe, rotation schedule</td>
+                                <td>Access controlled</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>The Encryption Chain</h3>
+
+                <p>Here's how the encryption actually works (this is the key insight many people miss):</p>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Master Key (in HSM)</h4>
+                            <p>The top of the chain. This key lives in a Hardware Security Module and <strong>never leaves it in plaintext</strong>. It's used to encrypt/decrypt the vault encryption key.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Vault Encryption Key</h4>
+                            <p>This key actually encrypts the stored credentials. It's itself encrypted by the master key. If you steal the database file, you get encrypted data that's useless without this key.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Individual Credentials</h4>
+                            <p>Each password is encrypted with the vault key. To retrieve a password, the PAM server must: authenticate to the HSM → get the master key to decrypt the vault key → use the vault key to decrypt the specific credential.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-box warning">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Why This Matters</h4>
+                        <p>If an attacker steals your PAM database backup, they get encrypted blobs. Without the master key (which is in the HSM), and without the vault key (which is encrypted by the master key), the passwords are unrecoverable. This is why the HSM is critical.</p>
+                    </div>
+                </div>
+
+                <h3>Retrieval Process</h3>
+
+                <p>When a user needs a credential:</p>
+
+                <ol>
+                    <li>User authenticates to PAM (MFA, SSO, etc.)</li>
+                    <li>PAM checks: Is this user authorized for this account? (Policy check)</li>
+                    <li>PAM contacts the HSM to decrypt the vault encryption key</li>
+                    <li>PAM uses the vault key to decrypt the specific credential</li>
+                    <li>Credential is used (injected into session or returned via API)</li>
+                    <li>Audit log records who accessed what, when</li>
+                </ol>
+
+                <p>The credential exists in plaintext only briefly, in memory, during the operation.</p>
+            </section>
+
+            <section id="session-proxy">
+                <h2>The Session Proxy Magic</h2>
+
+                <p>
+                    The session proxy (also called PSM - Privileged Session Manager) is where PAM gets really clever. It enables users to access systems <strong>without ever knowing the password</strong>.
+                </p>
+
+                <h3>How It Works - Step by Step</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>User Initiates Connection</h4>
+                            <p>User clicks "Connect" in the PAM portal, or uses a PAM-aware client. The user is connecting <strong>to the PAM proxy</strong>, not directly to the target.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>PAM Authenticates User</h4>
+                            <p>PAM verifies the user's identity (they already logged in) and checks they're authorized for this specific target with this specific account.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>PAM Retrieves Credential</h4>
+                            <p>PAM gets the password from the vault. The user's client never sees this password—it stays on the PAM server.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>PAM Connects to Target</h4>
+                            <p>The PAM proxy opens a connection to the actual target server (RDP, SSH, etc.) and authenticates using the retrieved credential.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>PAM Bridges the Sessions</h4>
+                            <p>Now there are two sessions: User ↔ PAM and PAM ↔ Target. PAM acts as a "man in the middle" (but a good one), passing keystrokes/mouse from user to target, and screen/output from target to user.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <h4>PAM Records Everything</h4>
+                            <p>Because all traffic flows through PAM, it can capture video of the screen, log keystrokes, record commands, and even detect/block specific actions.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Visual Representation</h3>
+
+                <div class="diagram-container">
+                    <div class="diagram-title">Session Proxy Data Flow</div>
+                    <div class="architecture-flow">
+                        <div class="arch-row">
+                            <div class="arch-box">
+                                <div class="arch-box-title">User's Browser/Client</div>
+                                <div class="arch-box-subtitle">No password here</div>
+                            </div>
+                            <div class="arch-arrow">Keystrokes →<br>← Screen</div>
+                            <div class="arch-box primary">
+                                <div class="arch-box-title">PAM Session Proxy</div>
+                                <div class="arch-box-subtitle">Records everything</div>
+                            </div>
+                            <div class="arch-arrow">Keystrokes →<br>← Screen</div>
+                            <div class="arch-box secondary">
+                                <div class="arch-box-title">Target Server</div>
+                                <div class="arch-box-subtitle">Thinks PAM is the user</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Why This Is Powerful</h3>
+
+                <ul>
+                    <li><strong>User never has the password:</strong> Can't leak what you don't know</li>
+                    <li><strong>Password never on user's machine:</strong> Malware on workstation can't capture it</li>
+                    <li><strong>Complete visibility:</strong> Every action is recorded</li>
+                    <li><strong>Real-time control:</strong> Can terminate sessions, block commands</li>
+                    <li><strong>Protocol agnostic:</strong> Works for RDP, SSH, web, databases—anything</li>
+                </ul>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>The "Never Leaves" Question</h4>
+                        <p>People often ask: "Does the password really never leave PAM?" Yes, for proxied sessions. The password goes from vault → PAM memory → network connection to target. It never touches the user's device. For "show password" features or API retrieval, the password does travel to the requestor—which is why proxied sessions are more secure.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="password-rotation">
+                <h2>Password Rotation Mechanics</h2>
+
+                <p>
+                    Password rotation sounds simple—just change the password, right? In practice, it's more complex. Here's what actually happens.
+                </p>
+
+                <h3>The Rotation Process</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Generate New Password</h4>
+                            <p>PAM generates a new password meeting complexity requirements (length, character types, etc.). This uses a cryptographically secure random generator.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Connect to Target</h4>
+                            <p>PAM connects to the target system using the <strong>current</strong> password (the one it has stored).</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Change Password on Target</h4>
+                            <p>PAM executes the password change command appropriate for the platform. For Windows, it might use the Windows API. For Linux, it might use passwd or change the shadow file. For databases, it's an ALTER USER command.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Verify New Password Works</h4>
+                            <p>PAM attempts to authenticate with the new password to confirm the change succeeded. This is critical—if verification fails, PAM knows something went wrong.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Store New Password</h4>
+                            <p>Only after verification succeeds does PAM store the new password in the vault (encrypted). The old password is overwritten.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>What Can Go Wrong</h3>
+
+                <p>Rotation isn't always smooth. Common issues:</p>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Problem</th>
+                                <th>What Happens</th>
+                                <th>Solution</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Can't connect</strong></td>
+                                <td>Target unreachable, firewall, etc.</td>
+                                <td>Retry later, alert admin</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Current password wrong</strong></td>
+                                <td>Someone changed it outside PAM</td>
+                                <td>Reconciliation process</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Change command fails</strong></td>
+                                <td>Permission denied, policy violation</td>
+                                <td>Check account permissions</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Verification fails</strong></td>
+                                <td>Password changed but doesn't work</td>
+                                <td>Keep old password, alert admin</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Reconciliation</h3>
+
+                <p>
+                    <strong>Reconciliation</strong> is PAM's recovery mechanism when the stored password doesn't match reality. It uses a separate "reconciliation account" (usually a domain admin or higher-privilege account) to reset the password.
+                </p>
+
+                <ol>
+                    <li>PAM detects stored password doesn't work</li>
+                    <li>PAM uses reconciliation account to connect to the target</li>
+                    <li>PAM resets the password using the reconciliation account's authority</li>
+                    <li>PAM verifies and stores the new password</li>
+                </ol>
+            </section>
+
+            <section id="credential-injection">
+                <h2>Credential Injection Explained</h2>
+
+                <p>
+                    "Credential injection" is how PAM gets passwords into sessions without the user seeing them. There are several methods depending on the protocol and deployment.
+                </p>
+
+                <h3>Method 1: Connection String Injection</h3>
+
+                <p>For some protocols, PAM builds the entire connection including credentials:</p>
+
+                <ul>
+                    <li>PAM constructs: <code>ssh admin@server -p 22</code> (with password ready)</li>
+                    <li>PAM handles the password prompt automatically</li>
+                    <li>User just sees the connected session</li>
+                </ul>
+
+                <h3>Method 2: RDP File with Credentials</h3>
+
+                <p>For Windows RDP:</p>
+
+                <ul>
+                    <li>PAM generates an RDP file with connection details</li>
+                    <li>Password is injected into the Windows credential manager or RDP gateway</li>
+                    <li>User downloads RDP file, opens it, and connects without typing password</li>
+                </ul>
+
+                <h3>Method 3: Browser-Based Proxy</h3>
+
+                <p>For web consoles and applications:</p>
+
+                <ul>
+                    <li>PAM renders the target in an iframe or HTML5 canvas</li>
+                    <li>PAM fills in the login form automatically</li>
+                    <li>User interacts with the rendered session, not the actual page</li>
+                </ul>
+
+                <h3>Method 4: Native Client with PAM Plugin</h3>
+
+                <p>Some PAM solutions offer native clients:</p>
+
+                <ul>
+                    <li>User opens PAM's SSH client or RDP client</li>
+                    <li>Client communicates with PAM to get credentials</li>
+                    <li>Credentials are used internally, never displayed</li>
+                </ul>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>The Security Trade-off</h4>
+                        <p>Native clients can offer better user experience but require installing software. Browser-based access works anywhere but may have performance limitations. Most enterprises use a mix: browser for occasional access, native clients for daily admin work.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="discovery">
+                <h2>How Discovery Works</h2>
+
+                <p>
+                    Before you can manage privileged accounts, you need to find them. Discovery is the process of scanning your environment to identify privileged accounts.
+                </p>
+
+                <h3>Active Directory Discovery</h3>
+
+                <p>For Windows environments, PAM queries AD:</p>
+
+                <ol>
+                    <li>PAM authenticates to AD with a service account</li>
+                    <li>PAM queries privileged groups: Domain Admins, Enterprise Admins, etc.</li>
+                    <li>PAM enumerates members of these groups</li>
+                    <li>Result: List of AD accounts with elevated privileges</li>
+                </ol>
+
+                <h3>Local Account Discovery</h3>
+
+                <p>For local accounts on servers:</p>
+
+                <ol>
+                    <li>PAM connects to each server (via WMI, SSH, or agent)</li>
+                    <li>PAM enumerates local accounts and group memberships</li>
+                    <li>PAM identifies accounts in Administrators/root groups</li>
+                    <li>Result: List of local privileged accounts per server</li>
+                </ol>
+
+                <h3>SSH Key Discovery</h3>
+
+                <p>For SSH keys on Linux systems:</p>
+
+                <ol>
+                    <li>PAM connects to each Linux server</li>
+                    <li>PAM scans for authorized_keys files</li>
+                    <li>PAM identifies which public keys grant access</li>
+                    <li>Result: Map of SSH keys and where they grant access</li>
+                </ol>
+
+                <h3>What Discovery Finds</h3>
+
+                <p>A typical discovery might reveal:</p>
+
+                <ul>
+                    <li>500 servers have the same local admin password</li>
+                    <li>20 service accounts are members of Domain Admins</li>
+                    <li>The same SSH key grants root access to 200 Linux servers</li>
+                    <li>50 accounts haven't been used in over a year (orphaned)</li>
+                </ul>
+
+                <p>This is why discovery is eye-opening—organizations are usually shocked by what they find.</p>
+            </section>
+
+            <section id="putting-together">
+                <h2>Putting It All Together</h2>
+
+                <p>
+                    Let's walk through a complete real-world scenario to see how all these pieces work together.
+                </p>
+
+                <h3>Scenario: Database Admin Needs to Run a Query</h3>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>The Story</h4>
+                        <p>Sarah, a DBA, needs to run a maintenance query on the production Oracle database. The database has an admin account "SYSDBA" that's managed by PAM. Let's follow what happens.</p>
+                    </div>
+                </div>
+
+                <h3>Step-by-Step Flow</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Sarah Logs Into PAM</h4>
+                            <p>Sarah opens the PAM web portal. She authenticates with her AD credentials (SSO) and completes MFA with her phone. PAM now knows who she is.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Sarah Requests Access</h4>
+                            <p>Sarah browses to the production Oracle database and clicks "Connect as SYSDBA". PAM checks: Is Sarah authorized for this account? Yes, DBAs have access to database admin accounts.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Approval (If Required)</h4>
+                            <p>For production databases, PAM is configured to require approval. Sarah enters a reason: "Running monthly maintenance - ticket INC12345". Her manager gets a notification and approves.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>PAM Retrieves the Password</h4>
+                            <p>PAM contacts the HSM, decrypts the vault key, and retrieves the SYSDBA password. The password is 32 random characters—Sarah has never seen it and never will.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Session Proxy Activates</h4>
+                            <p>PAM's session proxy opens a connection to the Oracle database using the retrieved password. It authenticates successfully. PAM then presents Sarah with a SQL interface in her browser.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <h4>Sarah Does Her Work</h4>
+                            <p>Sarah types SQL commands. Each command goes: Sarah's browser → PAM proxy → Oracle database. Results come back: Oracle → PAM proxy → Sarah's browser. PAM is recording every command and result.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">7</div>
+                        <div class="step-content">
+                            <h4>Session Ends</h4>
+                            <p>Sarah finishes and closes the session. PAM logs the session end. Because policy says "rotate after use", PAM immediately generates a new password for SYSDBA and changes it on the database.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">8</div>
+                        <div class="step-content">
+                            <h4>Audit Trail Complete</h4>
+                            <p>PAM has a complete record: Sarah accessed SYSDBA on production Oracle, approved by her manager, ran these specific SQL commands, session lasted 23 minutes. If there's ever a question about what happened, the recording is available.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>What Was Protected</h3>
+
+                <ul>
+                    <li><strong>Password never exposed:</strong> Sarah never saw the SYSDBA password</li>
+                    <li><strong>Malware can't capture it:</strong> Password wasn't on Sarah's workstation</li>
+                    <li><strong>Complete visibility:</strong> Every SQL command is logged</li>
+                    <li><strong>Accountability:</strong> We know exactly who did what</li>
+                    <li><strong>Credential rotation:</strong> Even if password was somehow captured, it's already changed</li>
+                </ul>
+            </section>
+
+            <div class="info-box success">
+                <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <div class="info-box-content">
+                    <h4>Key Understanding</h4>
+                    <p>PAM works by inserting itself between users and sensitive systems. Credentials are encrypted and protected by HSM-backed keys. Session proxying keeps passwords off user devices while enabling full recording. Password rotation limits the window of exposure. Discovery finds accounts you didn't know existed. All of this combines to give organizations control over their most sensitive access.</p>
+                </div>
+            </div>
+
+            <nav class="page-nav">
+                <a href="pam-fundamentals.html" class="page-nav-link prev">
+                    <span class="page-nav-label">Previous</span>
+                    <span class="page-nav-title">← PAM Fundamentals</span>
+                </a>
+                <a href="encryption-explained.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next</span>
+                    <span class="page-nav-title">Encryption Explained →</span>
+                </a>
+            </nav>
+        </div>
+
+        <footer class="footer">
+            <p>PAM & KMS Ultimate Guide — A comprehensive enterprise security documentation resource</p>
+        </footer>
+    </main>
+
+    <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+           

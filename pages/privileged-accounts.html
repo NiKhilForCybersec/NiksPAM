@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Types of Privileged Accounts - Understanding and categorizing privileged accounts for effective PAM">
+    <title>Privileged Accounts | PAM & KMS Guide</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="scroll-progress" id="scroll-progress"></div>
+
+    <header class="header">
+        <div class="header-content">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                PAM & KMS Guide
+            </a>
+            
+            <nav class="header-nav">
+                <a href="pam-fundamentals.html" class="active">PAM</a>
+                <a href="kms-fundamentals.html">KMS</a>
+                <a href="vendors.html">Vendors</a>
+                <a href="implementation.html">Implementation</a>
+            </nav>
+            
+            <div class="header-actions">
+                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-title">Getting Started</div>
+            <ul class="sidebar-nav">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="introduction.html">Introduction</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">PAM Fundamentals</div>
+            <ul class="sidebar-nav">
+                <li><a href="pam-fundamentals.html">What is PAM?</a></li>
+                <li><a href="pam-business-case.html">Business Case</a></li>
+                <li><a href="privileged-accounts.html" class="active">Privileged Accounts</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">PAM Architecture</div>
+            <ul class="sidebar-nav">
+                <li><a href="pam-components.html">Core Components</a></li>
+                <li><a href="pam-architecture.html">Architecture Patterns</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">PAM Workflows</div>
+            <ul class="sidebar-nav">
+                <li><a href="user-access-workflow.html">User Access Workflow</a></li>
+                <li><a href="session-management.html">Session Management</a></li>
+                <li><a href="jit-access.html">Just-In-Time Access</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">Vendors</div>
+            <ul class="sidebar-nav">
+                <li><a href="vendors.html">Vendor Overview</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <main class="main-wrapper">
+        <div class="main-content">
+            <nav class="breadcrumb">
+                <a href="../index.html">Home</a>
+                <span class="breadcrumb-separator">/</span>
+                <a href="pam-fundamentals.html">PAM Fundamentals</a>
+                <span class="breadcrumb-separator">/</span>
+                <span>Privileged Accounts</span>
+            </nav>
+
+            <div class="page-header">
+                <h1>Types of Privileged Accounts</h1>
+                <p class="page-description">
+                    Understanding the different types of privileged accounts in your environment is the first step to managing them effectively. This page categorizes privileged accounts by type, risk level, and management requirements.
+                </p>
+            </div>
+
+            <div class="toc">
+                <div class="toc-title">On This Page</div>
+                <ul class="toc-list">
+                    <li><a href="#defining"><span class="toc-number">1.</span> Defining Privileged Access</a></li>
+                    <li><a href="#local-admin"><span class="toc-number">2.</span> Local Administrator Accounts</a></li>
+                    <li><a href="#domain-admin"><span class="toc-number">3.</span> Domain/Directory Accounts</a></li>
+                    <li><a href="#service-accounts"><span class="toc-number">4.</span> Service Accounts</a></li>
+                    <li><a href="#application-accounts"><span class="toc-number">5.</span> Application Accounts</a></li>
+                    <li><a href="#database-accounts"><span class="toc-number">6.</span> Database Accounts</a></li>
+                    <li><a href="#network-accounts"><span class="toc-number">7.</span> Network Device Accounts</a></li>
+                    <li><a href="#cloud-accounts"><span class="toc-number">8.</span> Cloud IAM Accounts</a></li>
+                    <li><a href="#ssh-keys"><span class="toc-number">9.</span> SSH Keys</a></li>
+                    <li><a href="#break-glass"><span class="toc-number">10.</span> Emergency/Break-Glass Accounts</a></li>
+                    <li><a href="#discovery"><span class="toc-number">11.</span> Account Discovery</a></li>
+                </ul>
+            </div>
+
+            <section id="defining">
+                <h2>Defining Privileged Access</h2>
+                
+                <p>
+                    A <strong>privileged account</strong> is any account with access rights that exceed those of a standard user. This elevated access can take many forms—administrative rights, access to sensitive data, ability to change configurations, or authority to create other accounts.
+                </p>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>The Privilege Spectrum</h4>
+                        <p>Privilege isn't binary—it's a spectrum. A database user with SELECT-only access has some privilege. A DBA with full admin rights has much more. PAM focuses on accounts with significant risk potential, but the definition of "significant" varies by organization and regulatory context.</p>
+                    </div>
+                </div>
+
+                <h3>Common Privileged Access Types</h3>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+                        </div>
+                        <div class="feature-title">System Administration</div>
+                        <p class="feature-description">Install software, change configurations, manage users, access all files on a system.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+                        </div>
+                        <div class="feature-title">Data Access</div>
+                        <p class="feature-description">Query, modify, or export sensitive data—customer records, financial data, PII.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                        </div>
+                        <div class="feature-title">Security Controls</div>
+                        <p class="feature-description">Modify security policies, create accounts, change access permissions, disable logging.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                        </div>
+                        <div class="feature-title">Infrastructure</div>
+                        <p class="feature-description">Network configuration, firewall rules, cloud infrastructure provisioning.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="local-admin">
+                <h2>Local Administrator Accounts</h2>
+
+                <p>
+                    <strong>Local administrator accounts</strong> have full control over a single system—they can install software, modify the OS, access all files, and create other local users.
+                </p>
+
+                <h3>Common Examples</h3>
+
+                <ul>
+                    <li><strong>Windows:</strong> Built-in Administrator, custom local admin accounts</li>
+                    <li><strong>Linux/Unix:</strong> root account, accounts with sudo privileges</li>
+                    <li><strong>macOS:</strong> root, admin group members</li>
+                </ul>
+
+                <h3>Risks</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Risk</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Shared credentials</strong></td>
+                                <td>Same password used across many systems enables lateral movement</td>
+                            </tr>
+                            <tr>
+                                <td><strong>No accountability</strong></td>
+                                <td>Multiple people using same account makes attribution impossible</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Rarely rotated</strong></td>
+                                <td>Passwords often unchanged for years</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Pass-the-hash</strong></td>
+                                <td>Credential theft from one system enables access to others</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>PAM Approach</h3>
+
+                <ul>
+                    <li><strong>Unique passwords:</strong> Each system gets a unique local admin password</li>
+                    <li><strong>Automatic rotation:</strong> Passwords changed regularly (daily, weekly, or after each use)</li>
+                    <li><strong>Vaulted storage:</strong> Passwords stored in PAM, not known to users</li>
+                    <li><strong>Check-out workflow:</strong> Users request access, usage is logged</li>
+                </ul>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Microsoft LAPS</h4>
+                        <p>Microsoft's Local Administrator Password Solution (LAPS) provides basic local admin password management through Active Directory at no cost. It's a good starting point, though enterprise PAM solutions offer more features like session recording and workflow approvals.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="domain-admin">
+                <h2>Domain/Directory Accounts</h2>
+
+                <p>
+                    <strong>Domain administrator accounts</strong> have elevated rights across the entire directory service—Active Directory, Azure AD, LDAP directories. These are among the most powerful accounts in any organization.
+                </p>
+
+                <h3>Windows Active Directory Tiers</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Account Type</th>
+                                <th>Access Level</th>
+                                <th>Risk</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Domain Admin</strong></td>
+                                <td>Full control of the domain</td>
+                                <td><span class="badge badge-danger">Critical</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Enterprise Admin</strong></td>
+                                <td>Full control of the forest (all domains)</td>
+                                <td><span class="badge badge-danger">Critical</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Schema Admin</strong></td>
+                                <td>Can modify AD schema (permanent changes)</td>
+                                <td><span class="badge badge-danger">Critical</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Account Operators</strong></td>
+                                <td>Create/modify user accounts and groups</td>
+                                <td><span class="badge badge-warning">High</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Server Operators</strong></td>
+                                <td>Administrative access to domain controllers</td>
+                                <td><span class="badge badge-warning">High</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Backup Operators</strong></td>
+                                <td>Backup files, including reading all data</td>
+                                <td><span class="badge badge-warning">High</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>PAM Approach</h3>
+
+                <ul>
+                    <li><strong>JIT access:</strong> No standing Domain Admin membership—add to group only when needed</li>
+                    <li><strong>Dedicated accounts:</strong> Separate admin accounts from regular user accounts</li>
+                    <li><strong>Tier isolation:</strong> Tier 0 admin accounts only used on Tier 0 systems</li>
+                    <li><strong>Session recording:</strong> Full recording of all domain admin sessions</li>
+                    <li><strong>Multi-person approval:</strong> Require approval for the most sensitive access</li>
+                </ul>
+            </section>
+
+            <section id="service-accounts">
+                <h2>Service Accounts</h2>
+
+                <p>
+                    <strong>Service accounts</strong> are non-human accounts used by applications, services, and automated processes. They often have significant privileges and are frequently overlooked in security programs.
+                </p>
+
+                <h3>Characteristics</h3>
+
+                <ul>
+                    <li>Run application services (web servers, databases, middleware)</li>
+                    <li>Execute scheduled tasks and batch jobs</li>
+                    <li>Connect between systems (API integrations)</li>
+                    <li>Often have more privileges than necessary</li>
+                    <li>Passwords rarely changed (fear of breaking applications)</li>
+                </ul>
+
+                <h3>Types of Service Accounts</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Platform</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Windows Service Account</strong></td>
+                                <td>Windows</td>
+                                <td>Runs Windows services (Local System, custom accounts)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Managed Service Account (MSA)</strong></td>
+                                <td>Windows/AD</td>
+                                <td>AD-managed password, single server</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Group Managed Service Account (gMSA)</strong></td>
+                                <td>Windows/AD</td>
+                                <td>AD-managed password, multiple servers</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Linux daemon accounts</strong></td>
+                                <td>Linux</td>
+                                <td>Run services (apache, mysql, postgres, etc.)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Scheduled task accounts</strong></td>
+                                <td>All platforms</td>
+                                <td>Run cron jobs, Windows Task Scheduler</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>PAM Approach</h3>
+
+                <ul>
+                    <li><strong>Inventory:</strong> Discover all service accounts and document their purpose</li>
+                    <li><strong>Ownership:</strong> Assign an owner responsible for each service account</li>
+                    <li><strong>Least privilege:</strong> Review and reduce permissions to minimum necessary</li>
+                    <li><strong>Password rotation:</strong> Coordinate rotation with application teams</li>
+                    <li><strong>API access:</strong> Use PAM APIs for applications to retrieve credentials</li>
+                </ul>
+            </section>
+
+            <section id="application-accounts">
+                <h2>Application Accounts</h2>
+
+                <p>
+                    <strong>Application accounts</strong> are administrative accounts within applications—not OS-level accounts, but accounts that manage the application itself.
+                </p>
+
+                <h3>Examples</h3>
+
+                <ul>
+                    <li><strong>Web application admin:</strong> WordPress admin, Drupal admin, CMS administrators</li>
+                    <li><strong>Business application admin:</strong> SAP basis, Salesforce admin, ServiceNow admin</li>
+                    <li><strong>Virtualization admin:</strong> vCenter administrator, Hyper-V admin</li>
+                    <li><strong>Security tool admin:</strong> SIEM admin, firewall admin, EDR admin</li>
+                    <li><strong>DevOps tools:</strong> Jenkins admin, GitLab admin, Kubernetes admin</li>
+                </ul>
+
+                <h3>Challenges</h3>
+
+                <div class="key-points">
+                    <div class="key-points-title">Application Account Challenges</div>
+                    <ul>
+                        <li><strong>Non-standard authentication:</strong> Many apps don't integrate with directory services</li>
+                        <li><strong>Web-based access:</strong> Traditional PAM session proxy may not work</li>
+                        <li><strong>Vendor defaults:</strong> Default admin passwords often left unchanged</li>
+                        <li><strong>Lack of visibility:</strong> Often not tracked in identity systems</li>
+                    </ul>
+                </div>
+
+                <h3>PAM Approach</h3>
+
+                <ul>
+                    <li><strong>Web session recording:</strong> Use PAM's web application connector to record sessions</li>
+                    <li><strong>Password vaulting:</strong> Store application admin passwords in vault</li>
+                    <li><strong>SSO integration:</strong> Where possible, federate app access through IdP</li>
+                    <li><strong>Rotation via API:</strong> Use application APIs to rotate passwords where available</li>
+                </ul>
+            </section>
+
+            <section id="database-accounts">
+                <h2>Database Accounts</h2>
+
+                <p>
+                    <strong>Database administrator (DBA) accounts</strong> have direct access to organizational data and database infrastructure. They represent significant risk due to their data access.
+                </p>
+
+                <h3>Common Database Accounts</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Database</th>
+                                <th>Admin Account</th>
+                                <th>Capabilities</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>SQL Server</strong></td>
+                                <td>sa (system administrator)</td>
+                                <td>Full database server control</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Oracle</strong></td>
+                                <td>SYS, SYSTEM</td>
+                                <td>Full database control, data dictionary</td>
+                            </tr>
+                            <tr>
+                                <td><strong>MySQL/MariaDB</strong></td>
+                                <td>root</td>
+                                <td>Full database server control</td>
+                            </tr>
+                            <tr>
+                                <td><strong>PostgreSQL</strong></td>
+                                <td>postgres (superuser)</td>
+                                <td>Full database cluster control</td>
+                            </tr>
+                            <tr>
+                                <td><strong>MongoDB</strong></td>
+                                <td>root, userAdminAnyDatabase</td>
+                                <td>Full database control</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>PAM Approach</h3>
+
+                <ul>
+                    <li><strong>Session recording:</strong> Record all DBA sessions, capture SQL queries</li>
+                    <li><strong>Query logging:</strong> Log all commands for audit and analysis</li>
+                    <li><strong>Credential injection:</strong> DBAs connect through PAM, never see passwords</li>
+                    <li><strong>Command blocking:</strong> Optionally block dangerous commands (DROP, DELETE without WHERE)</li>
+                    <li><strong>Time-limited access:</strong> JIT access for maintenance windows</li>
+                </ul>
+            </section>
+
+            <section id="network-accounts">
+                <h2>Network Device Accounts</h2>
+
+                <p>
+                    <strong>Network device accounts</strong> manage routers, switches, firewalls, load balancers, and other network infrastructure. Compromise of these accounts can enable network-wide attacks.
+                </p>
+
+                <h3>Examples</h3>
+
+                <ul>
+                    <li>Cisco IOS enable/privilege 15 accounts</li>
+                    <li>Palo Alto firewall admin</li>
+                    <li>F5 BIG-IP admin</li>
+                    <li>Juniper root</li>
+                    <li>Wireless controller admin</li>
+                </ul>
+
+                <h3>Challenges</h3>
+
+                <ul>
+                    <li><strong>Legacy protocols:</strong> Many devices use Telnet, which is unencrypted</li>
+                    <li><strong>Limited authentication:</strong> May not support RADIUS/TACACS+ integration</li>
+                    <li><strong>Shared accounts:</strong> Often one admin account shared by entire team</li>
+                    <li><strong>Firmware limitations:</strong> Password complexity/rotation may be limited</li>
+                </ul>
+
+                <h3>PAM Approach</h3>
+
+                <ul>
+                    <li><strong>Proxy all access:</strong> All network device access goes through PAM (even Telnet becomes encrypted)</li>
+                    <li><strong>Session recording:</strong> Record all configuration changes</li>
+                    <li><strong>Individual accountability:</strong> Users authenticate to PAM, then PAM uses shared credentials</li>
+                    <li><strong>Automatic rotation:</strong> PAM rotates device passwords on schedule</li>
+                </ul>
+            </section>
+
+            <section id="cloud-accounts">
+                <h2>Cloud IAM Accounts</h2>
+
+                <p>
+                    <strong>Cloud IAM accounts</strong> with administrative privileges can provision infrastructure, access data, and modify security controls across cloud environments.
+                </p>
+
+                <h3>Cloud Admin Account Types</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Cloud</th>
+                                <th>Admin Roles</th>
+                                <th>Risk Level</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>AWS</strong></td>
+                                <td>Root account, IAM users with AdministratorAccess</td>
+                                <td><span class="badge badge-danger">Critical</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Azure</strong></td>
+                                <td>Global Administrator, Subscription Owner</td>
+                                <td><span class="badge badge-danger">Critical</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>GCP</strong></td>
+                                <td>Organization Admin, Project Owner</td>
+                                <td><span class="badge badge-danger">Critical</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>PAM Approach</h3>
+
+                <ul>
+                    <li><strong>Federated access:</strong> No standing cloud admin accounts—federate from IdP</li>
+                    <li><strong>JIT role elevation:</strong> Use cloud-native PIM (Azure AD PIM, AWS temporary credentials)</li>
+                    <li><strong>Root account protection:</strong> Lock down cloud root/billing accounts with MFA and no regular use</li>
+                    <li><strong>Session recording:</strong> Record cloud console access via web session recording</li>
+                    <li><strong>API key management:</strong> Vault and rotate API keys/access keys</li>
+                </ul>
+            </section>
+
+            <section id="ssh-keys">
+                <h2>SSH Keys</h2>
+
+                <p>
+                    <strong>SSH keys</strong> provide passwordless authentication to Linux/Unix systems. While more secure than passwords in some ways, unmanaged SSH keys create significant risk.
+                </p>
+
+                <h3>SSH Key Risks</h3>
+
+                <ul>
+                    <li><strong>No expiration:</strong> SSH keys don't expire by default</li>
+                    <li><strong>Proliferation:</strong> Keys copied between systems, often without tracking</li>
+                    <li><strong>No central visibility:</strong> Hard to know what keys exist and who has them</li>
+                    <li><strong>Difficult revocation:</strong> Must remove from all authorized_keys files</li>
+                    <li><strong>Shared keys:</strong> Same key pair used by multiple people</li>
+                </ul>
+
+                <h3>PAM Approach</h3>
+
+                <ul>
+                    <li><strong>Vault private keys:</strong> Store SSH private keys in PAM vault</li>
+                    <li><strong>Certificate-based access:</strong> Issue short-lived SSH certificates instead of static keys</li>
+                    <li><strong>Session proxy:</strong> Users connect through PAM, which handles SSH authentication</li>
+                    <li><strong>Key discovery:</strong> Scan systems to inventory existing authorized_keys</li>
+                    <li><strong>Key rotation:</strong> Regularly rotate key pairs</li>
+                </ul>
+            </section>
+
+            <section id="break-glass">
+                <h2>Emergency/Break-Glass Accounts</h2>
+
+                <p>
+                    <strong>Break-glass accounts</strong> are emergency access accounts used when normal access paths fail—during outages, when PAM is unavailable, or for disaster recovery.
+                </p>
+
+                <h3>Characteristics</h3>
+
+                <ul>
+                    <li>Highest privilege level (Domain Admin, root, cloud admin)</li>
+                    <li>Rarely used—only in true emergencies</li>
+                    <li>Password may be stored in physical safe or split among custodians</li>
+                    <li>Usage should trigger immediate alerts</li>
+                </ul>
+
+                <h3>Best Practices</h3>
+
+                <div class="key-points">
+                    <div class="key-points-title">Break-Glass Account Management</div>
+                    <ul>
+                        <li><strong>Secure storage:</strong> Password in sealed envelope in physical safe, or M-of-N split</li>
+                        <li><strong>Detection:</strong> Alert immediately on any use of break-glass accounts</li>
+                        <li><strong>Rotation after use:</strong> Rotate password after every use</li>
+                        <li><strong>Periodic testing:</strong> Test break-glass access works (quarterly/annually)</li>
+                        <li><strong>Documentation:</strong> Clear procedures for when and how to use</li>
+                        <li><strong>Post-incident review:</strong> Review every use—was it justified?</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="discovery">
+                <h2>Account Discovery</h2>
+
+                <p>
+                    You can't manage what you don't know exists. <strong>Privileged account discovery</strong> is the process of finding all privileged accounts across your environment.
+                </p>
+
+                <h3>Discovery Methods</h3>
+
+                <ul>
+                    <li><strong>AD enumeration:</strong> Query Active Directory for privileged group members</li>
+                    <li><strong>Network scanning:</strong> Connect to systems and enumerate local accounts</li>
+                    <li><strong>Agent-based:</strong> Deploy agents that inventory accounts on each system</li>
+                    <li><strong>Cloud API:</strong> Query cloud IAM APIs for privileged identities</li>
+                    <li><strong>SSH key scanning:</strong> Find authorized_keys files across Linux systems</li>
+                    <li><strong>Application integration:</strong> Query applications for admin accounts</li>
+                </ul>
+
+                <h3>Discovery Outputs</h3>
+
+                <p>
+                    A good discovery process produces:
+                </p>
+
+                <ul>
+                    <li>Complete inventory of privileged accounts</li>
+                    <li>Account classification by type and risk</li>
+                    <li>Identification of orphaned accounts (no owner)</li>
+                    <li>Detection of shared credentials</li>
+                    <li>Mapping of accounts to systems/applications</li>
+                </ul>
+            </section>
+
+            <div class="info-box success">
+                <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <div class="info-box-content">
+                    <h4>Key Takeaways</h4>
+                    <p>Privileged accounts take many forms—local admins, domain admins, service accounts, application accounts, DBA accounts, network device accounts, cloud IAM, and SSH keys. Each type has specific risks and requires tailored PAM controls. Start with discovery to understand your environment, then prioritize based on risk.</p>
+                </div>
+            </div>
+
+            <nav class="page-nav">
+                <a href="pam-business-case.html" class="page-nav-link prev">
+                    <span class="page-nav-label">Previous</span>
+                    <span class="page-nav-title">← Business Case</span>
+                </a>
+                <a href="pam-components.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next</span>
+                    <span class="page-nav-title">Core Components →</span>
+                </a>
+            </nav>
+        </div>
+
+        <footer class="footer">
+            <p>PAM & KMS Ultimate Guide — A comprehensive enterprise security documentation resource</p>
+        </footer>
+    </main>
+
+    <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+    </button>
+
+    <script src="../js/main.js"></script>
+</body>
+</html>

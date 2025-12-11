@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PAM and KMS Data Flows - Understanding how authentication, sessions, and encryption operations actually work">
+    <title>Data Flows Explained | PAM & KMS Guide</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="scroll-progress" id="scroll-progress"></div>
+
+    <header class="header">
+        <div class="header-content">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                PAM & KMS Guide
+            </a>
+            
+            <nav class="header-nav">
+                <a href="pam-fundamentals.html" class="active">PAM</a>
+                <a href="kms-fundamentals.html">KMS</a>
+                <a href="vendors.html">Vendors</a>
+                <a href="implementation.html">Implementation</a>
+            </nav>
+            
+            <div class="header-actions">
+                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-title">Getting Started</div>
+            <ul class="sidebar-nav">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="introduction.html">Introduction</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">Architecture</div>
+            <ul class="sidebar-nav">
+                <li><a href="pam-architecture.html">PAM Architecture</a></li>
+                <li><a href="data-flows.html" class="active">Data Flows Explained</a></li>
+                <li><a href="kms-components.html">KMS Components</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <main class="main-wrapper">
+        <div class="main-content">
+            <nav class="breadcrumb">
+                <a href="../index.html">Home</a>
+                <span class="breadcrumb-separator">/</span>
+                <a href="pam-architecture.html">Architecture</a>
+                <span class="breadcrumb-separator">/</span>
+                <span>Data Flows Explained</span>
+            </nav>
+
+            <div class="page-header">
+                <h1>Data Flows Explained</h1>
+                <p class="page-description">
+                    Understanding exactly how data moves through PAM and KMS systems. These detailed flows show every step, every component involved, and what happens at each stage.
+                </p>
+            </div>
+
+            <div class="toc">
+                <div class="toc-title">On This Page</div>
+                <ul class="toc-list">
+                    <li><a href="#authentication-flow"><span class="toc-number">1.</span> Authentication Flow</a></li>
+                    <li><a href="#credential-checkout"><span class="toc-number">2.</span> Credential Checkout Flow</a></li>
+                    <li><a href="#session-flow"><span class="toc-number">3.</span> Session Establishment Flow</a></li>
+                    <li><a href="#rotation-flow"><span class="toc-number">4.</span> Password Rotation Flow</a></li>
+                    <li><a href="#encryption-flow"><span class="toc-number">5.</span> Encryption Operation Flow</a></li>
+                    <li><a href="#audit-flow"><span class="toc-number">6.</span> Audit and Logging Flow</a></li>
+                    <li><a href="#api-flow"><span class="toc-number">7.</span> API/Application Access Flow</a></li>
+                    <li><a href="#network-ports"><span class="toc-number">8.</span> Network Ports and Protocols</a></li>
+                </ul>
+            </div>
+
+            <section id="authentication-flow">
+                <h2>Authentication Flow</h2>
+                
+                <p>
+                    When a user logs into the PAM system, multiple components work together to verify their identity. Here's exactly what happens:
+                </p>
+
+                <h3>Direct Authentication (PAM's Own Database)</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>User Opens PAM Portal</h4>
+                            <p><strong>Action:</strong> User navigates to https://pam.company.com in browser</p>
+                            <p><strong>Network:</strong> HTTPS (TCP 443) to PAM Web Server</p>
+                            <p><strong>What happens:</strong> Browser establishes TLS connection. PAM returns login page.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>User Submits Credentials</h4>
+                            <p><strong>Action:</strong> User enters username and password, clicks Login</p>
+                            <p><strong>Network:</strong> HTTPS POST to PAM Web Server</p>
+                            <p><strong>What happens:</strong> Credentials sent encrypted over TLS. Web Server passes to Authentication Engine.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Credential Verification</h4>
+                            <p><strong>Action:</strong> Authentication Engine validates credentials</p>
+                            <p><strong>Network:</strong> Internal component communication</p>
+                            <p><strong>What happens:</strong> Password hash computed and compared against stored hash in PAM database. Account status checked (active, locked, expired).</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>MFA Challenge</h4>
+                            <p><strong>Action:</strong> PAM prompts for second factor</p>
+                            <p><strong>Network:</strong> May call external MFA provider (HTTPS to Duo, Okta, etc.)</p>
+                            <p><strong>What happens:</strong> Push notification sent, or user enters TOTP code. MFA provider confirms.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Session Created</h4>
+                            <p><strong>Action:</strong> PAM creates authenticated session</p>
+                            <p><strong>What happens:</strong> Session token generated. User's roles and permissions loaded. Audit log entry created. User redirected to dashboard.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>SSO/Federated Authentication</h3>
+
+                <p>When PAM integrates with your corporate Identity Provider (IdP):</p>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>User Accesses PAM</h4>
+                            <p>PAM detects user isn't authenticated. Generates SAML AuthnRequest.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Redirect to IdP</h4>
+                            <p>Browser redirected to corporate IdP (e.g., Azure AD, Okta) with SAML request.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>User Authenticates to IdP</h4>
+                            <p>If not already logged in, user authenticates to IdP (password + MFA). IdP validates identity.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>SAML Assertion Returned</h4>
+                            <p>IdP creates signed SAML assertion containing user identity and attributes. Browser POST to PAM's ACS endpoint.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>PAM Validates Assertion</h4>
+                            <p>PAM verifies IdP signature, checks assertion isn't expired or replayed. Extracts user identity and group memberships.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <h4>Session Created</h4>
+                            <p>PAM maps IdP groups to PAM roles. Creates authenticated session. User sees dashboard.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Why SSO is Preferred</h4>
+                        <p>With SSO, PAM never sees the user's corporate password. The IdP handles authentication, and PAM trusts the signed assertion. This means: one less password for users, one less password database for PAM to protect, and consistent MFA enforcement through the IdP.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="credential-checkout">
+                <h2>Credential Checkout Flow</h2>
+
+                <p>
+                    When a user needs a password (not a proxied session), this is what happens:
+                </p>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>User Requests Credential</h4>
+                            <p><strong>Action:</strong> User clicks "Show Password" for target account</p>
+                            <p><strong>Network:</strong> HTTPS request to PAM API</p>
+                            <p><strong>Data sent:</strong> Session token, account identifier, reason (if required)</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Authorization Check</h4>
+                            <p><strong>Component:</strong> Policy Engine</p>
+                            <p><strong>Checks performed:</strong></p>
+                            <ul>
+                                <li>Is user a member of a group with access to this safe?</li>
+                                <li>Does user have "retrieve" permission for this account?</li>
+                                <li>Is the account already checked out (exclusive access)?</li>
+                                <li>Does policy require approval? Is it within allowed time window?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Approval Workflow (If Required)</h4>
+                            <p><strong>If approval needed:</strong></p>
+                            <ul>
+                                <li>Request created in pending state</li>
+                                <li>Notification sent to approvers (email, Slack, etc.)</li>
+                                <li>User waits for approval</li>
+                                <li>Approver reviews and approves/denies</li>
+                            </ul>
+                            <p><strong>If no approval needed:</strong> Continue to next step</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Credential Retrieval from Vault</h4>
+                            <p><strong>Component:</strong> Vault</p>
+                            <p><strong>Process:</strong></p>
+                            <ul>
+                                <li>Vault Engine authenticates to HSM</li>
+                                <li>HSM decrypts Vault Encryption Key</li>
+                                <li>Vault Key decrypts the specific credential</li>
+                                <li>Credential loaded into memory</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Credential Returned to User</h4>
+                            <p><strong>Network:</strong> HTTPS response</p>
+                            <p><strong>Security:</strong> Password sent over TLS, displayed in browser. Often: auto-clear after X seconds, no copy allowed (policy), shown only once.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <h4>Checkout Recorded</h4>
+                            <p><strong>Audit log contains:</strong></p>
+                            <ul>
+                                <li>Who: Username, source IP</li>
+                                <li>What: Account checked out</li>
+                                <li>When: Timestamp</li>
+                                <li>Why: Reason provided</li>
+                                <li>Authorization: Who approved (if applicable)</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">7</div>
+                        <div class="step-content">
+                            <h4>Checkin (When User is Done)</h4>
+                            <p><strong>Options:</strong></p>
+                            <ul>
+                                <li>Manual checkin: User clicks "Checkin"</li>
+                                <li>Automatic: After time limit expires</li>
+                            </ul>
+                            <p><strong>Post-checkin:</strong> Password rotation triggered (if policy requires)</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="session-flow">
+                <h2>Session Establishment Flow</h2>
+
+                <p>
+                    When a user launches a proxied session (RDP, SSH, etc.), the flow is more complex because PAM sits in the middle:
+                </p>
+
+                <h3>RDP Session Example</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>User Clicks "Connect"</h4>
+                            <p><strong>Action:</strong> User requests RDP session to SERVER01 as Administrator</p>
+                            <p><strong>Network:</strong> HTTPS to PAM</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Authorization Check</h4>
+                            <p><strong>Same as credential checkout:</strong> User permissions validated. Approval workflow if required.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Session Preparation</h4>
+                            <p><strong>PAM Session Manager:</strong></p>
+                            <ul>
+                                <li>Allocates session resources on Session Proxy server</li>
+                                <li>Retrieves credential from vault</li>
+                                <li>Generates connection file (RDP file) or web session</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>User Connects to Proxy</h4>
+                            <p><strong>Two options:</strong></p>
+                            <p><strong>A. Native RDP client:</strong> User downloads .rdp file → Opens in mstsc.exe → Connects to Session Proxy (not directly to SERVER01)</p>
+                            <p><strong>B. Web-based:</strong> HTML5 RDP client in browser connects to Session Proxy via WebSocket</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Proxy Connects to Target</h4>
+                            <p><strong>Session Proxy:</strong></p>
+                            <ul>
+                                <li>Opens RDP connection to SERVER01 (TCP 3389)</li>
+                                <li>Authenticates as Administrator using vaulted password</li>
+                                <li>User's client sees the RDP session, but the actual connection is from the proxy</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <h4>Session Active - Traffic Flow</h4>
+                            <p><strong>Continuous flow:</strong></p>
+                            <p>User ↔ PAM Session Proxy ↔ Target Server</p>
+                            <ul>
+                                <li>Keystrokes flow: User → Proxy → Target</li>
+                                <li>Screen updates flow: Target → Proxy → User</li>
+                                <li>Proxy records everything passing through</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">7</div>
+                        <div class="step-content">
+                            <h4>Recording Storage</h4>
+                            <p><strong>Session recording:</strong></p>
+                            <ul>
+                                <li>Video encoded in real-time (compressed format)</li>
+                                <li>Keystroke log captured separately</li>
+                                <li>Metadata recorded (commands, window titles)</li>
+                                <li>Stored encrypted in recording vault</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">8</div>
+                        <div class="step-content">
+                            <h4>Session Termination</h4>
+                            <p><strong>Triggers:</strong> User logs off, idle timeout, admin terminates, time limit reached</p>
+                            <p><strong>Process:</strong></p>
+                            <ul>
+                                <li>Target session disconnected</li>
+                                <li>Proxy session closed</li>
+                                <li>Recording finalized and stored</li>
+                                <li>Credential rotation triggered (if policy)</li>
+                                <li>Audit log updated with session end</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>SSH Session - Key Differences</h3>
+
+                <ul>
+                    <li><strong>Protocol:</strong> TCP 22 (SSH) instead of TCP 3389 (RDP)</li>
+                    <li><strong>Authentication:</strong> Password or SSH key injection</li>
+                    <li><strong>Recording:</strong> Text-based command log (smaller than video)</li>
+                    <li><strong>Command filtering:</strong> Easier to implement for text commands</li>
+                </ul>
+            </section>
+
+            <section id="rotation-flow">
+                <h2>Password Rotation Flow</h2>
+
+                <p>
+                    When PAM rotates a password, it's not just generating a new random string—it's coordinating a change across systems:
+                </p>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Rotation Triggered</h4>
+                            <p><strong>Triggers:</strong></p>
+                            <ul>
+                                <li>Scheduled: "Rotate every 24 hours"</li>
+                                <li>Event-based: "Rotate after checkout/checkin"</li>
+                                <li>Manual: Admin clicks "Rotate Now"</li>
+                                <li>Policy: "Rotate when user leaves group"</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Generate New Password</h4>
+                            <p><strong>Component:</strong> Password Manager / CPM</p>
+                            <p><strong>Process:</strong></p>
+                            <ul>
+                                <li>Read password policy (length, complexity, exclusions)</li>
+                                <li>Generate cryptographically random password</li>
+                                <li>Validate against policy rules</li>
+                                <li>Store temporarily (not yet committed)</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Connect to Target System</h4>
+                            <p><strong>Component:</strong> Password Manager + Platform Connector</p>
+                            <p><strong>Process:</strong></p>
+                            <ul>
+                                <li>Use current password to authenticate to target</li>
+                                <li>Connection method depends on platform (WinRM, SSH, API, etc.)</li>
+                                <li>If current password fails → flag for reconciliation</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Change Password on Target</h4>
+                            <p><strong>Platform-specific commands:</strong></p>
+                            <ul>
+                                <li><strong>Windows:</strong> NET USER or AD PowerShell cmdlets</li>
+                                <li><strong>Linux:</strong> passwd command or direct shadow file edit</li>
+                                <li><strong>Oracle:</strong> ALTER USER command</li>
+                                <li><strong>Cisco:</strong> enable secret / username password commands</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Verify New Password</h4>
+                            <p><strong>Critical step:</strong></p>
+                            <ul>
+                                <li>Disconnect from target</li>
+                                <li>Reconnect using NEW password</li>
+                                <li>If successful → password verified</li>
+                                <li>If failed → rollback attempt, alert generated</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <h4>Update Vault</h4>
+                            <p><strong>Only after verification:</strong></p>
+                            <ul>
+                                <li>Encrypt new password with vault key</li>
+                                <li>Store in vault database</li>
+                                <li>Old password overwritten</li>
+                                <li>Timestamp updated</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">7</div>
+                        <div class="step-content">
+                            <h4>Audit and Notification</h4>
+                            <p><strong>Logging:</strong> Rotation event logged with timestamp, account, target, success/failure</p>
+                            <p><strong>Alerts:</strong> If failure, alert sent to PAM admins</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Service Account Rotation - Additional Complexity</h3>
+
+                <p>For service accounts, rotation must also update everywhere the credential is used:</p>
+
+                <ol>
+                    <li>Stop dependent services (or prepare for restart)</li>
+                    <li>Change password in AD/target system</li>
+                    <li>Update Windows Service configuration (sc.exe or similar)</li>
+                    <li>Update scheduled tasks</li>
+                    <li>Update IIS application pools</li>
+                    <li>Restart services</li>
+                    <li>Verify services are running</li>
+                    <li>Update vault only after all steps succeed</li>
+                </ol>
+
+                <div class="info-box warning">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Why Rotation Fails</h4>
+                        <p>Common failure reasons: Target unreachable (network/firewall), current password wrong (someone changed it outside PAM), insufficient permissions to change password, password policy violation (too similar to previous), service restart failure. Each failure needs a recovery procedure.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="encryption-flow">
+                <h2>Encryption Operation Flow (KMS)</h2>
+
+                <p>
+                    When an application needs to encrypt data using KMS, here's the complete flow:
+                </p>
+
+                <h3>Envelope Encryption Flow</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Application Requests Encryption</h4>
+                            <p><strong>API call:</strong> Application calls KMS API to encrypt data</p>
+                            <p><strong>Authentication:</strong> Application authenticates (IAM role, service principal, API key)</p>
+                            <p><strong>Request contains:</strong> Key ID, plaintext data (or request for DEK)</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Authorization Check</h4>
+                            <p><strong>KMS Policy Engine checks:</strong></p>
+                            <ul>
+                                <li>Is this identity allowed to use this key?</li>
+                                <li>Is "encrypt" operation permitted?</li>
+                                <li>Are there condition restrictions (IP, time, etc.)?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Generate Data Encryption Key (DEK)</h4>
+                            <p><strong>For envelope encryption:</strong></p>
+                            <ul>
+                                <li>KMS generates random DEK (e.g., AES-256 key)</li>
+                                <li>DEK returned to application in two forms:</li>
+                                <li>Plaintext DEK (for immediate use)</li>
+                                <li>Encrypted DEK (wrapped with master key)</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Application Encrypts Data</h4>
+                            <p><strong>Client-side:</strong></p>
+                            <ul>
+                                <li>Application receives plaintext DEK</li>
+                                <li>Uses DEK to encrypt actual data (AES-256-GCM)</li>
+                                <li>Plaintext DEK discarded from memory</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Store Encrypted Data + Encrypted DEK</h4>
+                            <p><strong>Application stores:</strong></p>
+                            <ul>
+                                <li>Ciphertext (encrypted data)</li>
+                                <li>Encrypted DEK (can be stored alongside or separately)</li>
+                                <li>Encryption metadata (algorithm, IV, key ID)</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <h4>Audit Logged</h4>
+                            <p><strong>KMS records:</strong> Key ID used, operation (GenerateDataKey), caller identity, timestamp</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Decryption Flow</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Application Needs to Decrypt</h4>
+                            <p>Application retrieves encrypted data and encrypted DEK from storage.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Call KMS to Decrypt DEK</h4>
+                            <p><strong>API call:</strong> Send encrypted DEK to KMS</p>
+                            <p><strong>Authorization:</strong> KMS verifies caller can "decrypt" with this key</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>KMS Decrypts DEK</h4>
+                            <p><strong>Process:</strong></p>
+                            <ul>
+                                <li>Master key used to decrypt DEK</li>
+                                <li>If master key is in HSM, decryption happens inside HSM</li>
+                                <li>Plaintext DEK returned to application</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Application Decrypts Data</h4>
+                            <p>Application uses plaintext DEK to decrypt the actual data. DEK discarded after use.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Why Envelope Encryption?</h3>
+
+                <p>Direct encryption (sending all data to KMS) has limitations:</p>
+
+                <ul>
+                    <li><strong>Size:</strong> KMS typically limits data size (e.g., 4KB for AWS KMS)</li>
+                    <li><strong>Performance:</strong> Network round-trip for every encrypt/decrypt</li>
+                    <li><strong>Cost:</strong> API calls cost money at scale</li>
+                </ul>
+
+                <p>Envelope encryption solves these:</p>
+
+                <ul>
+                    <li><strong>DEK is small:</strong> KMS only handles 32-byte keys, not gigabytes of data</li>
+                    <li><strong>Local encryption:</strong> Bulk encryption happens locally (fast)</li>
+                    <li><strong>Efficient:</strong> One KMS call per data blob, not per byte</li>
+                </ul>
+            </section>
+
+            <section id="audit-flow">
+                <h2>Audit and Logging Flow</h2>
+
+                <p>
+                    Every action in PAM and KMS generates audit logs. Understanding the flow helps with compliance and incident response:
+                </p>
+
+                <h3>What Gets Logged</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Event Category</th>
+                                <th>Examples</th>
+                                <th>Data Captured</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Authentication</strong></td>
+                                <td>Login success/failure, MFA challenge</td>
+                                <td>User, timestamp, source IP, method, result</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Authorization</strong></td>
+                                <td>Access granted/denied, approval workflow</td>
+                                <td>User, resource, action, policy matched, result</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Credential operations</strong></td>
+                                <td>Checkout, checkin, show password</td>
+                                <td>User, account, target, reason, timestamp</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Session activity</strong></td>
+                                <td>Session start/end, commands executed</td>
+                                <td>User, target, duration, commands, recording ID</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Administrative</strong></td>
+                                <td>Policy change, user created, account onboarded</td>
+                                <td>Admin user, what changed, old/new values</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Key operations</strong></td>
+                                <td>Encrypt, decrypt, sign, key rotation</td>
+                                <td>Key ID, operation, caller, result</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Log Flow to SIEM</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Event Occurs</h4>
+                            <p>User checks out a credential. PAM generates audit event with all details.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Local Logging</h4>
+                            <p>Event written to PAM's local audit database. Tamper-protected (signed, append-only).</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>SIEM Forwarding</h4>
+                            <p><strong>Methods:</strong></p>
+                            <ul>
+                                <li>Syslog (UDP 514 or TCP 514/6514 with TLS)</li>
+                                <li>CEF/LEEF format for structured data</li>
+                                <li>API push (HTTP POST to SIEM)</li>
+                                <li>File-based (SIEM agent reads log files)</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>SIEM Processing</h4>
+                            <p>SIEM (Splunk, Sentinel, etc.) ingests, parses, normalizes. Events become searchable. Correlation rules evaluate.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Alerting</h4>
+                            <p><strong>Examples:</strong></p>
+                            <ul>
+                                <li>"Break-glass account used" → High priority alert</li>
+                                <li>"Multiple failed authentications" → Brute force detection</li>
+                                <li>"Unusual access pattern" → Insider threat investigation</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="api-flow">
+                <h2>API/Application Access Flow</h2>
+
+                <p>
+                    When applications (not humans) need credentials from PAM:
+                </p>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Application Authenticates to PAM</h4>
+                            <p><strong>Methods:</strong></p>
+                            <ul>
+                                <li><strong>Certificate-based:</strong> App presents client certificate</li>
+                                <li><strong>API key:</strong> Static key in header (less secure)</li>
+                                <li><strong>OAuth/JWT:</strong> Token-based authentication</li>
+                                <li><strong>Instance metadata:</strong> Cloud workload identity</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Application Requests Credential</h4>
+                            <p><strong>REST API call:</strong></p>
+                            <pre style="background: var(--bg-tertiary); padding: var(--space-2); border-radius: var(--radius-md); font-size: var(--text-sm);">
+GET /api/accounts/{accountId}/password
+Authorization: Bearer {token}
+                            </pre>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>PAM Authorization</h4>
+                            <p>PAM verifies: Is this application identity allowed to retrieve this credential? Check application-to-safe membership.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Credential Returned</h4>
+                            <p><strong>Response:</strong></p>
+                            <pre style="background: var(--bg-tertiary); padding: var(--space-2); border-radius: var(--radius-md); font-size: var(--text-sm);">
+{
+  "password": "x9Kp2mNv...",
+  "username": "svc_app",
+  "expires": "2024-01-01T12:00:00Z"
+}
+                            </pre>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Application Uses Credential</h4>
+                            <p>Application connects to database/service using retrieved credential. Credential should be cached appropriately (not forever, not every request).</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <h4>Credential Refresh</h4>
+                            <p>Before credential expires, application requests fresh credential. Handles rotation gracefully (old may still work briefly).</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="network-ports">
+                <h2>Network Ports and Protocols</h2>
+
+                <p>
+                    Understanding network requirements is crucial for firewall rules and troubleshooting:
+                </p>
+
+                <h3>PAM Network Requirements</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Source</th>
+                                <th>Destination</th>
+                                <th>Port</th>
+                                <th>Protocol</th>
+                                <th>Purpose</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Users</td>
+                                <td>PAM Web Portal</td>
+                                <td>443</td>
+                                <td>HTTPS</td>
+                                <td>Web interface access</td>
+                            </tr>
+                            <tr>
+                                <td>Users (native RDP)</td>
+                                <td>PAM Session Proxy</td>
+                                <td>3389</td>
+                                <td>RDP/TLS</td>
+                                <td>RDP session proxy</td>
+                            </tr>
+                            <tr>
+                                <td>Users (native SSH)</td>
+                                <td>PAM Session Proxy</td>
+                                <td>22</td>
+                                <td>SSH</td>
+                                <td>SSH session proxy</td>
+                            </tr>
+                            <tr>
+                                <td>PAM Session Proxy</td>
+                                <td>Target Servers</td>
+                                <td>3389</td>
+                                <td>RDP</td>
+                                <td>Connect to Windows targets</td>
+                            </tr>
+                            <tr>
+                                <td>PAM Session Proxy</td>
+                                <td>Target Servers</td>
+                                <td>22</td>
+                                <td>SSH</td>
+                                <td>Connect to Linux/network targets</td>
+                            </tr>
+                            <tr>
+                                <td>PAM Password Manager</td>
+                                <td>Windows Servers</td>
+                                <td>5985/5986</td>
+                                <td>WinRM</td>
+                                <td>Password rotation</td>
+                            </tr>
+                            <tr>
+                                <td>PAM Password Manager</td>
+                                <td>Linux Servers</td>
+                                <td>22</td>
+                                <td>SSH</td>
+                                <td>Password rotation</td>
+                            </tr>
+                            <tr>
+                                <td>PAM</td>
+                                <td>Active Directory</td>
+                                <td>389/636</td>
+                                <td>LDAP/LDAPS</td>
+                                <td>Directory queries, password changes</td>
+                            </tr>
+                            <tr>
+                                <td>PAM</td>
+                                <td>Active Directory</td>
+                                <td>88</td>
+                                <td>Kerberos</td>
+                                <td>Authentication</td>
+                            </tr>
+                            <tr>
+                                <td>PAM</td>
+                                <td>HSM</td>
+                                <td>1792</td>
+                                <td>NTLS</td>
+                                <td>Thales Luna HSM communication</td>
+                            </tr>
+                            <tr>
+                                <td>PAM</td>
+                                <td>SIEM</td>
+                                <td>514/6514</td>
+                                <td>Syslog/TLS</td>
+                                <td>Log forwarding</td>
+                            </tr>
+                            <tr>
+                                <td>Applications</td>
+                                <td>PAM API</td>
+                                <td>443</td>
+                                <td>HTTPS</td>
+                                <td>Credential retrieval</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>KMS Network Requirements</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Source</th>
+                                <th>Destination</th>
+                                <th>Port</th>
+                                <th>Protocol</th>
+                                <th>Purpose</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Applications</td>
+                                <td>KMS API</td>
+                                <td>443</td>
+                                <td>HTTPS</td>
+                                <td>Key operations</td>
+                            </tr>
+                            <tr>
+                                <td>KMS Server</td>
+                                <td>HSM</td>
+                                <td>1792</td>
+                                <td>NTLS</td>
+                                <td>HSM operations (Thales)</td>
+                            </tr>
+                            <tr>
+                                <td>KMS Server</td>
+                                <td>HSM</td>
+                                <td>9004</td>
+                                <td>TCP</td>
+                                <td>HSM operations (Entrust)</td>
+                            </tr>
+                            <tr>
+                                <td>AWS resources</td>
+                                <td>AWS KMS</td>
+                                <td>443</td>
+                                <td>HTTPS</td>
+                                <td>AWS KMS API (via VPC endpoint or internet)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <div class="info-box success">
+                <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <div class="info-box-content">
+                    <h4>Key Takeaways</h4>
+                    <p>Understanding data flows helps you: <strong>troubleshoot</strong> (where in the flow is it failing?), <strong>design</strong> (what network connectivity is needed?), <strong>secure</strong> (where is data at risk?), and <strong>explain</strong> (what happens when a user clicks "connect"?). Each flow involves multiple components, and failures at any point affect the outcome.</p>
+                </div>
+            </div>
+
+            <nav class="page-nav">
+                <a href="pam-architecture.html" class="page-nav-link prev">
+                    <span class="page-nav-label">Previous</span>
+                    <span class="page-nav-title">← PAM Architecture</span>
+                </a>
+                <a href="kms-components.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next</span>
+                    <span class="page-nav-title">KMS Components →</span>
+                </a>
+            </nav>
+        </div>
+
+        <footer class="footer">
+            <p>PAM & KMS Ultimate Guide — A comprehensive enterprise security documentation resource</p>
+        </footer>
+    </main>
+
+    <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+    </button>
+
+    <script src="../js/main.js"></script>
+</body>
+</html>

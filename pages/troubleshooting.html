@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PAM & KMS Troubleshooting Guide - Common issues, root causes, and solutions for privileged access and key management systems">
+    <title>Troubleshooting Guide | PAM & KMS Guide</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="scroll-progress" id="scroll-progress"></div>
+
+    <header class="header">
+        <div class="header-content">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                PAM & KMS Guide
+            </a>
+            
+            <nav class="header-nav">
+                <a href="pam-fundamentals.html">PAM</a>
+                <a href="kms-fundamentals.html">KMS</a>
+                <a href="vendors.html">Vendors</a>
+                <a href="implementation.html" class="active">Implementation</a>
+            </nav>
+            
+            <div class="header-actions">
+                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-title">Operations</div>
+            <ul class="sidebar-nav">
+                <li><a href="implementation.html">Implementation</a></li>
+                <li><a href="best-practices.html">Best Practices</a></li>
+                <li><a href="troubleshooting.html" class="active">Troubleshooting</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <main class="main-wrapper">
+        <div class="main-content">
+            <nav class="breadcrumb">
+                <a href="../index.html">Home</a>
+                <span class="breadcrumb-separator">/</span>
+                <a href="implementation.html">Operations</a>
+                <span class="breadcrumb-separator">/</span>
+                <span>Troubleshooting</span>
+            </nav>
+
+            <div class="page-header">
+                <h1>Troubleshooting Guide</h1>
+                <p class="page-description">
+                    Real-world issues you'll encounter with PAM and KMS systems, their root causes, and how to resolve them. Essential knowledge for interviews and on-the-job problem solving.
+                </p>
+            </div>
+
+            <div class="toc">
+                <div class="toc-title">On This Page</div>
+                <ul class="toc-list">
+                    <li><a href="#methodology"><span class="toc-number">1.</span> Troubleshooting Methodology</a></li>
+                    <li><a href="#authentication"><span class="toc-number">2.</span> Authentication Issues</a></li>
+                    <li><a href="#password-rotation"><span class="toc-number">3.</span> Password Rotation Failures</a></li>
+                    <li><a href="#session"><span class="toc-number">4.</span> Session Management Issues</a></li>
+                    <li><a href="#vault"><span class="toc-number">5.</span> Vault/Secret Store Issues</a></li>
+                    <li><a href="#kms-issues"><span class="toc-number">6.</span> KMS & Encryption Issues</a></li>
+                    <li><a href="#integration"><span class="toc-number">7.</span> Integration Issues</a></li>
+                    <li><a href="#performance"><span class="toc-number">8.</span> Performance Issues</a></li>
+                </ul>
+            </div>
+
+            <section id="methodology">
+                <h2>Troubleshooting Methodology</h2>
+                
+                <p>
+                    Before diving into specific issues, follow a systematic approach:
+                </p>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Gather Information</h4>
+                            <p>What changed? When did it start? Who is affected? What's the exact error message? Collect logs, screenshots, timestamps.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Reproduce the Issue</h4>
+                            <p>Can you reproduce it consistently? With the same user or any user? Same target or any target? Reproducing narrows the scope.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Check the Obvious</h4>
+                            <p>Is the service running? Can you reach the network? Is the certificate valid? Are credentials correct? 80% of issues are simple.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Isolate the Layer</h4>
+                            <p>Network? Authentication? Authorization? Target system? Backend database? Test each layer independently.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Check Logs</h4>
+                            <p>PAM logs, target system logs, Windows Event Viewer, syslog. Logs usually tell you exactly what failed.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <h4>Document & Escalate</h4>
+                            <p>Document what you tried. If stuck, escalate with all gathered information. Don't guess in production.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="authentication">
+                <h2>Authentication Issues</h2>
+
+                <h3>Issue: "User cannot log in to PAM portal"</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Symptom</th>
+                                <th>Possible Cause</th>
+                                <th>Solution</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Login page doesn't load</td>
+                                <td>Web server down, certificate expired, DNS issue</td>
+                                <td>Check web service status, verify SSL cert, test DNS resolution</td>
+                            </tr>
+                            <tr>
+                                <td>"Invalid credentials" immediately</td>
+                                <td>Wrong username, account disabled, typo</td>
+                                <td>Verify username format (UPN vs sAMAccountName), check AD account status</td>
+                            </tr>
+                            <tr>
+                                <td>Credentials correct but still fails</td>
+                                <td>LDAP binding issue, account locked, password expired</td>
+                                <td>Test LDAP bind separately, check AD lockout status, verify password policy</td>
+                            </tr>
+                            <tr>
+                                <td>SSO redirect fails</td>
+                                <td>SAML misconfiguration, IdP unreachable, clock skew</td>
+                                <td>Check SAML assertion, verify IdP connectivity, sync NTP</td>
+                            </tr>
+                            <tr>
+                                <td>MFA challenge never arrives</td>
+                                <td>MFA provider down, user not enrolled, phone number wrong</td>
+                                <td>Check MFA service status, verify enrollment, confirm phone/email</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h4>Diagnostic Steps</h4>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# Test LDAP connectivity (PowerShell)
+Test-NetConnection -ComputerName dc01.corp.local -Port 389
+Test-NetConnection -ComputerName dc01.corp.local -Port 636  # LDAPS
+
+# Test LDAP bind
+$cred = Get-Credential
+$ldap = New-Object System.DirectoryServices.DirectoryEntry("LDAP://dc01.corp.local", $cred.UserName, $cred.GetNetworkCredential().Password)
+$ldap.Name  # Should return domain name if successful
+
+# Check account status in AD
+Get-ADUser -Identity jsmith -Properties LockedOut, Enabled, PasswordExpired, PasswordLastSet
+
+# Test SAML (check browser developer tools)
+# Look for: SAML Response in Network tab, check for signature validation errors
+
+# Check NTP sync (critical for SAML/Kerberos)
+w32tm /query /status  # Windows
+chronyc tracking      # Linux
+                </pre>
+
+                <h3>Issue: "MFA always fails"</h3>
+
+                <ul>
+                    <li><strong>TOTP codes not working:</strong> Clock skew between user device and server. Sync time on both ends. TOTP allows ~30 second window.</li>
+                    <li><strong>Push notification not received:</strong> Check network connectivity on mobile device. Verify app permissions. Test with SMS backup.</li>
+                    <li><strong>RADIUS timeout:</strong> Check firewall between PAM and MFA server (UDP 1812/1813). Verify shared secret matches.</li>
+                </ul>
+            </section>
+
+            <section id="password-rotation">
+                <h2>Password Rotation Failures</h2>
+
+                <p>Password rotation is the most common source of PAM issues. When rotation fails, accounts become "out of sync" between PAM and target systems.</p>
+
+                <h3>Issue: "Password rotation failed"</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Error Message</th>
+                                <th>Likely Cause</th>
+                                <th>Solution</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>"Target unreachable"</td>
+                                <td>Network issue, firewall blocking, target offline</td>
+                                <td>Test connectivity from CPM/Password Manager server to target</td>
+                            </tr>
+                            <tr>
+                                <td>"Authentication failed"</td>
+                                <td>Current password in vault doesn't match target (out of sync)</td>
+                                <td>Use reconcile account to reset, or manually sync password</td>
+                            </tr>
+                            <tr>
+                                <td>"Access denied" / "Insufficient permissions"</td>
+                                <td>Account lacks permission to change its own password</td>
+                                <td>Check AD permissions, verify account can change password</td>
+                            </tr>
+                            <tr>
+                                <td>"Password doesn't meet policy"</td>
+                                <td>Generated password rejected by target's password policy</td>
+                                <td>Align PAM password generation with target policy (length, complexity, exclusions)</td>
+                            </tr>
+                            <tr>
+                                <td>"Account locked"</td>
+                                <td>Too many failed attempts (often from old cached passwords)</td>
+                                <td>Unlock account, identify source of old password usage</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h4>Windows/AD Password Rotation Failures</h4>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# Common Windows rotation issues:
+
+# 1. Check if account can change own password
+Get-ADUser -Identity svc_account -Properties CannotChangePassword | 
+    Select-Object Name, CannotChangePassword
+
+# 2. Check password age restrictions
+Get-ADUser -Identity svc_account -Properties PasswordLastSet, 
+    @{Name="MinPasswordAge";Expression={(Get-ADDefaultDomainPasswordPolicy).MinPasswordAge}}
+
+# 3. Verify WinRM connectivity (if using WinRM for rotation)
+Test-WSMan -ComputerName targetserver.corp.local
+
+# 4. Check required firewall ports
+# RPC: 135, 445, 49152-65535 (dynamic)
+# WinRM: 5985 (HTTP), 5986 (HTTPS)
+
+# 5. Test credential manually
+$cred = Get-Credential
+Invoke-Command -ComputerName targetserver -Credential $cred -ScriptBlock { whoami }
+                </pre>
+
+                <h4>Linux/Unix Password Rotation Failures</h4>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# Common Linux rotation issues:
+
+# 1. Test SSH connectivity
+ssh -v user@targetserver  # Verbose mode shows connection details
+
+# 2. Check if user can change password
+# Some accounts have "passwd: password unchanged" if restricted
+# Check /etc/shadow for account status
+
+# 3. Verify sudo permissions (if rotation requires sudo)
+sudo -l -U pam_user  # List sudo permissions
+
+# 4. Check PAM configuration on target (not to be confused with PAM product)
+cat /etc/pam.d/passwd
+
+# 5. Test password change manually
+passwd username  # Note any errors
+                </pre>
+
+                <h3>The Reconciliation Process</h3>
+
+                <p>When vault and target are out of sync, reconciliation fixes it:</p>
+
+                <ol>
+                    <li><strong>Reconcile account:</strong> A separate privileged account that can reset other accounts' passwords</li>
+                    <li><strong>Process:</strong> PAM uses reconcile account to force-reset the target password</li>
+                    <li><strong>New password:</strong> Stored in vault, now in sync</li>
+                </ol>
+
+                <div class="info-box warning">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Service Account Rotation Caution</h4>
+                        <p>Before rotating service account passwords, identify all dependent services. Rotation can break applications if they're using cached credentials. Use PAM's service restart capabilities or plan for brief outages.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="session">
+                <h2>Session Management Issues</h2>
+
+                <h3>Issue: "Session launch fails"</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Protocol</th>
+                                <th>Common Issues</th>
+                                <th>Solutions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>RDP</strong></td>
+                                <td>NLA authentication fails, certificate errors, RDS licensing</td>
+                                <td>Disable NLA or ensure proper credential injection, trust certs, verify RDS CALs</td>
+                            </tr>
+                            <tr>
+                                <td><strong>SSH</strong></td>
+                                <td>Host key verification, algorithm mismatch, key format</td>
+                                <td>Update known_hosts, configure supported algorithms, convert key formats</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Web/HTTPS</strong></td>
+                                <td>Certificate pinning, JavaScript issues, popup blockers</td>
+                                <td>Disable pinning for PAM proxy, whitelist PAM domain, allow popups</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h4>RDP Session Issues</h4>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# Test RDP connectivity from PSM server
+mstsc /v:targetserver  # Opens RDP client
+
+# Check if NLA is required (common issue)
+# On target server, check:
+# Computer Configuration > Administrative Templates > 
+#   Windows Components > Remote Desktop Services > 
+#   Remote Desktop Session Host > Security
+# "Require user authentication for remote connections using NLA"
+
+# Verify RDP port is open
+Test-NetConnection -ComputerName targetserver -Port 3389
+
+# Check RDS licensing (if using PSM heavily)
+# Remote Desktop Licensing Manager shows license status
+
+# Common fix: Ensure PSM server is in "Remote Desktop Users" group on targets
+# Or use domain group that includes PSM computer account
+                </pre>
+
+                <h3>Issue: "Session recording not working"</h3>
+
+                <ul>
+                    <li><strong>Recordings not visible:</strong> Check recording storage path permissions, verify recording service is running</li>
+                    <li><strong>Recordings corrupted:</strong> Disk space issue during recording, service crash. Check disk space, review crash logs.</li>
+                    <li><strong>Can't playback:</strong> Missing codec, incompatible player. Use vendor's recommended player.</li>
+                    <li><strong>Metadata missing:</strong> Text indexing service not running. Command logging requires session proxy to parse commands.</li>
+                </ul>
+
+                <h3>Issue: "Session terminated unexpectedly"</h3>
+
+                <ul>
+                    <li><strong>Idle timeout:</strong> Session timed out per policy. Adjust timeout or have user stay active.</li>
+                    <li><strong>Policy violation:</strong> User executed blocked command, session terminated by policy.</li>
+                    <li><strong>Network interruption:</strong> Connection lost between user and proxy or proxy and target.</li>
+                    <li><strong>Target issue:</strong> Target server rebooted, service crashed, or kicked session.</li>
+                </ul>
+            </section>
+
+            <section id="vault">
+                <h2>Vault/Secret Store Issues</h2>
+
+                <h3>Issue: "Cannot retrieve secrets"</h3>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# HashiCorp Vault troubleshooting
+
+# Check Vault status
+vault status
+# Look for: Sealed (must be unsealed), HA mode, etc.
+
+# If sealed, unseal it
+vault operator unseal [unseal_key]
+
+# Check authentication
+vault token lookup
+# Verify token is valid and has correct policies
+
+# Test secret path access
+vault kv get secret/myapp/database
+# Error "permission denied" = policy issue
+# Error "no value found" = secret doesn't exist at path
+
+# Check policy
+vault policy read my-policy
+# Verify path and capabilities match
+
+# Enable audit logging to see what's failing
+vault audit enable file file_path=/var/log/vault/audit.log
+# Then retry and check audit log for detailed error
+                </pre>
+
+                <h3>Issue: "Vault is sealed after restart"</h3>
+
+                <p>Vault seals automatically when restarted. Solutions:</p>
+
+                <ul>
+                    <li><strong>Manual unseal:</strong> Requires unseal key holders to provide keys</li>
+                    <li><strong>Auto-unseal:</strong> Configure cloud KMS (AWS, Azure, GCP) or HSM for automatic unseal</li>
+                    <li><strong>Prevent restarts:</strong> Ensure high availability to minimize restart needs</li>
+                </ul>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# Configure auto-unseal with AWS KMS (in Vault config)
+seal "awskms" {
+  region     = "us-east-1"
+  kms_key_id = "alias/vault-unseal"
+}
+
+# After migration to auto-unseal, old unseal keys become recovery keys
+                </pre>
+
+                <h3>Issue: "Lease expired, application failing"</h3>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# Dynamic secrets have leases that expire
+
+# Check lease status
+vault lease lookup database/creds/my-role/abcd1234
+
+# Renew lease (application should do this automatically)
+vault lease renew database/creds/my-role/abcd1234
+
+# Best practice: Application should:
+# 1. Request new credentials before lease expires
+# 2. Implement lease renewal at 2/3 of TTL
+# 3. Handle renewal failure by getting new credentials
+# 4. Gracefully reconnect with new credentials
+                </pre>
+            </section>
+
+            <section id="kms-issues">
+                <h2>KMS & Encryption Issues</h2>
+
+                <h3>Issue: "Cannot decrypt data"</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Symptom</th>
+                                <th>Cause</th>
+                                <th>Solution</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>AccessDenied</td>
+                                <td>IAM policy doesn't allow decrypt operation</td>
+                                <td>Add kms:Decrypt permission to role/user</td>
+                            </tr>
+                            <tr>
+                                <td>Key not found</td>
+                                <td>Key deleted, wrong region, wrong account</td>
+                                <td>Verify key exists, check region, check cross-account permissions</td>
+                            </tr>
+                            <tr>
+                                <td>Invalid ciphertext</td>
+                                <td>Ciphertext corrupted, wrong key, wrong algorithm</td>
+                                <td>Verify ciphertext integrity, ensure same key used for encrypt/decrypt</td>
+                            </tr>
+                            <tr>
+                                <td>Key disabled/pending deletion</td>
+                                <td>Key was disabled or scheduled for deletion</td>
+                                <td>Enable key or cancel deletion (if still in waiting period)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h4>AWS KMS Troubleshooting</h4>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# Check key status
+aws kms describe-key --key-id alias/my-key
+
+# Key states: Enabled, Disabled, PendingDeletion, PendingImport, Unavailable
+
+# Check key policy
+aws kms get-key-policy --key-id alias/my-key --policy-name default
+
+# Test encrypt/decrypt permissions
+aws kms encrypt --key-id alias/my-key --plaintext "test" --query CiphertextBlob --output text
+# If this fails, check IAM permissions
+
+# Check CloudTrail for KMS errors
+aws logs filter-log-events \
+    --log-group-name aws-cloudtrail-logs \
+    --filter-pattern "{ $.eventSource = kms.amazonaws.com && $.errorCode = * }"
+                </pre>
+
+                <h3>Issue: "Certificate expired"</h3>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# Check certificate expiration
+openssl s_client -connect server:443 -servername server 2>/dev/null | \
+    openssl x509 -noout -dates
+
+# Output:
+# notBefore=Jan  1 00:00:00 2024 GMT
+# notAfter=Jan  1 00:00:00 2025 GMT  <-- Expiration date
+
+# Check certificate chain
+openssl s_client -connect server:443 -servername server -showcerts
+
+# Verify certificate matches private key
+openssl x509 -noout -modulus -in cert.pem | md5sum
+openssl rsa -noout -modulus -in key.pem | md5sum
+# MD5 hashes should match
+
+# Common certificate issues:
+# 1. Expired: Renew the certificate
+# 2. Chain incomplete: Include intermediate CA certs
+# 3. Wrong cert: Certificate CN/SAN doesn't match hostname
+# 4. Key mismatch: Cert and private key don't match (regenerate CSR)
+                </pre>
+
+                <h3>Issue: "HSM not responding"</h3>
+
+                <ul>
+                    <li><strong>Network connectivity:</strong> Check firewall rules to HSM (typically port 1792 for Thales, 9004 for Entrust)</li>
+                    <li><strong>HSM partition:</strong> Verify partition is activated and not locked</li>
+                    <li><strong>Client configuration:</strong> Check HSM client software configuration, library paths</li>
+                    <li><strong>Licenses:</strong> Some HSM features require specific licenses</li>
+                </ul>
+            </section>
+
+            <section id="integration">
+                <h2>Integration Issues</h2>
+
+                <h3>Issue: "SIEM not receiving logs"</h3>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# Syslog troubleshooting
+
+# Test syslog connectivity
+nc -vz siem.corp.local 514       # UDP
+nc -vz siem.corp.local 6514      # TCP/TLS
+
+# Send test syslog message
+logger -n siem.corp.local -P 514 "Test from PAM server"
+
+# Check if PAM is sending logs (tcpdump)
+sudo tcpdump -i eth0 port 514 -vv
+
+# Common issues:
+# 1. Firewall blocking: Open UDP 514 or TCP 514/6514
+# 2. Wrong format: SIEM expects CEF but receiving plain syslog
+# 3. TLS certificate: If using encrypted syslog, verify certs
+# 4. Parsing: SIEM receiving but not parsing - check parser/sourcetype
+                </pre>
+
+                <h3>Issue: "LDAP/AD sync not working"</h3>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# Test LDAP search
+ldapsearch -H ldaps://dc01.corp.local:636 \
+    -D "cn=vault,ou=ServiceAccounts,dc=corp,dc=local" \
+    -W \
+    -b "ou=Users,dc=corp,dc=local" \
+    "(sAMAccountName=jsmith)"
+
+# Common LDAP issues:
+# 1. Bind DN format wrong: Use full DN or UPN depending on config
+# 2. Search base too narrow: User not in specified OU
+# 3. Filter syntax: LDAP filter has specific syntax requirements
+# 4. TLS certificate: Verify LDAPS cert is trusted
+# 5. Referrals: If multi-domain, may need to follow referrals
+
+# Test from Windows
+dsquery user -name "jsmith"
+                </pre>
+
+                <h3>Issue: "ServiceNow integration failing"</h3>
+
+                <ul>
+                    <li><strong>Authentication:</strong> API user credentials expired or locked</li>
+                    <li><strong>Permissions:</strong> API user lacks required roles in ServiceNow</li>
+                    <li><strong>API version:</strong> Check if using correct API version</li>
+                    <li><strong>Rate limiting:</strong> Too many API calls, implement throttling</li>
+                    <li><strong>Field mapping:</strong> PAM sending fields ServiceNow doesn't recognize</li>
+                </ul>
+            </section>
+
+            <section id="performance">
+                <h2>Performance Issues</h2>
+
+                <h3>Issue: "PAM portal is slow"</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Symptom</th>
+                                <th>Check</th>
+                                <th>Solution</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Slow page loads</td>
+                                <td>Web server CPU/memory, database queries</td>
+                                <td>Add web servers, optimize queries, add caching</td>
+                            </tr>
+                            <tr>
+                                <td>Slow search</td>
+                                <td>Database indexing, too many results</td>
+                                <td>Add indexes, limit search scope</td>
+                            </tr>
+                            <tr>
+                                <td>Login delay</td>
+                                <td>LDAP response time, MFA latency</td>
+                                <td>LDAP caching, check MFA provider performance</td>
+                            </tr>
+                            <tr>
+                                <td>Session launch delay</td>
+                                <td>PSM server load, credential retrieval time</td>
+                                <td>Add PSM servers, optimize vault queries</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Issue: "High API latency"</h3>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+# Measure API response time
+time curl -s https://pam.corp.local/api/health > /dev/null
+
+# Vault performance
+vault read sys/metrics  # Check operation latency metrics
+
+# Common API performance issues:
+# 1. No connection pooling: Each request opens new connection
+# 2. Synchronous operations: Batch operations where possible
+# 3. Large responses: Paginate results, filter fields
+# 4. Network latency: Deploy PAM closer to consumers
+# 5. TLS overhead: Use connection keep-alive, HTTP/2
+                </pre>
+
+                <h3>Scaling Guidelines</h3>
+
+                <ul>
+                    <li><strong>Credential retrievals:</strong> Scale API servers horizontally</li>
+                    <li><strong>Concurrent sessions:</strong> Scale session proxy servers</li>
+                    <li><strong>Password rotations:</strong> Scale CPM/Password Manager instances</li>
+                    <li><strong>Recording storage:</strong> Use distributed storage, archive old recordings</li>
+                </ul>
+            </section>
+
+            <div class="info-box success">
+                <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <div class="info-box-content">
+                    <h4>Interview Tip</h4>
+                    <p>When asked troubleshooting questions in interviews, demonstrate systematic thinking: "First I'd gather information about the error, then isolate which component is failing, check logs, and test connectivity layer by layer." Show you understand the architecture well enough to isolate problems.</p>
+                </div>
+            </div>
+
+            <nav class="page-nav">
+                <a href="best-practices.html" class="page-nav-link prev">
+                    <span class="page-nav-label">Previous</span>
+                    <span class="page-nav-title">← Best Practices</span>
+                </a>
+                <a href="labs.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next</span>
+                    <span class="page-nav-title">Hands-On Labs →</span>
+                </a>
+            </nav>
+        </div>
+
+        <footer class="footer">
+            <p>PAM & KMS Ultimate Guide — A comprehensive enterprise security documentation resource</p>
+        </footer>
+    </main>
+
+    <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+    </button>
+
+    <script src="../js/main.js"></script>
+</body>
+</html>

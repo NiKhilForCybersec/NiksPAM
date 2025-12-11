@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SIEM Integration - Connecting PAM and KMS to your Security Operations Center">
+    <title>SIEM Integration | PAM & KMS Guide</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="scroll-progress" id="scroll-progress"></div>
+
+    <header class="header">
+        <div class="header-content">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                PAM & KMS Guide
+            </a>
+            
+            <nav class="header-nav">
+                <a href="pam-fundamentals.html" class="active">PAM</a>
+                <a href="kms-fundamentals.html">KMS</a>
+                <a href="vendors.html">Vendors</a>
+                <a href="implementation.html">Implementation</a>
+            </nav>
+            
+            <div class="header-actions">
+                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-title">Getting Started</div>
+            <ul class="sidebar-nav">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="introduction.html">Introduction</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">Integrations</div>
+            <ul class="sidebar-nav">
+                <li><a href="siem-integration.html" class="active">SIEM Integration</a></li>
+                <li><a href="data-flows.html">Data Flows</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <main class="main-wrapper">
+        <div class="main-content">
+            <nav class="breadcrumb">
+                <a href="../index.html">Home</a>
+                <span class="breadcrumb-separator">/</span>
+                <a href="pam-fundamentals.html">PAM</a>
+                <span class="breadcrumb-separator">/</span>
+                <span>SIEM Integration</span>
+            </nav>
+
+            <div class="page-header">
+                <h1>SIEM Integration</h1>
+                <p class="page-description">
+                    Connecting PAM and KMS to your Security Information and Event Management (SIEM) platform enables real-time monitoring, threat detection, and compliance reporting for privileged access.
+                </p>
+            </div>
+
+            <div class="toc">
+                <div class="toc-title">On This Page</div>
+                <ul class="toc-list">
+                    <li><a href="#why-integrate"><span class="toc-number">1.</span> Why Integrate with SIEM?</a></li>
+                    <li><a href="#what-to-send"><span class="toc-number">2.</span> What Events to Send</a></li>
+                    <li><a href="#splunk"><span class="toc-number">3.</span> Splunk Integration</a></li>
+                    <li><a href="#sentinel"><span class="toc-number">4.</span> Microsoft Sentinel Integration</a></li>
+                    <li><a href="#detection-rules"><span class="toc-number">5.</span> Detection Rules & Use Cases</a></li>
+                    <li><a href="#dashboards"><span class="toc-number">6.</span> Dashboards and Reporting</a></li>
+                    <li><a href="#soar"><span class="toc-number">7.</span> SOAR Automation</a></li>
+                </ul>
+            </div>
+
+            <section id="why-integrate">
+                <h2>Why Integrate with SIEM?</h2>
+                
+                <p>
+                    PAM and KMS generate valuable security telemetry. Integrating with your SIEM provides:
+                </p>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        </div>
+                        <div class="feature-title">Real-Time Visibility</div>
+                        <p class="feature-description">See privileged access events as they happen, not hours or days later.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                        </div>
+                        <div class="feature-title">Threat Detection</div>
+                        <p class="feature-description">Correlate PAM events with other security data to detect attacks.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                        </div>
+                        <div class="feature-title">Compliance Reporting</div>
+                        <p class="feature-description">Generate audit reports showing who accessed what, when, and why.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                        </div>
+                        <div class="feature-title">Correlation</div>
+                        <p class="feature-description">Combine PAM data with endpoint, network, and cloud logs for full picture.</p>
+                    </div>
+                </div>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>The Value of Correlation</h4>
+                        <p>PAM events alone are useful. But combined with endpoint data? Powerful. Example: PAM shows user checked out Domain Admin credential at 3 AM. EDR shows that same user's workstation ran Mimikatz 5 minutes later. Individually interesting; together, clearly an attack.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="what-to-send">
+                <h2>What Events to Send</h2>
+
+                <p>
+                    Don't send everything—focus on security-relevant events. Here's a prioritized list:
+                </p>
+
+                <h3>High Priority (Always Send)</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Event Type</th>
+                                <th>Why It Matters</th>
+                                <th>Detection Use Cases</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Break-glass account usage</strong></td>
+                                <td>Emergency accounts used means something unusual</td>
+                                <td>Immediate investigation trigger</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Authentication failures</strong></td>
+                                <td>Could indicate brute force or credential stuffing</td>
+                                <td>Multiple failures = alert</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Session terminations (admin-initiated)</strong></td>
+                                <td>Security team killed a session</td>
+                                <td>Incident response correlation</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Credential checkout for high-tier accounts</strong></td>
+                                <td>Domain Admin, root, cloud admin access</td>
+                                <td>Track Tier 0/1 access</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Policy changes</strong></td>
+                                <td>Someone modified security settings</td>
+                                <td>Detect unauthorized changes</td>
+                            </tr>
+                            <tr>
+                                <td><strong>User provisioning/deprovisioning</strong></td>
+                                <td>New access granted or removed</td>
+                                <td>Detect privilege creep, insider prep</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Medium Priority (Recommended)</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Event Type</th>
+                                <th>Why It Matters</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>All credential checkouts</strong></td>
+                                <td>Track who accessed what credentials</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Session start/end</strong></td>
+                                <td>Know when privileged sessions occur</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Password rotation results</strong></td>
+                                <td>Detect rotation failures that need attention</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Approval workflow events</strong></td>
+                                <td>Who approved access, when</td>
+                            </tr>
+                            <tr>
+                                <td><strong>KMS key usage</strong></td>
+                                <td>Track encryption operations</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Lower Priority (Nice to Have)</h3>
+
+                <ul>
+                    <li>Successful authentications (high volume, less actionable)</li>
+                    <li>Discovery scan results</li>
+                    <li>Health monitoring events</li>
+                    <li>Scheduled maintenance events</li>
+                </ul>
+            </section>
+
+            <section id="splunk">
+                <h2>Splunk Integration</h2>
+
+                <p>
+                    Splunk is one of the most common SIEMs in enterprise environments. Here's how to integrate:
+                </p>
+
+                <h3>Integration Methods</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Method</th>
+                                <th>How It Works</th>
+                                <th>When to Use</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Syslog</strong></td>
+                                <td>PAM sends logs to Splunk via syslog (UDP/TCP)</td>
+                                <td>Simple setup, any PAM vendor</td>
+                            </tr>
+                            <tr>
+                                <td><strong>HTTP Event Collector (HEC)</strong></td>
+                                <td>PAM POSTs JSON events directly to Splunk</td>
+                                <td>Better performance, structured data</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Splunk Add-on/App</strong></td>
+                                <td>Vendor-specific app with parsing and dashboards</td>
+                                <td>Best experience, CyberArk/BeyondTrust have apps</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Universal Forwarder</strong></td>
+                                <td>Agent on PAM server reads log files</td>
+                                <td>When direct integration not available</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Sample Splunk Queries</h3>
+
+                <h4>Find All Break-Glass Usage</h4>
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto;">
+index=pam sourcetype=cyberark:pam
+| where like(safe, "%BreakGlass%") OR like(safe, "%Emergency%")
+| table _time, user, safe, account, target, action
+| sort -_time
+                </pre>
+
+                <h4>Authentication Failures Over Time</h4>
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto;">
+index=pam sourcetype=cyberark:pam action="Logon" result="Failure"
+| timechart count by user
+| where count > 5
+                </pre>
+
+                <h4>High-Value Account Access</h4>
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto;">
+index=pam sourcetype=cyberark:pam action="Retrieve"
+| where match(account, "(?i)admin|root|domain|enterprise")
+| stats count by user, account, target
+| sort -count
+                </pre>
+
+                <h4>Unusual Access Patterns (Outside Business Hours)</h4>
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto;">
+index=pam sourcetype=cyberark:pam action="Connect"
+| eval hour=strftime(_time, "%H")
+| where hour < 6 OR hour > 20
+| table _time, user, account, target
+| sort -_time
+                </pre>
+
+                <h3>Splunk Alert Examples</h3>
+
+                <div class="info-box warning">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Alert: Break-Glass Account Used</h4>
+                        <p><strong>Trigger:</strong> Any event from break-glass/emergency safe<br>
+                        <strong>Severity:</strong> High<br>
+                        <strong>Action:</strong> Page on-call security analyst, create incident ticket</p>
+                    </div>
+                </div>
+
+                <div class="info-box warning">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Alert: Multiple Auth Failures</h4>
+                        <p><strong>Trigger:</strong> More than 5 failed logins from same user in 10 minutes<br>
+                        <strong>Severity:</strong> Medium<br>
+                        <strong>Action:</strong> Email security team, consider account lockout</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="sentinel">
+                <h2>Microsoft Sentinel Integration</h2>
+
+                <p>
+                    For organizations using Microsoft's cloud-native SIEM:
+                </p>
+
+                <h3>Integration Options</h3>
+
+                <ul>
+                    <li><strong>Data Connector:</strong> Some PAM vendors have native Sentinel connectors</li>
+                    <li><strong>Common Event Format (CEF):</strong> Send via Log Analytics agent</li>
+                    <li><strong>Azure Monitor Agent:</strong> Collect from syslog or log files</li>
+                    <li><strong>Logic Apps:</strong> Pull from PAM API, push to Sentinel</li>
+                    <li><strong>Azure Event Hub:</strong> Stream events through Event Hub</li>
+                </ul>
+
+                <h3>Sample KQL Queries</h3>
+
+                <h4>Privileged Session Activity</h4>
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto;">
+PAMEvents
+| where ActionType == "SessionConnect"
+| summarize SessionCount=count() by User, TargetHost, bin(TimeGenerated, 1h)
+| order by SessionCount desc
+                </pre>
+
+                <h4>Credential Access by Risk Level</h4>
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto;">
+PAMEvents
+| where ActionType == "CredentialRetrieve"
+| extend AccountRisk = case(
+    AccountName contains "admin" or AccountName contains "root", "High",
+    AccountName contains "service", "Medium",
+    "Low"
+)
+| summarize AccessCount=count() by AccountRisk, User
+| render piechart
+                </pre>
+
+                <h4>Failed Operations</h4>
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto;">
+PAMEvents
+| where Result == "Failure"
+| summarize FailureCount=count() by ActionType, User, TargetHost
+| where FailureCount > 3
+| order by FailureCount desc
+                </pre>
+
+                <h3>Sentinel Analytics Rules</h3>
+
+                <h4>Rule: Unusual Access to Domain Controller</h4>
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto;">
+PAMEvents
+| where TargetHost contains "DC" or TargetHost contains "DomainController"
+| where TimeGenerated > ago(24h)
+| join kind=leftanti (
+    PAMEvents
+    | where TimeGenerated between (ago(30d) .. ago(24h))
+    | distinct User, TargetHost
+) on User, TargetHost
+| project TimeGenerated, User, TargetHost, ActionType
+                </pre>
+                <p>This finds users accessing domain controllers who haven't done so in the past 30 days—potential suspicious activity.</p>
+            </section>
+
+            <section id="detection-rules">
+                <h2>Detection Rules & Use Cases</h2>
+
+                <p>
+                    Here are specific detection scenarios to implement:
+                </p>
+
+                <h3>1. Credential Theft Detection</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Pattern</th>
+                                <th>Indicators</th>
+                                <th>Response</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Mimikatz Activity</strong></td>
+                                <td>PAM credential checkout + EDR detects Mimikatz on same user's workstation</td>
+                                <td>Terminate session, rotate credential, investigate</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Pass-the-Hash Attempt</strong></td>
+                                <td>PAM credential checkout + Windows Event 4624 Type 9 from unusual source</td>
+                                <td>Block source IP, rotate credential</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Golden Ticket</strong></td>
+                                <td>Domain Admin access via PAM + Kerberos TGT from unexpected time/location</td>
+                                <td>Revoke tickets, rotate krbtgt twice</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>2. Insider Threat Detection</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Pattern</th>
+                                <th>Indicators</th>
+                                <th>Response</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Data Exfiltration Prep</strong></td>
+                                <td>User accesses more systems than usual + DLP detects large downloads</td>
+                                <td>Alert manager, enable enhanced monitoring</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Privilege Escalation</strong></td>
+                                <td>User requests access to systems outside their normal scope</td>
+                                <td>Require additional approval, flag for review</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Off-Hours Activity</strong></td>
+                                <td>Privileged access at unusual times (3 AM, weekends)</td>
+                                <td>Correlate with ticket system, investigate if no ticket</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>3. Ransomware Precursor Detection</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Pattern</th>
+                                <th>Indicators</th>
+                                <th>Response</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Backup System Access</strong></td>
+                                <td>Unusual user accesses backup admin credentials</td>
+                                <td>High alert—ransomware targets backups first</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Mass Credential Checkout</strong></td>
+                                <td>Single user checks out many credentials in short time</td>
+                                <td>Suspicious reconnaissance—terminate access</td>
+                            </tr>
+                            <tr>
+                                <td><strong>GPO Access</strong></td>
+                                <td>Non-standard user accesses Group Policy admin credentials</td>
+                                <td>Ransomware uses GPO for mass deployment—investigate immediately</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>4. KMS Security Events</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Event</th>
+                                <th>What It Means</th>
+                                <th>Response</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Key deletion</strong></td>
+                                <td>Someone deleted a cryptographic key</td>
+                                <td>Verify authorized, check if data recoverable</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Unusual decrypt volume</strong></td>
+                                <td>Massive decryption requests (data exfil?)</td>
+                                <td>Investigate source application</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Key policy change</strong></td>
+                                <td>Permissions on key were modified</td>
+                                <td>Verify change was authorized</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Cross-region key access</strong></td>
+                                <td>Key used from unexpected region</td>
+                                <td>Could be attack from compromised region</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="dashboards">
+                <h2>Dashboards and Reporting</h2>
+
+                <h3>Executive Dashboard Elements</h3>
+
+                <ul>
+                    <li><strong>Total privileged sessions</strong> (24h, 7d, 30d trends)</li>
+                    <li><strong>Unique privileged users</strong> active in period</li>
+                    <li><strong>High-risk access events</strong> (Tier 0/1 systems)</li>
+                    <li><strong>Break-glass usage</strong> (should be near zero)</li>
+                    <li><strong>Policy violations</strong> (denied access attempts)</li>
+                    <li><strong>Password rotation compliance</strong> (% on schedule)</li>
+                </ul>
+
+                <h3>Security Operations Dashboard</h3>
+
+                <ul>
+                    <li><strong>Real-time session map</strong> (who's connected where)</li>
+                    <li><strong>Authentication failure trend</strong></li>
+                    <li><strong>Alerts by severity</strong> (open/acknowledged/resolved)</li>
+                    <li><strong>Top users by access volume</strong></li>
+                    <li><strong>Top systems by access volume</strong></li>
+                    <li><strong>Geographic access map</strong> (for remote/vendor access)</li>
+                </ul>
+
+                <h3>Compliance Reports</h3>
+
+                <ul>
+                    <li><strong>Access certification:</strong> All access granted in period</li>
+                    <li><strong>Privileged account inventory:</strong> All managed accounts</li>
+                    <li><strong>Rotation compliance:</strong> Which accounts rotated, which overdue</li>
+                    <li><strong>Session recordings:</strong> List of recorded sessions for audit</li>
+                    <li><strong>Access by system:</strong> Who accessed each critical system</li>
+                </ul>
+            </section>
+
+            <section id="soar">
+                <h2>SOAR Automation</h2>
+
+                <p>
+                    Security Orchestration, Automation, and Response (SOAR) platforms can automate responses to PAM events:
+                </p>
+
+                <h3>Automated Response Playbooks</h3>
+
+                <h4>Playbook: Suspicious Privileged Access</h4>
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Trigger</h4>
+                            <p>PAM alert: User accessed Domain Admin credential outside business hours</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Enrich</h4>
+                            <p>Query ITSM: Is there an approved change ticket? Query HR: Is user on call rotation?</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Decision</h4>
+                            <p>If valid ticket exists → log and close. If no ticket → escalate.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Respond (if suspicious)</h4>
+                            <p>Terminate PAM session via API. Send Teams/Slack message to user asking to confirm. Alert security analyst.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Document</h4>
+                            <p>Create incident ticket. Attach PAM session recording. Log all actions taken.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h4>Playbook: Credential Rotation Failure</h4>
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Trigger</h4>
+                            <p>PAM alert: Password rotation failed for service account</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Enrich</h4>
+                            <p>Get account details. Identify owner from CMDB. Check recent changes to target.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Attempt Recovery</h4>
+                            <p>If failure was network issue: Wait 5 min, retry via PAM API.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Escalate if Failed</h4>
+                            <p>Create ticket assigned to account owner. Include troubleshooting steps. Set SLA for resolution.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>SOAR Integrations</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>SOAR Platform</th>
+                                <th>PAM Integration</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Cortex XSOAR</strong></td>
+                                <td>CyberArk pack available. BeyondTrust integration. Custom integrations via REST API.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Splunk SOAR</strong></td>
+                                <td>CyberArk app. Custom apps for other vendors.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Microsoft Sentinel</strong></td>
+                                <td>Logic Apps for automation. Playbooks via Azure Functions.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>ServiceNow SecOps</strong></td>
+                                <td>Flow Designer integrations. Mid Server connectors.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <div class="info-box success">
+                <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <div class="info-box-content">
+                    <h4>Key Takeaways</h4>
+                    <p>SIEM integration transforms PAM from a control tool into a detection tool. Prioritize high-value events (break-glass, failures, high-tier access). Build detection rules that correlate PAM data with other sources. Create dashboards for both executives and SOC analysts. Automate response with SOAR for faster reaction to threats.</p>
+                </div>
+            </div>
+
+            <nav class="page-nav">
+                <a href="data-flows.html" class="page-nav-link prev">
+                    <span class="page-nav-label">Previous</span>
+                    <span class="page-nav-title">← Data Flows Explained</span>
+                </a>
+                <a href="best-practices.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next</span>
+                    <span class="page-nav-title">Best Practices →</span>
+                </a>
+            </nav>
+        </div>
+
+        <footer class="footer">
+            <p>PAM & KMS Ultimate Guide — A comprehensive enterprise security documentation resource</p>
+        </footer>
+    </main>
+
+    <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+    </button>
+
+    <script src="../js/main.js"></script>
+</body>
+</html>

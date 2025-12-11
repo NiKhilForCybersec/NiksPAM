@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Real-World Attack Scenarios - Understanding how attackers target privileged access and how PAM/KMS defend">
+    <title>Real-World Attack Scenarios | PAM & KMS Guide</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="scroll-progress" id="scroll-progress"></div>
+
+    <header class="header">
+        <div class="header-content">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                PAM & KMS Guide
+            </a>
+            
+            <nav class="header-nav">
+                <a href="pam-fundamentals.html" class="active">PAM</a>
+                <a href="kms-fundamentals.html">KMS</a>
+                <a href="vendors.html">Vendors</a>
+                <a href="implementation.html">Implementation</a>
+            </nav>
+            
+            <div class="header-actions">
+                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-title">Getting Started</div>
+            <ul class="sidebar-nav">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="introduction.html">Introduction</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">Deep Dives</div>
+            <ul class="sidebar-nav">
+                <li><a href="how-pam-works.html">How PAM Actually Works</a></li>
+                <li><a href="encryption-explained.html">Encryption Explained</a></li>
+                <li><a href="attack-scenarios.html" class="active">Real-World Attacks</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <main class="main-wrapper">
+        <div class="main-content">
+            <nav class="breadcrumb">
+                <a href="../index.html">Home</a>
+                <span class="breadcrumb-separator">/</span>
+                <a href="pam-fundamentals.html">PAM</a>
+                <span class="breadcrumb-separator">/</span>
+                <span>Real-World Attack Scenarios</span>
+            </nav>
+
+            <div class="page-header">
+                <h1>Real-World Attack Scenarios</h1>
+                <p class="page-description">
+                    Understanding how attackers actually operate helps you appreciate why PAM and KMS controls exist. This page walks through real attack patterns and shows exactly how proper controls would stop or detect them.
+                </p>
+            </div>
+
+            <div class="toc">
+                <div class="toc-title">On This Page</div>
+                <ul class="toc-list">
+                    <li><a href="#attack-lifecycle"><span class="toc-number">1.</span> The Attack Lifecycle</a></li>
+                    <li><a href="#credential-theft"><span class="toc-number">2.</span> Credential Theft Attacks</a></li>
+                    <li><a href="#lateral-movement"><span class="toc-number">3.</span> Lateral Movement</a></li>
+                    <li><a href="#privilege-escalation"><span class="toc-number">4.</span> Privilege Escalation</a></li>
+                    <li><a href="#insider-threat"><span class="toc-number">5.</span> Insider Threats</a></li>
+                    <li><a href="#ransomware"><span class="toc-number">6.</span> Ransomware Attacks</a></li>
+                    <li><a href="#supply-chain"><span class="toc-number">7.</span> Supply Chain Attacks</a></li>
+                    <li><a href="#defense-mapping"><span class="toc-number">8.</span> Mapping Defenses to Attacks</a></li>
+                </ul>
+            </div>
+
+            <section id="attack-lifecycle">
+                <h2>The Attack Lifecycle</h2>
+                
+                <p>
+                    Sophisticated attacks don't happen instantly. Attackers follow a methodical process, and understanding this process reveals where PAM and KMS create barriers.
+                </p>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Initial Access</h4>
+                            <p>Attacker gets a foothold: phishing email, exploited vulnerability, compromised credentials, or malicious insider. At this point, they typically have limited, non-privileged access.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Discovery</h4>
+                            <p>Attacker explores: What network am I on? What systems exist? Where are the valuable targets? Who has admin access?</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Privilege Escalation</h4>
+                            <p>Attacker tries to gain higher privileges: steal admin credentials, exploit vulnerabilities, abuse misconfigurations. <strong>This is where PAM creates the biggest barrier.</strong></p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Lateral Movement</h4>
+                            <p>With elevated credentials, attacker moves to other systems: domain controllers, database servers, backup systems. <strong>PAM limits how far they can go.</strong></p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Objective Execution</h4>
+                            <p>Attacker achieves their goal: steal data, deploy ransomware, establish persistence. <strong>KMS encryption can make stolen data useless.</strong></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>The Key Insight</h4>
+                        <p>Almost every significant breach involves privileged credentials. Attackers can do limited damage with a regular user account. Real damage requires admin access. This is why privileged access is the most valuable target—and why protecting it matters so much.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="credential-theft">
+                <h2>Credential Theft Attacks</h2>
+
+                <p>
+                    Stealing credentials is often the easiest path to escalation. Let's examine common techniques and how PAM defeats them.
+                </p>
+
+                <h3>Attack: Keylogger Captures Admin Password</h3>
+
+                <div class="info-box danger">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>The Attack</h4>
+                        <p>Attacker installs a keylogger on an admin's workstation (via phishing, drive-by download, or physical access). The keylogger records every keystroke, including when the admin types their password to connect to servers.</p>
+                    </div>
+                </div>
+
+                <p><strong>Without PAM:</strong> Admin types password directly. Keylogger captures "P@ssw0rd123!". Attacker now has the admin's credentials and can use them from anywhere.</p>
+
+                <p><strong>With PAM:</strong> Admin connects through PAM's session proxy. The admin never types the server password—PAM injects it. The keylogger captures nothing useful. Even if the attacker gets the admin's PAM portal password, MFA blocks unauthorized access, and session proxy means passwords still aren't exposed.</p>
+
+                <h3>Attack: Memory Scraping (Mimikatz)</h3>
+
+                <div class="info-box danger">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>The Attack</h4>
+                        <p>Tools like Mimikatz can extract passwords and password hashes from Windows memory. If an admin has logged into a compromised server, their credentials may be recoverable from memory.</p>
+                    </div>
+                </div>
+
+                <p><strong>Without PAM:</strong> Admin RDPs to server, types credentials. Those credentials are cached in memory. Attacker runs Mimikatz, extracts the admin's password hash or even plaintext password. Attacker can now impersonate the admin.</p>
+
+                <p><strong>With PAM:</strong></p>
+                <ul>
+                    <li>Admin never types credentials on the target—PAM session proxy handles authentication</li>
+                    <li>The admin's personal credentials never touch the target server</li>
+                    <li>The privileged account credentials are only on the PAM server, which is hardened</li>
+                    <li>Even if credentials are captured, they rotate after use—captured password is already invalid</li>
+                </ul>
+
+                <h3>Attack: Password in Config Files</h3>
+
+                <div class="info-box danger">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>The Attack</h4>
+                        <p>Developers hard-code database passwords in application config files. Attacker gains access to the web server (low-privilege), reads config files, and finds database credentials in plaintext.</p>
+                    </div>
+                </div>
+
+                <p><strong>Without PAM:</strong> Config file contains <code>db_password=SecretPass123</code>. Attacker reads it, connects to database, exfiltrates all data.</p>
+
+                <p><strong>With PAM (for application credentials):</strong></p>
+                <ul>
+                    <li>Application retrieves credentials from PAM via API at startup</li>
+                    <li>No credentials in config files, source code, or environment variables</li>
+                    <li>Credentials can be rotated without redeploying the application</li>
+                    <li>All access is logged—unusual access patterns trigger alerts</li>
+                </ul>
+            </section>
+
+            <section id="lateral-movement">
+                <h2>Lateral Movement</h2>
+
+                <p>
+                    Once attackers have some credentials, they try to use them on other systems. This is where the same password everywhere becomes catastrophic.
+                </p>
+
+                <h3>Attack: Pass-the-Hash</h3>
+
+                <div class="info-box danger">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>The Attack</h4>
+                        <p>In Windows environments, attackers don't even need the password—the password hash can be used directly to authenticate (NTLM authentication). Attacker captures hash from one machine and "passes" it to authenticate to other machines.</p>
+                    </div>
+                </div>
+
+                <p><strong>Scenario without PAM:</strong></p>
+                <ol>
+                    <li>Attacker compromises workstation</li>
+                    <li>Local admin account has password "AdminPass123" — same on all workstations</li>
+                    <li>Attacker extracts hash of local admin</li>
+                    <li>Attacker uses hash to authenticate to ALL other workstations (because same password = same hash)</li>
+                    <li>Attacker now controls every workstation in the company</li>
+                </ol>
+
+                <p><strong>With PAM (unique passwords per system):</strong></p>
+                <ol>
+                    <li>Attacker compromises workstation</li>
+                    <li>Local admin password is unique: "x9Kp2#mNv..." (set by PAM)</li>
+                    <li>Attacker extracts hash</li>
+                    <li>Hash ONLY works on this one workstation—every other machine has a different password</li>
+                    <li>Lateral movement is blocked</li>
+                </ol>
+
+                <h3>Attack: Stolen SSH Key Used Everywhere</h3>
+
+                <div class="info-box danger">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>The Attack</h4>
+                        <p>Admin uses the same SSH key pair for all 500 Linux servers. Attacker compromises the admin's laptop, finds the private key file, and now has root access to all 500 servers.</p>
+                    </div>
+                </div>
+
+                <p><strong>With PAM SSH Key Management:</strong></p>
+                <ul>
+                    <li>SSH private keys stored in PAM vault, not on admin's laptop</li>
+                    <li>Admin connects through PAM session proxy—never touches the private key</li>
+                    <li>Or: PAM issues short-lived SSH certificates (expire in hours)</li>
+                    <li>Even if a key is somehow compromised, it's rotated regularly</li>
+                </ul>
+            </section>
+
+            <section id="privilege-escalation">
+                <h2>Privilege Escalation</h2>
+
+                <p>
+                    Attackers with limited access seek ways to gain higher privileges. Let's see how PAM makes this harder.
+                </p>
+
+                <h3>Attack: Exploiting Weak Service Account</h3>
+
+                <div class="info-box danger">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>The Attack</h4>
+                        <p>Attacker discovers a service account that (a) has a weak password, (b) is a member of Domain Admins (because "it needed access to everything"), and (c) the password hasn't been changed in 3 years.</p>
+                    </div>
+                </div>
+
+                <p><strong>Without PAM:</strong> Attacker cracks or guesses the service account password. Instant Domain Admin. Game over.</p>
+
+                <p><strong>With PAM:</strong></p>
+                <ul>
+                    <li>Service account password is 30+ random characters (can't be cracked or guessed)</li>
+                    <li>Password rotates every 30 days (or more frequently)</li>
+                    <li>Service account is NOT in Domain Admins (PAM enables reviewing and right-sizing permissions)</li>
+                    <li>Any use of the service account is logged—unusual login times/sources trigger alerts</li>
+                </ul>
+
+                <h3>Attack: Kerberoasting</h3>
+
+                <div class="info-box danger">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>The Attack</h4>
+                        <p>In Active Directory, any authenticated user can request Kerberos service tickets for any service account with a Service Principal Name (SPN). The ticket is encrypted with the service account's password hash. Attackers request tickets, then crack them offline to recover passwords.</p>
+                    </div>
+                </div>
+
+                <p><strong>Without PAM:</strong> Service accounts have human-chosen passwords like "Summer2023!". Attacker cracks them in minutes.</p>
+
+                <p><strong>With PAM:</strong></p>
+                <ul>
+                    <li>Service account passwords are 25+ character random strings</li>
+                    <li>Cracking would take longer than the age of the universe</li>
+                    <li>Passwords rotate before any cracking could succeed anyway</li>
+                    <li>Better yet: use Group Managed Service Accounts (gMSA) where AD manages the password automatically</li>
+                </ul>
+            </section>
+
+            <section id="insider-threat">
+                <h2>Insider Threats</h2>
+
+                <p>
+                    Not all threats come from outside. Malicious or negligent insiders with privileged access can cause massive damage.
+                </p>
+
+                <h3>Scenario: Disgruntled DBA</h3>
+
+                <div class="info-box danger">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>The Scenario</h4>
+                        <p>A database administrator learns they're being laid off. Before their last day, they want to steal customer data to sell to competitors, and maybe delete some tables to cause chaos.</p>
+                    </div>
+                </div>
+
+                <p><strong>Without PAM:</strong></p>
+                <ul>
+                    <li>DBA knows all database passwords (they set them up)</li>
+                    <li>DBA can connect directly from home using VPN</li>
+                    <li>No one knows what queries the DBA runs</li>
+                    <li>After termination, DBA still knows the passwords (which haven't been changed)</li>
+                </ul>
+
+                <p><strong>With PAM:</strong></p>
+                <ul>
+                    <li><strong>DBA never knew the passwords</strong>—PAM injected them</li>
+                    <li><strong>Every SQL query is recorded</strong>—mass data export would be visible</li>
+                    <li><strong>Real-time monitoring</strong>—security team sees unusual activity</li>
+                    <li><strong>Termination triggers rotation</strong>—all credentials DBA ever touched are changed</li>
+                    <li><strong>Forensic evidence</strong>—complete audit trail of everything they did</li>
+                </ul>
+
+                <h3>Scenario: Accidental Exposure</h3>
+
+                <div class="info-box warning">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>The Scenario</h4>
+                        <p>A well-meaning developer accidentally commits AWS credentials to a public GitHub repository. Automated scanners find it in minutes. Attackers start using the credentials before the developer even realizes the mistake.</p>
+                    </div>
+                </div>
+
+                <p><strong>Without secrets management:</strong> Credentials are valid until someone notices and rotates them (could be hours or days). Attackers spin up crypto miners, access S3 buckets, or worse.</p>
+
+                <p><strong>With PAM/Secrets Management:</strong></p>
+                <ul>
+                    <li>Developers retrieve credentials from vault at runtime, never storing them in code</li>
+                    <li>Even if credentials leak, they rotate automatically (daily or more)</li>
+                    <li>Leaked credentials are quickly invalid</li>
+                    <li>Monitoring detects unusual access patterns (new IP, unusual API calls)</li>
+                </ul>
+            </section>
+
+            <section id="ransomware">
+                <h2>Ransomware Attacks</h2>
+
+                <p>
+                    Modern ransomware doesn't just encrypt random files. Attackers specifically target privileged access to maximize damage.
+                </p>
+
+                <h3>The Modern Ransomware Playbook</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Initial Compromise</h4>
+                            <p>Phishing email, RDP brute force, or exploited vulnerability gets attacker into one system.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Credential Harvesting</h4>
+                            <p>Attacker runs Mimikatz, searches for passwords in files, captures credentials from memory.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Domain Admin Achievement</h4>
+                            <p>Using harvested credentials, attacker escalates to Domain Admin. This is the key moment—with DA, they control everything.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Disable Defenses</h4>
+                            <p>With admin access, attacker disables antivirus, deletes backups, removes security tools.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Exfiltrate Data</h4>
+                            <p>Before encryption, attacker steals sensitive data for double extortion ("pay or we leak it").</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <h4>Deploy Ransomware</h4>
+                            <p>Using domain admin access, attacker pushes ransomware to all systems simultaneously.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Where PAM Breaks the Kill Chain</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Attack Stage</th>
+                                <th>PAM Defense</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Credential Harvesting</td>
+                                <td>Admins don't type passwords (session proxy). No credentials on endpoints to harvest.</td>
+                            </tr>
+                            <tr>
+                                <td>Pass-the-Hash lateral movement</td>
+                                <td>Unique passwords per system. Hash from one system doesn't work elsewhere.</td>
+                            </tr>
+                            <tr>
+                                <td>Domain Admin escalation</td>
+                                <td>DA accounts have rotating, unknown passwords. JIT membership means no standing DA access.</td>
+                            </tr>
+                            <tr>
+                                <td>Backup deletion</td>
+                                <td>Backup systems require PAM checkout. Unusual access triggers alerts.</td>
+                            </tr>
+                            <tr>
+                                <td>Mass deployment</td>
+                                <td>Without domain admin credentials, attacker can't push to all systems.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Where KMS Protects Data</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Attack Stage</th>
+                                <th>KMS Defense</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Data exfiltration</td>
+                                <td>Data at rest is encrypted. Without KMS access, stolen database files are useless.</td>
+                            </tr>
+                            <tr>
+                                <td>Double extortion</td>
+                                <td>If attacker can't decrypt the data, they have nothing to leak.</td>
+                            </tr>
+                            <tr>
+                                <td>Backup theft</td>
+                                <td>Encrypted backups require KMS keys to restore. Stolen backups are unreadable.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="supply-chain">
+                <h2>Supply Chain Attacks</h2>
+
+                <p>
+                    Sometimes attackers don't target you directly—they compromise something you trust.
+                </p>
+
+                <h3>Attack: Compromised Software Update</h3>
+
+                <div class="info-box danger">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>The Attack (SolarWinds Style)</h4>
+                        <p>Attackers compromise a software vendor's build process. Malicious code is inserted into a legitimate software update. When you install the "trusted" update, you install the malware. The malware often runs with high privileges because IT management software needs admin access.</p>
+                    </div>
+                </div>
+
+                <p><strong>How PAM/KMS Limit Damage:</strong></p>
+                <ul>
+                    <li><strong>Least privilege:</strong> Even if management software is compromised, it only has access to what it needs—not everything</li>
+                    <li><strong>Segmentation:</strong> Compromised software can't reach all systems if access is segmented</li>
+                    <li><strong>Monitoring:</strong> Unusual access patterns (management software querying unusual systems) trigger alerts</li>
+                    <li><strong>Credential isolation:</strong> Even if software is compromised, it doesn't have stored credentials to extract</li>
+                    <li><strong>Encrypted data:</strong> If attacker exfiltrates data, encryption renders it useless without keys</li>
+                </ul>
+
+                <h3>Attack: Third-Party Vendor Access</h3>
+
+                <div class="info-box danger">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>The Attack</h4>
+                        <p>You give a vendor VPN access for support. The vendor is breached. Attackers use the vendor's credentials to access your network.</p>
+                    </div>
+                </div>
+
+                <p><strong>With PAM for Vendor Access:</strong></p>
+                <ul>
+                    <li><strong>Just-in-time access:</strong> Vendor has no standing access—must request each time</li>
+                    <li><strong>Approval workflow:</strong> Your team approves each vendor access request</li>
+                    <li><strong>Session recording:</strong> Every vendor session is recorded and reviewable</li>
+                    <li><strong>Time limits:</strong> Access automatically expires after the support window</li>
+                    <li><strong>Scope limits:</strong> Vendor can only access specific systems they need</li>
+                </ul>
+            </section>
+
+            <section id="defense-mapping">
+                <h2>Mapping Defenses to Attacks</h2>
+
+                <p>
+                    Here's a summary of which PAM/KMS controls defend against which attack techniques:
+                </p>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Attack Technique</th>
+                                <th>Key Defense</th>
+                                <th>How It Helps</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Keyloggers</td>
+                                <td>Session proxy</td>
+                                <td>Passwords never typed by users</td>
+                            </tr>
+                            <tr>
+                                <td>Memory scraping</td>
+                                <td>Session proxy + rotation</td>
+                                <td>Credentials not on endpoints; rotate after use</td>
+                            </tr>
+                            <tr>
+                                <td>Hard-coded credentials</td>
+                                <td>Secrets management API</td>
+                                <td>No credentials in code/config</td>
+                            </tr>
+                            <tr>
+                                <td>Pass-the-hash</td>
+                                <td>Unique passwords</td>
+                                <td>Hash only valid for one system</td>
+                            </tr>
+                            <tr>
+                                <td>Kerberoasting</td>
+                                <td>Long random passwords</td>
+                                <td>Can't be cracked in useful time</td>
+                            </tr>
+                            <tr>
+                                <td>SSH key theft</td>
+                                <td>Vaulted keys + certificates</td>
+                                <td>Keys not on endpoints; short-lived certs</td>
+                            </tr>
+                            <tr>
+                                <td>Insider theft</td>
+                                <td>Session recording + monitoring</td>
+                                <td>All actions visible and auditable</td>
+                            </tr>
+                            <tr>
+                                <td>Data exfiltration</td>
+                                <td>Encryption (KMS)</td>
+                                <td>Stolen data is unreadable</td>
+                            </tr>
+                            <tr>
+                                <td>Ransomware</td>
+                                <td>Multiple PAM controls</td>
+                                <td>Blocks escalation path to domain admin</td>
+                            </tr>
+                            <tr>
+                                <td>Vendor compromise</td>
+                                <td>JIT + approval + recording</td>
+                                <td>Limited scope, time, and full visibility</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <div class="info-box success">
+                <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <div class="info-box-content">
+                    <h4>The Big Picture</h4>
+                    <p>Every sophisticated attack needs privileged credentials to succeed. PAM makes those credentials harder to steal (session proxy, no exposure), harder to use if stolen (unique passwords, rotation, MFA), and ensures attacks are detected (session recording, monitoring, SIEM integration). KMS ensures that even if attackers get the data, they can't read it. Together, they don't just raise the bar—they fundamentally change what's possible for attackers.</p>
+                </div>
+            </div>
+
+            <nav class="page-nav">
+                <a href="encryption-explained.html" class="page-nav-link prev">
+                    <span class="page-nav-label">Previous</span>
+                    <span class="page-nav-title">← Encryption Explained</span>
+                </a>
+                <a href="pam-fundamentals.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next</span>
+                    <span class="page-nav-title">PAM Fundamentals →</span>
+                </a>
+            </nav>
+        </div>
+
+        <footer class="footer">
+            <p>PAM & KMS Ultimate Guide — A comprehensive enterprise security documentation resource</p>
+        </footer>
+    </main>
+
+    <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+    </button>
+
+    <script src="../js/main.js"></script>
+</body>
+</html>

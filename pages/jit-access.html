@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Just-In-Time Access (JIT) - Eliminating standing privileges through time-bound, on-demand access in PAM">
+    <title>Just-In-Time Access | PAM & KMS Guide</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="scroll-progress" id="scroll-progress"></div>
+
+    <header class="header">
+        <div class="header-content">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                PAM & KMS Guide
+            </a>
+            
+            <nav class="header-nav">
+                <a href="pam-fundamentals.html" class="active">PAM</a>
+                <a href="kms-fundamentals.html">KMS</a>
+                <a href="vendors.html">Vendors</a>
+                <a href="implementation.html">Implementation</a>
+            </nav>
+            
+            <div class="header-actions">
+                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-title">Getting Started</div>
+            <ul class="sidebar-nav">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="introduction.html">Introduction</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">PAM Fundamentals</div>
+            <ul class="sidebar-nav">
+                <li><a href="pam-fundamentals.html">What is PAM?</a></li>
+                <li><a href="pam-business-case.html">Business Case</a></li>
+                <li><a href="privileged-accounts.html">Privileged Accounts</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">PAM Architecture</div>
+            <ul class="sidebar-nav">
+                <li><a href="pam-components.html">Core Components</a></li>
+                <li><a href="pam-architecture.html">Architecture Patterns</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">PAM Workflows</div>
+            <ul class="sidebar-nav">
+                <li><a href="user-access-workflow.html">User Access Workflow</a></li>
+                <li><a href="session-management.html">Session Management</a></li>
+                <li><a href="jit-access.html" class="active">Just-In-Time Access</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">KMS Fundamentals</div>
+            <ul class="sidebar-nav">
+                <li><a href="kms-fundamentals.html">What is KMS?</a></li>
+                <li><a href="cryptographic-basics.html">Cryptographic Basics</a></li>
+                <li><a href="key-lifecycle.html">Key Lifecycle</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">Vendors</div>
+            <ul class="sidebar-nav">
+                <li><a href="vendors.html">Vendor Overview</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <main class="main-wrapper">
+        <div class="main-content">
+            <nav class="breadcrumb">
+                <a href="../index.html">Home</a>
+                <span class="breadcrumb-separator">/</span>
+                <a href="user-access-workflow.html">PAM Workflows</a>
+                <span class="breadcrumb-separator">/</span>
+                <span>Just-In-Time Access</span>
+            </nav>
+
+            <div class="page-header">
+                <h1>Just-In-Time Access (JIT)</h1>
+                <p class="page-description">
+                    Just-In-Time access is a security model that eliminates standing privileges by granting access only when needed, for the minimum time required. This page explains JIT concepts, implementation approaches, and how it fits into Zero Trust architecture.
+                </p>
+            </div>
+
+            <div class="toc">
+                <div class="toc-title">On This Page</div>
+                <ul class="toc-list">
+                    <li><a href="#concept"><span class="toc-number">1.</span> The JIT Concept</a></li>
+                    <li><a href="#standing-privileges"><span class="toc-number">2.</span> The Problem with Standing Privileges</a></li>
+                    <li><a href="#how-jit-works"><span class="toc-number">3.</span> How JIT Works</a></li>
+                    <li><a href="#implementation"><span class="toc-number">4.</span> Implementation Approaches</a></li>
+                    <li><a href="#zero-standing"><span class="toc-number">5.</span> Zero Standing Privileges (ZSP)</a></li>
+                    <li><a href="#zero-trust"><span class="toc-number">6.</span> JIT and Zero Trust</a></li>
+                    <li><a href="#best-practices"><span class="toc-number">7.</span> Best Practices</a></li>
+                </ul>
+            </div>
+
+            <section id="concept">
+                <h2>The JIT Concept</h2>
+                
+                <p>
+                    <strong>Just-In-Time (JIT) access</strong> is a privilege management approach where users receive access only when they need it, for a limited time, and with the minimum privileges required for their task. When the time expires or the task is complete, access is automatically revoked.
+                </p>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>The Analogy: Hotel Room Keys</h4>
+                        <p>Think of a hotel room key. You get it when you check in, it works for your room only, and it expires when you check out. You don't get a permanent key to every room "just in case" you might need it someday. JIT access works the same way—you get exactly the access you need, exactly when you need it, and it goes away when you're done.</p>
+                    </div>
+                </div>
+
+                <h3>JIT Principles</h3>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        </div>
+                        <div class="feature-title">Time-Bound</div>
+                        <p class="feature-description">Access has a defined start and end time. When time expires, access is automatically revoked.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                        </div>
+                        <div class="feature-title">On-Demand</div>
+                        <p class="feature-description">Users request access when they need it, rather than having it permanently assigned.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                        </div>
+                        <div class="feature-title">Least Privilege</div>
+                        <p class="feature-description">Access is scoped to minimum necessary—specific systems, specific accounts, specific actions.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                        </div>
+                        <div class="feature-title">Justified</div>
+                        <p class="feature-description">Every access request includes a reason/justification that's logged for audit.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="standing-privileges">
+                <h2>The Problem with Standing Privileges</h2>
+
+                <p>
+                    <strong>Standing privileges</strong> are access rights that remain assigned to a user continuously, whether or not they're actively using them. This is the traditional approach, and it creates significant risk.
+                </p>
+
+                <h3>Why Standing Privileges Are Dangerous</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Risk</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Expanded Attack Window</strong></td>
+                                <td>If an attacker compromises a privileged account, those privileges are available 24/7. With JIT, they'd have to wait for the user to activate access.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Privilege Accumulation</strong></td>
+                                <td>Over time, users accumulate access they no longer need. People change roles but keep old access. This violates least privilege.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Lateral Movement</strong></td>
+                                <td>Attackers use stolen credentials to move laterally through the network. Standing privileges mean more paths are available.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Insider Threat</strong></td>
+                                <td>Disgruntled employees have constant access to sensitive systems. With JIT, their access window is limited.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Compliance Burden</strong></td>
+                                <td>Auditors ask who has access and why. With standing privileges, the answer is often unclear or outdated.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="info-box danger">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Real-World Impact</h4>
+                        <p>In many breaches, attackers gain access to an account and find it has Domain Admin privileges that were granted years ago for a one-time project. With JIT, that Domain Admin access wouldn't exist unless actively requested and approved for a current need.</p>
+                    </div>
+                </div>
+
+                <h3>Standing vs JIT Comparison</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Aspect</th>
+                                <th>Standing Privileges</th>
+                                <th>JIT Access</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>When access exists</strong></td>
+                                <td>Always (24/7/365)</td>
+                                <td>Only during approved window</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Attack surface</strong></td>
+                                <td>Maximum—all privileges always exposed</td>
+                                <td>Minimal—privileges only exist when active</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Audit complexity</strong></td>
+                                <td>Must justify all existing access</td>
+                                <td>Every access has built-in justification</td>
+                            </tr>
+                            <tr>
+                                <td><strong>User friction</strong></td>
+                                <td>None—access always available</td>
+                                <td>Some—must request access each time</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Compromised credential risk</strong></td>
+                                <td>High—attacker inherits all privileges</td>
+                                <td>Lower—attacker must wait for activation</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="how-jit-works">
+                <h2>How JIT Works</h2>
+
+                <p>
+                    A typical JIT workflow involves these stages:
+                </p>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Access Request</h4>
+                            <p>User submits a request for specific access: which system, which account/role, how long needed, and why (business justification). This may be manual or automated (e.g., triggered by a ticket).</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Policy Evaluation</h4>
+                            <p>PAM evaluates the request against policies: Is this user eligible for this access? Is the justification valid? Does this require approval, or can it be auto-approved?</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Approval (If Required)</h4>
+                            <p>For sensitive access, the request routes to an approver (manager, security team, system owner). They review and approve or deny the request.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Access Provisioning</h4>
+                            <p>Upon approval, access is granted. This might mean: adding user to a group, enabling an account, granting a role, or creating temporary credentials.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>User Performs Work</h4>
+                            <p>User has access for the approved duration. Session may be recorded. Activity is logged.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <h4>Automatic Revocation</h4>
+                            <p>When time expires (or user signals they're done), access is automatically revoked. User is removed from groups, account is disabled, credentials are rotated.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">7</div>
+                        <div class="step-content">
+                            <h4>Audit Trail</h4>
+                            <p>Complete record exists: who requested, why, who approved, when access was granted, what was done, when access was revoked.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="diagram-container">
+                    <div class="diagram-title">JIT Access Timeline</div>
+                    <div class="architecture-flow">
+                        <div class="arch-row">
+                            <div class="arch-box">
+                                <div class="arch-box-title">No Access</div>
+                                <div class="arch-box-subtitle">Default state</div>
+                            </div>
+                            <div class="arch-arrow">Request →</div>
+                            <div class="arch-box primary">
+                                <div class="arch-box-title">Pending</div>
+                                <div class="arch-box-subtitle">Awaiting approval</div>
+                            </div>
+                            <div class="arch-arrow">Approve →</div>
+                            <div class="arch-box accent">
+                                <div class="arch-box-title">Active</div>
+                                <div class="arch-box-subtitle">Time-limited access</div>
+                            </div>
+                            <div class="arch-arrow">Expire →</div>
+                            <div class="arch-box">
+                                <div class="arch-box-title">No Access</div>
+                                <div class="arch-box-subtitle">Auto-revoked</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="implementation">
+                <h2>Implementation Approaches</h2>
+
+                <p>
+                    There are several technical approaches to implementing JIT access:
+                </p>
+
+                <h3>1. JIT Group Membership</h3>
+
+                <p>
+                    User is temporarily added to a privileged group (e.g., Domain Admins) for the duration of the request.
+                </p>
+
+                <div class="key-points">
+                    <div class="key-points-title">How It Works</div>
+                    <ul>
+                        <li>User normally has no membership in privileged AD groups</li>
+                        <li>Upon approval, PAM adds user to the group</li>
+                        <li>User's token/session refreshes to include new group</li>
+                        <li>When time expires, PAM removes user from group</li>
+                    </ul>
+                </div>
+
+                <p><strong>Pros:</strong> Works with existing infrastructure, no application changes needed.</p>
+                <p><strong>Cons:</strong> Token refresh required (may need re-login), coarse-grained (whole group membership).</p>
+
+                <h3>2. JIT Account Activation</h3>
+
+                <p>
+                    Privileged accounts exist but are disabled by default. JIT enables the account temporarily.
+                </p>
+
+                <div class="key-points">
+                    <div class="key-points-title">How It Works</div>
+                    <ul>
+                        <li>Dedicated privileged account per user (e.g., admin-jsmith) exists but is disabled</li>
+                        <li>Upon approval, PAM enables the account and provides the password</li>
+                        <li>User logs in with the enabled account</li>
+                        <li>When time expires, PAM disables the account and rotates the password</li>
+                    </ul>
+                </div>
+
+                <p><strong>Pros:</strong> Clear separation between regular and privileged identity.</p>
+                <p><strong>Cons:</strong> More accounts to manage, account provisioning overhead.</p>
+
+                <h3>3. JIT Role Assignment (Cloud)</h3>
+
+                <p>
+                    For cloud platforms, temporarily assign IAM roles to users.
+                </p>
+
+                <div class="key-points">
+                    <div class="key-points-title">How It Works</div>
+                    <ul>
+                        <li>User has no standing IAM policies/roles for sensitive resources</li>
+                        <li>Upon approval, PAM assigns the required role (e.g., AWS IAM Role)</li>
+                        <li>User assumes the role for their session</li>
+                        <li>When time expires, role assignment is removed</li>
+                    </ul>
+                </div>
+
+                <p><strong>Pros:</strong> Native cloud integration, fine-grained permissions.</p>
+                <p><strong>Cons:</strong> Cloud-specific, may require different approach per cloud.</p>
+
+                <h3>4. Dynamic/Ephemeral Credentials</h3>
+
+                <p>
+                    Generate short-lived credentials on demand that automatically expire.
+                </p>
+
+                <div class="key-points">
+                    <div class="key-points-title">How It Works</div>
+                    <ul>
+                        <li>No permanent credentials exist</li>
+                        <li>Upon request, system generates temporary credentials (certificate, token, password)</li>
+                        <li>Credentials have built-in expiration (e.g., 1 hour TTL)</li>
+                        <li>No revocation needed—credentials simply stop working</li>
+                    </ul>
+                </div>
+
+                <p><strong>Pros:</strong> Most secure—no standing credentials anywhere. HashiCorp Vault excels at this.</p>
+                <p><strong>Cons:</strong> Requires application/infrastructure changes to support dynamic credentials.</p>
+            </section>
+
+            <section id="zero-standing">
+                <h2>Zero Standing Privileges (ZSP)</h2>
+
+                <p>
+                    <strong>Zero Standing Privileges (ZSP)</strong> is the ultimate goal of JIT access—a state where NO user has any standing privileged access. All privileged access is JIT.
+                </p>
+
+                <h3>What ZSP Means</h3>
+
+                <div class="key-points">
+                    <div class="key-points-title">Zero Standing Privileges Defined</div>
+                    <ul>
+                        <li>No user is a permanent member of privileged groups (Domain Admins, etc.)</li>
+                        <li>No privileged accounts are permanently enabled</li>
+                        <li>No standing IAM policies grant sensitive permissions</li>
+                        <li>All privileged access flows through JIT workflows</li>
+                        <li>Even "break-glass" emergency access is managed (just with expedited workflow)</li>
+                    </ul>
+                </div>
+
+                <h3>ZSP Maturity Journey</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Level 1: Vaulting</h4>
+                            <p>Privileged credentials are stored in PAM vault. Users still have standing access, but passwords are managed.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Level 2: JIT for High-Risk</h4>
+                            <p>JIT implemented for the most sensitive access (Domain Admin, production databases). Other privileges remain standing.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Level 3: JIT as Default</h4>
+                            <p>Most privileged access is JIT. Standing privileges only for exceptional cases with strong justification.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Level 4: Zero Standing Privileges</h4>
+                            <p>No standing privileged access anywhere. 100% JIT. Even emergency access is JIT with expedited approval.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-box warning">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>ZSP Is a Journey</h4>
+                        <p>Most organizations don't achieve ZSP overnight. It requires significant process changes, user training, and cultural shift. Start with the highest-risk access and expand gradually. The goal is continuous reduction of standing privileges.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="zero-trust">
+                <h2>JIT and Zero Trust</h2>
+
+                <p>
+                    JIT access is a fundamental component of <strong>Zero Trust architecture</strong>. Zero Trust assumes no implicit trust—every access request must be verified.
+                </p>
+
+                <h3>Zero Trust Principles and JIT</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Zero Trust Principle</th>
+                                <th>How JIT Supports It</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Never Trust, Always Verify</strong></td>
+                                <td>Every JIT request is verified against policy, even for "trusted" users</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Least Privilege</strong></td>
+                                <td>JIT grants minimum required access for minimum required time</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Assume Breach</strong></td>
+                                <td>JIT limits blast radius—compromised account has no standing privileges</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Continuous Verification</strong></td>
+                                <td>Each JIT request is a new verification point, not just initial login</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Microsegmentation</strong></td>
+                                <td>JIT enables fine-grained access to specific resources, not broad network access</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>JIT + Zero Trust = Defense in Depth</h4>
+                        <p>In a Zero Trust model, even if an attacker bypasses perimeter controls and compromises a user account, they face another barrier: the user has no standing privileges. They'd have to also compromise the JIT workflow to gain privileged access.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="best-practices">
+                <h2>Best Practices</h2>
+
+                <h3>Implementation Best Practices</h3>
+
+                <div class="key-points">
+                    <div class="key-points-title">Getting JIT Right</div>
+                    <ul>
+                        <li><strong>Start with highest-risk access:</strong> Domain Admin, database admin, cloud admin roles</li>
+                        <li><strong>Define reasonable time windows:</strong> Not too short (frustrating) or too long (defeats purpose). 4-8 hours typical.</li>
+                        <li><strong>Allow extensions:</strong> Users should be able to request more time before expiration, with justification</li>
+                        <li><strong>Automate revocation:</strong> Never rely on manual cleanup—access must expire automatically</li>
+                        <li><strong>Include emergency procedures:</strong> Define break-glass process for urgent access when approvers unavailable</li>
+                    </ul>
+                </div>
+
+                <h3>User Experience Best Practices</h3>
+
+                <div class="key-points">
+                    <div class="key-points-title">Minimizing Friction</div>
+                    <ul>
+                        <li><strong>Self-service portal:</strong> Users should be able to request access without opening tickets</li>
+                        <li><strong>Fast approval:</strong> Mobile approval, Slack/Teams integration for quick turnaround</li>
+                        <li><strong>Pre-approved access:</strong> For routine tasks, define pre-approved JIT that doesn't require manager sign-off</li>
+                        <li><strong>Remember preferences:</strong> Save common request patterns for quick re-request</li>
+                        <li><strong>Clear status:</strong> Users should easily see what access they have and when it expires</li>
+                    </ul>
+                </div>
+
+                <h3>Security Best Practices</h3>
+
+                <div class="key-points">
+                    <div class="key-points-title">Maintaining Security</div>
+                    <ul>
+                        <li><strong>Require MFA for JIT requests:</strong> Extra verification before granting privileged access</li>
+                        <li><strong>Log everything:</strong> Request, approval, provisioning, activity, revocation</li>
+                        <li><strong>Review patterns:</strong> Regularly review JIT usage for anomalies or abuse</li>
+                        <li><strong>Limit approver scope:</strong> Approvers should only approve access they understand</li>
+                        <li><strong>Test revocation:</strong> Regularly verify that access is actually revoked when it should be</li>
+                    </ul>
+                </div>
+            </section>
+
+            <div class="info-box success">
+                <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <div class="info-box-content">
+                    <h4>Key Takeaways</h4>
+                    <p>JIT access eliminates standing privileges by granting access only when needed, for limited time, with automatic revocation. It's a core component of Zero Trust architecture and significantly reduces the attack surface. Start with high-risk access and expand gradually toward Zero Standing Privileges.</p>
+                </div>
+            </div>
+
+            <nav class="page-nav">
+                <a href="session-management.html" class="page-nav-link prev">
+                    <span class="page-nav-label">Previous</span>
+                    <span class="page-nav-title">← Session Management</span>
+                </a>
+                <a href="kms-fundamentals.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next</span>
+                    <span class="page-nav-title">KMS Fundamentals →</span>
+                </a>
+            </nav>
+        </div>
+
+        <footer class="footer">
+            <p>PAM & KMS Ultimate Guide — A comprehensive enterprise security documentation resource</p>
+        </footer>
+    </main>
+
+    <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+    </button>
+
+    <script src="../js/main.js"></script>
+</body>
+</html>

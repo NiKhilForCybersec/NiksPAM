@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="What is Privileged Access Management (PAM)? Complete guide to understanding PAM concepts, components, and importance">
+    <title>What is PAM? | PAM & KMS Guide</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="scroll-progress" id="scroll-progress"></div>
+
+    <header class="header">
+        <div class="header-content">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                PAM & KMS Guide
+            </a>
+            
+            <nav class="header-nav">
+                <a href="pam-fundamentals.html" class="active">PAM</a>
+                <a href="kms-fundamentals.html">KMS</a>
+                <a href="vendors.html">Vendors</a>
+                <a href="implementation.html">Implementation</a>
+            </nav>
+            
+            <div class="header-actions">
+                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-title">Getting Started</div>
+            <ul class="sidebar-nav">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="introduction.html">Introduction</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">PAM Fundamentals</div>
+            <ul class="sidebar-nav">
+                <li><a href="pam-fundamentals.html" class="active">What is PAM?</a></li>
+                <li><a href="pam-business-case.html">Business Case</a></li>
+                <li><a href="privileged-accounts.html">Privileged Accounts</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">PAM Architecture</div>
+            <ul class="sidebar-nav">
+                <li><a href="pam-components.html">Core Components</a></li>
+                <li><a href="pam-architecture.html">Architecture Patterns</a></li>
+                <li><a href="pam-data-flows.html">Data Flows</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">PAM Workflows</div>
+            <ul class="sidebar-nav">
+                <li><a href="user-access-workflow.html">User Access Workflow</a></li>
+                <li><a href="session-management.html">Session Management</a></li>
+                <li><a href="jit-access.html">Just-In-Time Access</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">KMS Fundamentals</div>
+            <ul class="sidebar-nav">
+                <li><a href="kms-fundamentals.html">What is KMS?</a></li>
+                <li><a href="cryptographic-basics.html">Cryptographic Basics</a></li>
+                <li><a href="key-lifecycle.html">Key Lifecycle</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">Vendors</div>
+            <ul class="sidebar-nav">
+                <li><a href="vendors.html">Vendor Overview</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <main class="main-wrapper">
+        <div class="main-content">
+            <nav class="breadcrumb">
+                <a href="../index.html">Home</a>
+                <span class="breadcrumb-separator">/</span>
+                <a href="pam-fundamentals.html">PAM Fundamentals</a>
+                <span class="breadcrumb-separator">/</span>
+                <span>What is PAM?</span>
+            </nav>
+
+            <div class="page-header">
+                <h1>What is Privileged Access Management?</h1>
+                <p class="page-description">
+                    Privileged Access Management (PAM) is a critical security discipline focused on controlling, monitoring, and securing access to privileged accounts and systems. This page provides a comprehensive understanding of PAM from the ground up.
+                </p>
+            </div>
+
+            <div class="toc">
+                <div class="toc-title">On This Page</div>
+                <ul class="toc-list">
+                    <li><a href="#definition"><span class="toc-number">1.</span> Definition & Core Concept</a></li>
+                    <li><a href="#privilege-problem"><span class="toc-number">2.</span> The Privilege Problem</a></li>
+                    <li><a href="#pam-vs-iam"><span class="toc-number">3.</span> PAM vs IAM vs PIM</a></li>
+                    <li><a href="#core-capabilities"><span class="toc-number">4.</span> Core PAM Capabilities</a></li>
+                    <li><a href="#how-pam-works"><span class="toc-number">5.</span> How PAM Works</a></li>
+                    <li><a href="#key-terminology"><span class="toc-number">6.</span> Key Terminology</a></li>
+                </ul>
+            </div>
+
+            <section id="definition">
+                <h2>Definition & Core Concept</h2>
+                
+                <p>
+                    <strong>Privileged Access Management (PAM)</strong> is a cybersecurity strategy and set of technologies designed to control, monitor, secure, and audit all human and non-human privileged identities and activities across an enterprise IT environment.
+                </p>
+
+                <p>
+                    In simpler terms, PAM is like a highly secure bank vault combined with a video surveillance system, but for your most sensitive computer accounts and systems. It answers three fundamental questions:
+                </p>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        </div>
+                        <div class="feature-title">WHO has access?</div>
+                        <p class="feature-description">Which users, applications, and services are authorized to use privileged accounts?</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                        </div>
+                        <div class="feature-title">WHAT can they access?</div>
+                        <p class="feature-description">Which specific systems, servers, databases, and resources can they reach?</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        </div>
+                        <div class="feature-title">WHAT did they do?</div>
+                        <p class="feature-description">What actions were performed during their privileged session?</p>
+                    </div>
+                </div>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Think of PAM Like This</h4>
+                        <p>Imagine a hospital where certain medicine cabinets contain controlled substances. PAM is like a system that: (1) keeps those cabinets locked, (2) only allows authorized staff to request access, (3) requires a reason for each access, (4) records video of every time someone opens the cabinet, and (5) changes the lock combination after each use.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="privilege-problem">
+                <h2>The Privilege Problem</h2>
+
+                <p>
+                    To understand why PAM is necessary, you need to understand the "privilege problem" that exists in every organization.
+                </p>
+
+                <h3>What Makes an Account "Privileged"?</h3>
+
+                <p>
+                    A privileged account is any account that has elevated permissions beyond what a normal user has. These accounts can:
+                </p>
+
+                <ul>
+                    <li>Install or remove software</li>
+                    <li>Change system configurations</li>
+                    <li>Create, modify, or delete other user accounts</li>
+                    <li>Access sensitive data across the organization</li>
+                    <li>Control security settings and bypass controls</li>
+                    <li>Access logs and audit trails (potentially covering tracks)</li>
+                </ul>
+
+                <h3>Why Attackers Target Privileged Accounts</h3>
+
+                <p>
+                    Privileged accounts are the "keys to the kingdom." An attacker with a regular user account might be able to steal some files. An attacker with a domain administrator account can:
+                </p>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Access Everything</h4>
+                            <p>Move freely across all systems in the network, accessing any data they want.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Create Persistence</h4>
+                            <p>Create new admin accounts, install backdoors, and establish multiple ways to maintain access.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Disable Security</h4>
+                            <p>Turn off antivirus, modify firewall rules, disable logging, and blind the security team.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Cover Tracks</h4>
+                            <p>Delete or modify logs, change timestamps, and hide evidence of the breach.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-box danger">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>The Hard Truth</h4>
+                        <p>Without PAM, privileged credentials often remain unchanged for years, are shared among multiple people, are stored in spreadsheets or sticky notes, and provide unlimited, unmonitored access. A single compromised privileged account can lead to a complete organizational breach.</p>
+                    </div>
+                </div>
+
+                <h3>Common Privilege-Related Security Failures</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Problem</th>
+                                <th>Description</th>
+                                <th>How PAM Addresses It</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Shared Credentials</strong></td>
+                                <td>Multiple people know and share the same admin password</td>
+                                <td>Credentials are vaulted; users never see actual passwords</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Static Passwords</strong></td>
+                                <td>Passwords never change, remaining valid indefinitely</td>
+                                <td>Automatic password rotation after each use or on schedule</td>
+                            </tr>
+                            <tr>
+                                <td><strong>No Audit Trail</strong></td>
+                                <td>No record of who accessed what or when</td>
+                                <td>Complete session recording and keystroke logging</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Over-Privileging</strong></td>
+                                <td>Users have more access than they need</td>
+                                <td>Granular access policies; just-in-time privilege elevation</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Orphaned Accounts</strong></td>
+                                <td>Service accounts whose purpose is forgotten</td>
+                                <td>Discovery and inventory of all privileged accounts</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="pam-vs-iam">
+                <h2>PAM vs IAM vs PIM</h2>
+
+                <p>
+                    These three terms are often confused. Here's how they differ and relate to each other:
+                </p>
+
+                <h3>Identity and Access Management (IAM)</h3>
+
+                <p>
+                    <strong>IAM</strong> is the broadest category. It encompasses all the processes and technologies used to manage digital identities and their access to resources. IAM answers: "Who is this person, and what are they generally allowed to access?"
+                </p>
+
+                <p>IAM includes:</p>
+                <ul>
+                    <li>User provisioning and deprovisioning</li>
+                    <li>Single Sign-On (SSO)</li>
+                    <li>Multi-Factor Authentication (MFA)</li>
+                    <li>Directory services (Active Directory, LDAP)</li>
+                    <li>Access governance and certification</li>
+                </ul>
+
+                <h3>Privileged Access Management (PAM)</h3>
+
+                <p>
+                    <strong>PAM</strong> is a specialized subset of IAM that focuses specifically on privileged accounts. While IAM might manage access for 10,000 employees, PAM intensively manages the 500 privileged accounts that could cause catastrophic damage if compromised.
+                </p>
+
+                <p>PAM adds capabilities that IAM typically doesn't provide:</p>
+                <ul>
+                    <li>Credential vaulting with automatic rotation</li>
+                    <li>Privileged session recording and monitoring</li>
+                    <li>Just-in-time privilege elevation</li>
+                    <li>Application-to-application password management</li>
+                    <li>Privileged threat analytics</li>
+                </ul>
+
+                <h3>Privileged Identity Management (PIM)</h3>
+
+                <p>
+                    <strong>PIM</strong> is sometimes used interchangeably with PAM, but more precisely refers to the identity governance aspects of privileged access—managing who has privileged roles and when. Microsoft's "Azure AD Privileged Identity Management" is a well-known example.
+                </p>
+
+                <p>PIM focuses on:</p>
+                <ul>
+                    <li>Just-in-time role activation</li>
+                    <li>Time-bound privileged access</li>
+                    <li>Approval workflows for privilege elevation</li>
+                    <li>Access reviews and recertification</li>
+                </ul>
+
+                <!-- Visual Diagram -->
+                <div class="diagram-container">
+                    <div class="diagram-title">Relationship Between IAM, PAM, and PIM</div>
+                    <div class="architecture-flow">
+                        <div class="arch-row">
+                            <div class="arch-box primary" style="min-width: 400px;">
+                                <div class="arch-box-title">Identity & Access Management (IAM)</div>
+                                <div class="arch-box-subtitle">All identity and access controls</div>
+                            </div>
+                        </div>
+                        <div class="arch-arrow">↓</div>
+                        <div class="arch-row">
+                            <div class="arch-box accent" style="min-width: 320px;">
+                                <div class="arch-box-title">Privileged Access Management (PAM)</div>
+                                <div class="arch-box-subtitle">Privileged account controls</div>
+                            </div>
+                        </div>
+                        <div class="arch-arrow">↓</div>
+                        <div class="arch-row">
+                            <div class="arch-box secondary">
+                                <div class="arch-box-title">Credential Vaulting</div>
+                            </div>
+                            <div class="arch-box secondary">
+                                <div class="arch-box-title">Session Management</div>
+                            </div>
+                            <div class="arch-box secondary">
+                                <div class="arch-box-title">PIM (Role Governance)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="core-capabilities">
+                <h2>Core PAM Capabilities</h2>
+
+                <p>
+                    A comprehensive PAM solution provides several interconnected capabilities. Understanding these helps you evaluate solutions and design your implementation.
+                </p>
+
+                <h3>1. Credential Vaulting</h3>
+
+                <p>
+                    The foundation of PAM is a secure, encrypted vault that stores privileged credentials. Instead of passwords living in spreadsheets, configuration files, or people's memories, they're centralized in a hardened repository.
+                </p>
+
+                <div class="key-points">
+                    <div class="key-points-title">Key Features of Credential Vaulting</div>
+                    <ul>
+                        <li><strong>Encrypted Storage:</strong> Credentials encrypted with strong algorithms (AES-256 typical)</li>
+                        <li><strong>Access Control:</strong> Granular policies determining who can access what</li>
+                        <li><strong>Checkout/Checkin:</strong> Users "borrow" credentials and return them after use</li>
+                        <li><strong>Automatic Rotation:</strong> Passwords changed automatically after use or on schedule</li>
+                        <li><strong>High Availability:</strong> Replicated across sites for resilience</li>
+                    </ul>
+                </div>
+
+                <h3>2. Privileged Session Management</h3>
+
+                <p>
+                    Beyond just storing passwords, PAM can broker and record entire privileged sessions. Users connect through the PAM system, which injects credentials and monitors everything.
+                </p>
+
+                <div class="key-points">
+                    <div class="key-points-title">Session Management Capabilities</div>
+                    <ul>
+                        <li><strong>Session Proxy:</strong> PAM acts as intermediary between user and target system</li>
+                        <li><strong>Credential Injection:</strong> Passwords never exposed to the user</li>
+                        <li><strong>Session Recording:</strong> Video-like recording of the entire session</li>
+                        <li><strong>Keystroke Logging:</strong> Every command captured and searchable</li>
+                        <li><strong>Live Monitoring:</strong> Security team can watch sessions in real-time</li>
+                        <li><strong>Session Termination:</strong> Ability to forcibly end suspicious sessions</li>
+                    </ul>
+                </div>
+
+                <h3>3. Privileged Account Discovery</h3>
+
+                <p>
+                    You can't protect what you don't know exists. PAM solutions scan your environment to find all privileged accounts, including those that may have been forgotten or created outside normal processes.
+                </p>
+
+                <div class="key-points">
+                    <div class="key-points-title">Discovery Capabilities</div>
+                    <ul>
+                        <li><strong>Network Scanning:</strong> Find systems and their local admin accounts</li>
+                        <li><strong>Directory Integration:</strong> Identify privileged groups in Active Directory</li>
+                        <li><strong>Cloud Discovery:</strong> Find privileged roles in AWS, Azure, GCP</li>
+                        <li><strong>Service Account Detection:</strong> Identify accounts used by applications</li>
+                        <li><strong>Continuous Monitoring:</strong> Alert when new privileged accounts appear</li>
+                    </ul>
+                </div>
+
+                <h3>4. Just-In-Time (JIT) Access</h3>
+
+                <p>
+                    Rather than giving users permanent privileged access, JIT provides elevated privileges only when needed and for a limited time. This dramatically reduces the attack surface.
+                </p>
+
+                <div class="key-points">
+                    <div class="key-points-title">JIT Access Features</div>
+                    <ul>
+                        <li><strong>Request Workflow:</strong> Users request access with business justification</li>
+                        <li><strong>Approval Chain:</strong> Manager or security team approves requests</li>
+                        <li><strong>Time Bounds:</strong> Access granted for specific duration (e.g., 4 hours)</li>
+                        <li><strong>Automatic Revocation:</strong> Privileges automatically removed when time expires</li>
+                        <li><strong>Audit Trail:</strong> Complete record of who requested, who approved, what was accessed</li>
+                    </ul>
+                </div>
+
+                <h3>5. Application-to-Application Password Management</h3>
+
+                <p>
+                    Many applications need to authenticate to other systems (databases, APIs, etc.) using credentials. PAM eliminates hard-coded passwords in scripts and configuration files.
+                </p>
+
+                <div class="key-points">
+                    <div class="key-points-title">A2A Capabilities</div>
+                    <ul>
+                        <li><strong>API Retrieval:</strong> Applications fetch credentials from vault via API</li>
+                        <li><strong>Credential Rotation:</strong> Passwords can be rotated without application changes</li>
+                        <li><strong>No Hard-Coding:</strong> Eliminates credentials in source code and config files</li>
+                        <li><strong>Application Identity:</strong> Validates which applications can access which credentials</li>
+                    </ul>
+                </div>
+
+                <h3>6. Privileged Threat Analytics</h3>
+
+                <p>
+                    Modern PAM solutions use analytics and machine learning to detect unusual privileged activity that might indicate a compromised account or insider threat.
+                </p>
+
+                <div class="key-points">
+                    <div class="key-points-title">Analytics Capabilities</div>
+                    <ul>
+                        <li><strong>Behavioral Baselining:</strong> Learn normal patterns for each user/account</li>
+                        <li><strong>Anomaly Detection:</strong> Alert on unusual access times, commands, or patterns</li>
+                        <li><strong>Risk Scoring:</strong> Assign risk scores to sessions and users</li>
+                        <li><strong>SIEM Integration:</strong> Feed alerts to security operations for investigation</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="how-pam-works">
+                <h2>How PAM Works: A Complete Example</h2>
+
+                <p>
+                    Let's walk through a complete scenario to see how all the PAM components work together. We'll follow Sarah, a database administrator, as she performs emergency maintenance on a production database server.
+                </p>
+
+                <h3>The Scenario</h3>
+                <p>
+                    Sarah receives an alert that the production database is running low on disk space. She needs to connect to the database server with administrator privileges to perform cleanup.
+                </p>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Sarah Opens Her Browser</h4>
+                            <p>Sarah navigates to the company's PAM portal at <code>https://pam.company.com</code>. This is a web-based interface provided by the PAM solution.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Authentication with SSO and MFA</h4>
+                            <p>The PAM portal redirects Sarah to the company's identity provider (e.g., Azure AD). She enters her corporate credentials and then approves a push notification on her phone (MFA). The identity provider confirms her identity to PAM.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Sarah Sees Her Authorized Resources</h4>
+                            <p>After authentication, Sarah lands on her PAM dashboard. She sees a list of systems she's authorized to access. She searches for "PROD-DB-01" and finds the production database server.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Request Access with Justification</h4>
+                            <p>Sarah clicks on PROD-DB-01 and selects "Request RDP Session." A form appears asking for a ticket number and business justification. She enters: "INC-2024-1234 - Emergency disk space cleanup per monitoring alert."</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Approval Workflow (If Required)</h4>
+                            <p>Based on policy, production database access requires manager approval. Sarah's manager receives a notification, reviews the request, and approves it. For some systems, access might be auto-approved based on role.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <h4>Session Launched Through PAM</h4>
+                            <p>Once approved, Sarah clicks "Connect." The PAM system retrieves the local administrator password for PROD-DB-01 from the vault and establishes an RDP session. Sarah never sees the actual password—PAM injects it automatically.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">7</div>
+                        <div class="step-content">
+                            <h4>Session Recording Begins</h4>
+                            <p>From this moment, everything Sarah does is being recorded. Her screen is captured as video, and every keystroke and command is logged. The security team could watch this session live if needed.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">8</div>
+                        <div class="step-content">
+                            <h4>Sarah Performs Her Work</h4>
+                            <p>Sarah connects to the database, runs cleanup scripts, and verifies the disk space issue is resolved. She documents her changes in the server's maintenance log.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">9</div>
+                        <div class="step-content">
+                            <h4>Session Ends</h4>
+                            <p>Sarah closes the RDP window. PAM detects the session has ended and completes the recording. The recording is stored for compliance purposes (typically 1-7 years).</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">10</div>
+                        <div class="step-content">
+                            <h4>Automatic Password Rotation</h4>
+                            <p>PAM automatically connects to PROD-DB-01 and changes the local administrator password to a new, randomly generated value. Even if someone had intercepted the password during Sarah's session, it's now useless.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">11</div>
+                        <div class="step-content">
+                            <h4>Audit Trail Complete</h4>
+                            <p>The entire activity is now searchable: who accessed what, when, why, what they did, and the session recording. Auditors can review this during compliance audits, or security can investigate if an incident occurs.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="key-terminology">
+                <h2>Key PAM Terminology</h2>
+
+                <p>
+                    As you learn about PAM, you'll encounter these terms frequently. Here's a reference glossary:
+                </p>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Term</th>
+                                <th>Definition</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Vault / Safe</strong></td>
+                                <td>The encrypted repository where privileged credentials are stored. Sometimes called a "digital vault" or "password safe."</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Checkout / Checkin</strong></td>
+                                <td>The process of requesting (checkout) and returning (checkin) access to a privileged credential. Like checking out a library book.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Credential Rotation</strong></td>
+                                <td>Automatically changing a password to a new value, typically after use or on a schedule.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Session Proxy</strong></td>
+                                <td>A component that sits between the user and target system, relaying the connection while injecting credentials and recording activity.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Privileged Session Manager (PSM)</strong></td>
+                                <td>The PAM component responsible for session brokering and recording.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Central Policy Manager (CPM)</strong></td>
+                                <td>The component that manages password policies and performs automatic rotation.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Just-In-Time (JIT) Access</strong></td>
+                                <td>Providing privileged access only when needed, for a limited time, rather than permanently.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Zero Standing Privileges (ZSP)</strong></td>
+                                <td>An approach where no one has permanent privileged access; all privileges are granted JIT.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Break-Glass / Emergency Access</strong></td>
+                                <td>A mechanism for accessing privileged accounts when normal procedures can't be followed (e.g., during an outage). Requires extra audit and review.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Dual Control</strong></td>
+                                <td>Requiring two people to perform a sensitive action, such as accessing master keys or break-glass accounts.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Service Account</strong></td>
+                                <td>An account used by an application or service (rather than a human) to authenticate to other systems.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Application Identity</strong></td>
+                                <td>A way to identify and authenticate an application that needs to retrieve credentials from the vault.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Connector / Plugin</strong></td>
+                                <td>A software component that enables PAM to manage credentials on a specific type of target system (Windows, Linux, database, etc.).</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="info-box success">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    <div class="info-box-content">
+                        <h4>You Now Understand PAM Fundamentals!</h4>
+                        <p>You've learned what PAM is, why it matters, how it differs from IAM, its core capabilities, and how it works in practice. Continue to the next pages to dive deeper into specific topics like privileged account types and PAM architecture.</p>
+                    </div>
+                </div>
+            </section>
+
+            <nav class="page-nav">
+                <a href="introduction.html" class="page-nav-link prev">
+                    <span class="page-nav-label">Previous</span>
+                    <span class="page-nav-title">← Introduction</span>
+                </a>
+                <a href="pam-business-case.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next</span>
+                    <span class="page-nav-title">Business Case for PAM →</span>
+                </a>
+            </nav>
+        </div>
+
+        <footer class="footer">
+            <p>PAM & KMS Ultimate Guide — A comprehensive enterprise security documentation resource</p>
+        </footer>
+    </main>
+
+    <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+    </button>
+
+    <script src="../js/main.js"></script>
+</body>
+</html>

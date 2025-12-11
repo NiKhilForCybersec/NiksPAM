@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PAM for OT/ICS - Securing privileged access in industrial and operational technology environments">
+    <title>OT/ICS Security | PAM & KMS Guide</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="scroll-progress" id="scroll-progress"></div>
+
+    <header class="header">
+        <div class="header-content">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                PAM & KMS Guide
+            </a>
+            
+            <nav class="header-nav">
+                <a href="pam-fundamentals.html" class="active">PAM</a>
+                <a href="kms-fundamentals.html">KMS</a>
+                <a href="vendors.html">Vendors</a>
+                <a href="implementation.html">Implementation</a>
+            </nav>
+            
+            <div class="header-actions">
+                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-title">Use Cases</div>
+            <ul class="sidebar-nav">
+                <li><a href="pam-use-cases.html">PAM Use Cases</a></li>
+                <li><a href="kms-use-cases.html">KMS Use Cases</a></li>
+                <li><a href="ot-ics-security.html" class="active">OT/ICS Security</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <main class="main-wrapper">
+        <div class="main-content">
+            <nav class="breadcrumb">
+                <a href="../index.html">Home</a>
+                <span class="breadcrumb-separator">/</span>
+                <a href="pam-use-cases.html">Use Cases</a>
+                <span class="breadcrumb-separator">/</span>
+                <span>OT/ICS Security</span>
+            </nav>
+
+            <div class="page-header">
+                <h1>PAM for OT/ICS Environments</h1>
+                <p class="page-description">
+                    Operational Technology (OT) and Industrial Control Systems (ICS) present unique challenges for privileged access management. This guide covers how to secure privileged access in manufacturing, utilities, energy, and other industrial environments.
+                </p>
+            </div>
+
+            <div class="toc">
+                <div class="toc-title">On This Page</div>
+                <ul class="toc-list">
+                    <li><a href="#ot-vs-it"><span class="toc-number">1.</span> OT vs. IT: Key Differences</a></li>
+                    <li><a href="#purdue-model"><span class="toc-number">2.</span> Purdue Model & Network Segmentation</a></li>
+                    <li><a href="#ot-challenges"><span class="toc-number">3.</span> OT-Specific Challenges</a></li>
+                    <li><a href="#pam-architecture"><span class="toc-number">4.</span> PAM Architecture for OT</a></li>
+                    <li><a href="#vendor-access"><span class="toc-number">5.</span> Vendor Remote Access</a></li>
+                    <li><a href="#protocols"><span class="toc-number">6.</span> Industrial Protocols</a></li>
+                    <li><a href="#compliance"><span class="toc-number">7.</span> OT Compliance (NERC CIP, IEC 62443)</a></li>
+                    <li><a href="#implementation"><span class="toc-number">8.</span> Implementation Approach</a></li>
+                </ul>
+            </div>
+
+            <section id="ot-vs-it">
+                <h2>OT vs. IT: Key Differences</h2>
+                
+                <p>
+                    Before implementing PAM in OT environments, you must understand how OT differs from traditional IT:
+                </p>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Aspect</th>
+                                <th>IT Environment</th>
+                                <th>OT Environment</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Priority</strong></td>
+                                <td>Confidentiality → Integrity → Availability (CIA)</td>
+                                <td>Safety → Availability → Integrity → Confidentiality</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Downtime tolerance</strong></td>
+                                <td>Planned maintenance windows acceptable</td>
+                                <td>24/7/365 operation often required</td>
+                            </tr>
+                            <tr>
+                                <td><strong>System lifespan</strong></td>
+                                <td>3-5 years typical</td>
+                                <td>15-30 years common</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Patching</strong></td>
+                                <td>Regular patching expected</td>
+                                <td>Patching may be impossible or rare</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Change management</strong></td>
+                                <td>Agile, frequent changes</td>
+                                <td>Highly controlled, infrequent changes</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Real-time requirements</strong></td>
+                                <td>Generally none</td>
+                                <td>Millisecond timing may be critical</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Physical safety</strong></td>
+                                <td>Rarely a concern</td>
+                                <td>Can cause injury, death, or environmental damage</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Vendor dependency</strong></td>
+                                <td>Multiple vendors, competitive market</td>
+                                <td>Often single-vendor systems, proprietary</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="info-box warning">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Safety First</h4>
+                        <p>In OT, security controls must NEVER compromise safety. A PAM system that blocks emergency access to a safety system could cause injury or death. Always work with operations teams to understand safety implications before implementing controls.</p>
+                    </div>
+                </div>
+
+                <h3>OT System Types</h3>
+
+                <ul>
+                    <li><strong>SCADA (Supervisory Control and Data Acquisition):</strong> Monitors and controls distributed systems (pipelines, power grids)</li>
+                    <li><strong>DCS (Distributed Control Systems):</strong> Controls industrial processes (refineries, chemical plants)</li>
+                    <li><strong>PLC (Programmable Logic Controllers):</strong> Automated control of machinery</li>
+                    <li><strong>HMI (Human Machine Interface):</strong> Operator workstations for monitoring/control</li>
+                    <li><strong>RTU (Remote Terminal Units):</strong> Field devices that collect data and execute commands</li>
+                    <li><strong>SIS (Safety Instrumented Systems):</strong> Emergency shutdown systems—highest criticality</li>
+                </ul>
+            </section>
+
+            <section id="purdue-model">
+                <h2>Purdue Model & Network Segmentation</h2>
+
+                <p>
+                    The Purdue Enterprise Reference Architecture defines network zones for industrial environments:
+                </p>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+┌────────────────────────────────────────────────────────────────────┐
+│  LEVEL 5 - ENTERPRISE NETWORK                                      │
+│  Corporate IT, email, ERP, internet access                         │
+│  [Standard IT PAM applies here]                                    │
+└────────────────────────────────────────────────────────────────────┘
+                              │
+                    ══════════════════════
+                     ENTERPRISE DMZ (3.5)
+                    ══════════════════════
+                              │
+┌────────────────────────────────────────────────────────────────────┐
+│  LEVEL 4 - SITE BUSINESS PLANNING                                  │
+│  Site operations, scheduling, logistics                            │
+└────────────────────────────────────────────────────────────────────┘
+                              │
+                    ══════════════════════
+                       INDUSTRIAL DMZ (3.5)
+                      [PAM JUMP SERVERS HERE]
+                    ══════════════════════
+                              │
+┌────────────────────────────────────────────────────────────────────┐
+│  LEVEL 3 - SITE OPERATIONS                                         │
+│  Historian, engineering workstations, patch servers                │
+└────────────────────────────────────────────────────────────────────┘
+                              │
+┌────────────────────────────────────────────────────────────────────┐
+│  LEVEL 2 - AREA SUPERVISORY CONTROL                                │
+│  HMI, SCADA servers, control room                                  │
+└────────────────────────────────────────────────────────────────────┘
+                              │
+┌────────────────────────────────────────────────────────────────────┐
+│  LEVEL 1 - BASIC CONTROL                                           │
+│  PLCs, RTUs, controllers                                           │
+└────────────────────────────────────────────────────────────────────┘
+                              │
+┌────────────────────────────────────────────────────────────────────┐
+│  LEVEL 0 - PROCESS                                                 │
+│  Sensors, actuators, physical processes                            │
+└────────────────────────────────────────────────────────────────────┘
+                </pre>
+
+                <h3>PAM Placement in Purdue Model</h3>
+
+                <ul>
+                    <li><strong>Level 3.5 (Industrial DMZ):</strong> PAM jump servers and session proxies placed here</li>
+                    <li><strong>Never direct access:</strong> Users from Level 4/5 should never connect directly to Level 2/1/0</li>
+                    <li><strong>PAM as gateway:</strong> All access to lower levels flows through PAM in the DMZ</li>
+                    <li><strong>Vault location:</strong> Can be in IT network with secure communication to OT PAM components</li>
+                </ul>
+            </section>
+
+            <section id="ot-challenges">
+                <h2>OT-Specific Challenges</h2>
+
+                <h3>1. Legacy Systems</h3>
+
+                <p>Many OT systems run outdated software that can't be easily updated:</p>
+
+                <ul>
+                    <li>Windows XP/2003 still common in industrial environments</li>
+                    <li>Proprietary operating systems with no modern authentication</li>
+                    <li>Hardcoded credentials that can't be changed</li>
+                    <li>Systems with no encryption capability</li>
+                </ul>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Legacy Workaround</h4>
+                        <p>For systems that can't rotate passwords or support modern auth, PAM can still add value: control access to jump servers, record all sessions to the legacy system, and provide an audit trail even if you can't change the underlying credential.</p>
+                    </div>
+                </div>
+
+                <h3>2. Availability Requirements</h3>
+
+                <ul>
+                    <li>Can't implement controls that might cause outages</li>
+                    <li>Password rotation during production could be catastrophic</li>
+                    <li>MFA failures can't block emergency access</li>
+                    <li>Network latency for PAM can't impact real-time control</li>
+                </ul>
+
+                <h3>3. Air-Gapped Networks</h3>
+
+                <p>Some OT networks have no connection to IT or internet:</p>
+
+                <ul>
+                    <li>PAM must operate standalone (no cloud dependencies)</li>
+                    <li>Updates and patches delivered manually</li>
+                    <li>No SIEM integration (or one-way data diode)</li>
+                    <li>Separate identity infrastructure</li>
+                </ul>
+
+                <h3>4. Vendor Maintenance</h3>
+
+                <ul>
+                    <li>Equipment vendors need remote access for maintenance</li>
+                    <li>Often use shared credentials ("vendor password")</li>
+                    <li>May require broad access with minimal oversight</li>
+                    <li>Contractual obligations may limit security controls</li>
+                </ul>
+
+                <h3>5. Protocol Diversity</h3>
+
+                <p>OT uses many protocols that IT PAM solutions don't natively support:</p>
+
+                <ul>
+                    <li>Modbus (serial and TCP)</li>
+                    <li>DNP3 (Distributed Network Protocol)</li>
+                    <li>OPC UA/DA</li>
+                    <li>IEC 61850, IEC 60870-5-104</li>
+                    <li>Proprietary vendor protocols</li>
+                </ul>
+            </section>
+
+            <section id="pam-architecture">
+                <h2>PAM Architecture for OT</h2>
+
+                <h3>Jump Server Architecture</h3>
+
+                <p>
+                    The standard approach for OT PAM uses hardened jump servers in the Industrial DMZ:
+                </p>
+
+                <pre style="background: var(--bg-tertiary); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; font-family: monospace; font-size: var(--text-sm);">
+Enterprise Network (IT)
+         │
+    [Firewall]
+         │
+    [PAM Vault]──────────────────────────────────────────┐
+         │                                                │
+    [Firewall]                                            │
+         │                                                │
+Industrial DMZ ─────────────────────────────────────────────────────
+         │                                                │
+    ┌────┴────┐                                          │
+    │  PAM    │ ← Users connect here                     │
+    │  Jump   │   (authenticated, recorded)              │
+    │ Server  │                                          │
+    └────┬────┘                                          │
+         │                                                │
+    [Firewall] ← Only PAM server can reach OT            │
+         │                                                │
+OT Network ─────────────────────────────────────────────────────────
+         │                                                │
+    ┌────┴────┐  ┌────────┐  ┌────────┐                  │
+    │  HMI    │  │  SCADA │  │  PLC   │← Credentials     │
+    │ Server  │  │ Server │  │        │  from vault ─────┘
+    └─────────┘  └────────┘  └────────┘
+                </pre>
+
+                <h3>Architecture Options</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Model</th>
+                                <th>Description</th>
+                                <th>When to Use</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Centralized Vault</strong></td>
+                                <td>Single vault in IT, connectors in OT DMZ</td>
+                                <td>Connected environments, single site</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Distributed Vault</strong></td>
+                                <td>Separate vault in OT network, replicated or independent</td>
+                                <td>Air-gapped networks, multiple sites</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Hybrid</strong></td>
+                                <td>IT vault for IT accounts, OT vault for OT accounts</td>
+                                <td>Different compliance requirements</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Cloud + On-Prem</strong></td>
+                                <td>Cloud PAM for IT, on-prem for OT</td>
+                                <td>IT modernizing, OT staying traditional</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Air-Gapped Deployment</h3>
+
+                <p>For truly isolated OT networks:</p>
+
+                <ul>
+                    <li><strong>Standalone PAM:</strong> Complete PAM infrastructure within OT network</li>
+                    <li><strong>Local identity:</strong> Separate AD or local PAM users (no IT AD)</li>
+                    <li><strong>Manual updates:</strong> PAM updates via secure media transfer</li>
+                    <li><strong>Data diode:</strong> One-way flow of audit data to IT SIEM (optional)</li>
+                    <li><strong>No internet:</strong> No license checks, cloud features, external MFA</li>
+                </ul>
+            </section>
+
+            <section id="vendor-access">
+                <h2>Vendor Remote Access</h2>
+
+                <p>
+                    Equipment vendors are a major attack vector in OT. Third-party vendors are often compromised and used to access customer networks. PAM is critical for controlling vendor access.
+                </p>
+
+                <h3>Vendor Access Challenges</h3>
+
+                <ul>
+                    <li>Vendors need periodic access for maintenance and troubleshooting</li>
+                    <li>Often demand "always-on" VPN access</li>
+                    <li>May resist session recording (claim proprietary methods)</li>
+                    <li>Use shared credentials ("Siemens support account")</li>
+                    <li>Multiple vendor employees, one "vendor" account</li>
+                </ul>
+
+                <h3>PAM Solution for Vendor Access</h3>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Individual Vendor Accounts</h4>
+                            <p>Each vendor employee gets their own PAM account (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="aac0c5c2c484d9c7c3dec2eadccfc4cec5d8c9c5d8da84c9c5c7">[email&#160;protected]</a>). No shared "vendor" accounts.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Just-In-Time Access</h4>
+                            <p>No standing access. Vendor requests access for specific work window. Your team approves each request.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Scoped Access</h4>
+                            <p>Vendor only gets access to their specific equipment. Siemens can't see ABB systems and vice versa.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Full Session Recording</h4>
+                            <p>Every keystroke, every screen recorded. Can be reviewed later. Provides accountability.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Automatic Expiration</h4>
+                            <p>Access expires after approved window. No "permanent" vendor access.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-box warning">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Vendor Pushback</h4>
+                        <p>Vendors may resist individual accounts and session recording. Stand firm. It's your network, your risk. Professional vendors understand and accept security requirements. If a vendor refuses basic security controls, that's a red flag about their own security practices.</p>
+                    </div>
+                </div>
+
+                <h3>VPN-less Vendor Access</h3>
+
+                <p>Modern approach eliminates traditional VPN:</p>
+
+                <ul>
+                    <li><strong>Zero Trust Network Access (ZTNA):</strong> Vendor accesses specific application, not full network</li>
+                    <li><strong>PAM Web Portal:</strong> Browser-based access, no VPN client needed</li>
+                    <li><strong>No network exposure:</strong> Vendor can't scan or pivot</li>
+                    <li><strong>Works from anywhere:</strong> Vendor doesn't need corporate network</li>
+                </ul>
+            </section>
+
+            <section id="protocols">
+                <h2>Industrial Protocols</h2>
+
+                <p>
+                    PAM session recording works well for standard protocols (RDP, SSH, VNC). Industrial protocols are more challenging:
+                </p>
+
+                <h3>Protocol Coverage</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Protocol</th>
+                                <th>PAM Approach</th>
+                                <th>Considerations</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>RDP to HMI</strong></td>
+                                <td>Full PSM recording</td>
+                                <td>Standard PAM use case</td>
+                            </tr>
+                            <tr>
+                                <td><strong>SSH to Linux servers</strong></td>
+                                <td>Full PSM recording</td>
+                                <td>Standard PAM use case</td>
+                            </tr>
+                            <tr>
+                                <td><strong>VNC</strong></td>
+                                <td>PSM recording (many PAM vendors support)</td>
+                                <td>Common in OT for legacy systems</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Telnet</strong></td>
+                                <td>PSM proxies and records</td>
+                                <td>Insecure but still used; PAM makes it safer</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Vendor engineering tools</strong></td>
+                                <td>Record the workstation session, not the protocol</td>
+                                <td>User connects to jump server via PSM, runs vendor tool</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Serial connections</strong></td>
+                                <td>Serial-to-IP converters + PAM</td>
+                                <td>Convert to network protocol, then proxy</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Modbus/DNP3</strong></td>
+                                <td>Network monitoring, not PAM recording</td>
+                                <td>OT-specific security tools (Claroty, Nozomi)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Engineering Workstation Approach</h3>
+
+                <p>For proprietary vendor protocols, use an engineering workstation model:</p>
+
+                <ol>
+                    <li>Engineer connects via PAM to jump server (RDP, recorded)</li>
+                    <li>Jump server has vendor software installed (Step7, FactoryTalk, etc.)</li>
+                    <li>Engineer uses vendor software to connect to equipment</li>
+                    <li>The RDP session captures everything they do</li>
+                    <li>Network monitoring tools can capture the protocol traffic separately</li>
+                </ol>
+            </section>
+
+            <section id="compliance">
+                <h2>OT Compliance Frameworks</h2>
+
+                <h3>NERC CIP (North American Energy)</h3>
+
+                <p>
+                    Critical Infrastructure Protection standards for the bulk electric system:
+                </p>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Standard</th>
+                                <th>Requirement</th>
+                                <th>PAM Coverage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>CIP-004-6</strong></td>
+                                <td>Personnel & Training</td>
+                                <td>Access management, training records, access reviews</td>
+                            </tr>
+                            <tr>
+                                <td><strong>CIP-005-6</strong></td>
+                                <td>Electronic Security Perimeter</td>
+                                <td>PAM enforces ESP access controls, remote access management</td>
+                            </tr>
+                            <tr>
+                                <td><strong>CIP-006-6</strong></td>
+                                <td>Physical Security</td>
+                                <td>Logical access to physical security systems</td>
+                            </tr>
+                            <tr>
+                                <td><strong>CIP-007-6</strong></td>
+                                <td>System Security Management</td>
+                                <td>Password management, access control enforcement</td>
+                            </tr>
+                            <tr>
+                                <td><strong>CIP-011-2</strong></td>
+                                <td>Information Protection</td>
+                                <td>Encryption via KMS, access logging</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>IEC 62443 (Industrial Automation)</h3>
+
+                <p>
+                    International standard for industrial cybersecurity:
+                </p>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Requirement</th>
+                                <th>PAM Coverage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>IAC (Identification and Authentication Control)</strong></td>
+                                <td>Strong authentication, unique user IDs</td>
+                            </tr>
+                            <tr>
+                                <td><strong>UC (Use Control)</strong></td>
+                                <td>Authorization enforcement, least privilege, session limits</td>
+                            </tr>
+                            <tr>
+                                <td><strong>SI (System Integrity)</strong></td>
+                                <td>Audit logging, tamper detection</td>
+                            </tr>
+                            <tr>
+                                <td><strong>DC (Data Confidentiality)</strong></td>
+                                <td>Credential encryption, session encryption via KMS</td>
+                            </tr>
+                            <tr>
+                                <td><strong>TRE (Timely Response to Events)</strong></td>
+                                <td>Real-time monitoring, alerting, session termination</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Industry-Specific Standards</h3>
+
+                <ul>
+                    <li><strong>Pharmaceutical (21 CFR Part 11):</strong> Electronic records, electronic signatures, audit trails</li>
+                    <li><strong>Oil & Gas (API):</strong> Pipeline security, SCADA protection</li>
+                    <li><strong>Water (AWIA):</strong> America's Water Infrastructure Act security requirements</li>
+                    <li><strong>Transportation (TSA):</strong> Pipeline and rail cybersecurity directives</li>
+                </ul>
+            </section>
+
+            <section id="implementation">
+                <h2>Implementation Approach</h2>
+
+                <h3>Phase 1: Assessment & Planning (Months 1-2)</h3>
+
+                <ul>
+                    <li>Inventory all OT systems and privileged accounts</li>
+                    <li>Map network architecture (Purdue levels)</li>
+                    <li>Identify vendor access requirements</li>
+                    <li>Assess which systems can have passwords rotated</li>
+                    <li>Identify safety-critical systems requiring special handling</li>
+                    <li>Engage operations teams early—their buy-in is critical</li>
+                </ul>
+
+                <h3>Phase 2: Infrastructure (Months 2-3)</h3>
+
+                <ul>
+                    <li>Deploy PAM infrastructure in Industrial DMZ</li>
+                    <li>Configure network segmentation (if not already in place)</li>
+                    <li>Set up jump servers with required vendor tools</li>
+                    <li>Test connectivity to OT systems</li>
+                    <li>Establish break-glass procedures for emergencies</li>
+                </ul>
+
+                <h3>Phase 3: Pilot (Months 3-4)</h3>
+
+                <ul>
+                    <li>Start with Level 3 systems (historians, engineering workstations)</li>
+                    <li>Onboard a small group of users and accounts</li>
+                    <li>Implement session recording without blocking access</li>
+                    <li>Test password rotation on non-critical systems only</li>
+                    <li>Gather feedback, adjust policies</li>
+                </ul>
+
+                <h3>Phase 4: Expansion (Months 4-6)</h3>
+
+                <ul>
+                    <li>Extend to Level 2 systems (HMI, SCADA servers)</li>
+                    <li>Implement vendor access controls</li>
+                    <li>Enable approval workflows for critical systems</li>
+                    <li>Begin password rotation where safe to do so</li>
+                </ul>
+
+                <h3>Phase 5: Hardening (Months 6+)</h3>
+
+                <ul>
+                    <li>Remove direct access paths (force through PAM)</li>
+                    <li>Implement real-time monitoring and alerting</li>
+                    <li>Regular access reviews</li>
+                    <li>Continuous improvement based on operational experience</li>
+                </ul>
+
+                <div class="info-box success">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    <div class="info-box-content">
+                        <h4>Keys to OT PAM Success</h4>
+                        <p><strong>Work with operations:</strong> They know the systems and risks. <strong>Don't break production:</strong> Implement controls gradually. <strong>Plan for emergencies:</strong> Break-glass must work when needed. <strong>Accept limitations:</strong> Some legacy systems can't be fully managed—do what you can. <strong>Focus on vendors:</strong> Often the biggest risk and quickest win.</p>
+                    </div>
+                </div>
+            </section>
+
+            <nav class="page-nav">
+                <a href="pam-use-cases.html" class="page-nav-link prev">
+                    <span class="page-nav-label">Previous</span>
+                    <span class="page-nav-title">← PAM Use Cases</span>
+                </a>
+                <a href="compliance-frameworks.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next</span>
+                    <span class="page-nav-title">Compliance Frameworks →</span>
+                </a>
+            </nav>
+        </div>
+
+        <footer class="footer">
+            <p>PAM & KMS Ultimate Guide — A comprehensive enterprise security documentation resource</p>
+        </footer>
+    </main>
+
+    <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyli

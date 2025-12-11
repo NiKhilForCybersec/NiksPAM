@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PAM and KMS Vendor Comparison - CyberArk, BeyondTrust, Delinea, HashiCorp Vault, Thales, and more">
+    <title>Vendor Comparison | PAM & KMS Guide</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="scroll-progress" id="scroll-progress"></div>
+
+    <header class="header">
+        <div class="header-content">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                PAM & KMS Guide
+            </a>
+            
+            <nav class="header-nav">
+                <a href="pam-fundamentals.html">PAM</a>
+                <a href="kms-fundamentals.html">KMS</a>
+                <a href="vendors.html" class="active">Vendors</a>
+                <a href="implementation.html">Implementation</a>
+            </nav>
+            
+            <div class="header-actions">
+                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-title">Getting Started</div>
+            <ul class="sidebar-nav">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="introduction.html">Introduction</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">PAM Fundamentals</div>
+            <ul class="sidebar-nav">
+                <li><a href="pam-fundamentals.html">What is PAM?</a></li>
+                <li><a href="pam-business-case.html">Business Case</a></li>
+                <li><a href="privileged-accounts.html">Privileged Accounts</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">PAM Architecture</div>
+            <ul class="sidebar-nav">
+                <li><a href="pam-components.html">Core Components</a></li>
+                <li><a href="pam-architecture.html">Architecture Patterns</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">KMS Fundamentals</div>
+            <ul class="sidebar-nav">
+                <li><a href="kms-fundamentals.html">What is KMS?</a></li>
+                <li><a href="cryptographic-basics.html">Cryptographic Basics</a></li>
+                <li><a href="key-lifecycle.html">Key Lifecycle</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">Vendors</div>
+            <ul class="sidebar-nav">
+                <li><a href="vendors.html" class="active">Vendor Overview</a></li>
+                <li><a href="vendor-cyberark.html">CyberArk</a></li>
+                <li><a href="vendor-beyondtrust.html">BeyondTrust</a></li>
+                <li><a href="vendor-delinea.html">Delinea</a></li>
+                <li><a href="vendor-hashicorp.html">HashiCorp Vault</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">Resources</div>
+            <ul class="sidebar-nav">
+                <li><a href="glossary.html">Glossary</a></li>
+                <li><a href="interview-prep.html">Interview Prep</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <main class="main-wrapper">
+        <div class="main-content">
+            <nav class="breadcrumb">
+                <a href="../index.html">Home</a>
+                <span class="breadcrumb-separator">/</span>
+                <span>Vendors</span>
+            </nav>
+
+            <div class="page-header">
+                <h1>PAM & KMS Vendor Landscape</h1>
+                <p class="page-description">
+                    Understanding the vendor landscape is essential for making informed decisions about PAM and KMS implementations. This guide covers the major players, their strengths, and how to evaluate them for your specific needs.
+                </p>
+            </div>
+
+            <div class="toc">
+                <div class="toc-title">On This Page</div>
+                <ul class="toc-list">
+                    <li><a href="#market-overview"><span class="toc-number">1.</span> Market Overview</a></li>
+                    <li><a href="#pam-vendors"><span class="toc-number">2.</span> PAM Vendors</a></li>
+                    <li><a href="#kms-vendors"><span class="toc-number">3.</span> KMS Vendors</a></li>
+                    <li><a href="#comparison"><span class="toc-number">4.</span> Feature Comparison</a></li>
+                    <li><a href="#selection-criteria"><span class="toc-number">5.</span> Selection Criteria</a></li>
+                    <li><a href="#analyst-reports"><span class="toc-number">6.</span> Analyst Reports</a></li>
+                </ul>
+            </div>
+
+            <section id="market-overview">
+                <h2>Market Overview</h2>
+                
+                <p>
+                    The PAM and KMS markets have evolved significantly, with consolidation, cloud transformation, and the convergence of secrets management driving change. Understanding the landscape helps you navigate vendor selection.
+                </p>
+
+                <h3>Market Segments</h3>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        </div>
+                        <div class="feature-title">Traditional PAM</div>
+                        <p class="feature-description">Enterprise-focused solutions for vaulting, session management, and credential rotation. CyberArk, BeyondTrust, Delinea lead this space.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
+                        </div>
+                        <div class="feature-title">Enterprise KMS</div>
+                        <p class="feature-description">Hardware-backed key management with HSM integration. Thales, Entrust, and Utimaco dominate enterprise deployments.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
+                        </div>
+                        <div class="feature-title">Cloud KMS</div>
+                        <p class="feature-description">Native cloud key management services. AWS KMS, Azure Key Vault, and Google Cloud KMS are the primary options.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                        </div>
+                        <div class="feature-title">DevOps Secrets</div>
+                        <p class="feature-description">Cloud-native secrets management for modern applications. HashiCorp Vault is the leader; AWS Secrets Manager and others compete.</p>
+                    </div>
+                </div>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Market Convergence</h4>
+                        <p>The lines between PAM, KMS, and secrets management are blurring. Traditional PAM vendors are adding cloud and DevOps capabilities. Secrets management platforms are expanding into PAM territory. Cloud providers are bundling multiple services. Consider your current and future needs when selecting vendors.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="pam-vendors">
+                <h2>PAM Vendors</h2>
+
+                <h3>CyberArk</h3>
+                <div class="card">
+                    <p><strong>Market Position:</strong> Industry leader, largest market share in enterprise PAM.</p>
+                    
+                    <h4>Key Products</h4>
+                    <ul>
+                        <li><strong>Privileged Access Manager:</strong> Core PAM platform (vault, PSM, CPM)</li>
+                        <li><strong>Endpoint Privilege Manager:</strong> Workstation privilege management</li>
+                        <li><strong>Secrets Manager:</strong> Application secrets and DevOps integration</li>
+                        <li><strong>Cloud Entitlements Manager:</strong> Cloud IAM governance</li>
+                        <li><strong>Identity Security Platform:</strong> Unified SaaS platform</li>
+                    </ul>
+                    
+                    <h4>Strengths</h4>
+                    <ul>
+                        <li>Most comprehensive enterprise feature set</li>
+                        <li>Strongest session recording and monitoring</li>
+                        <li>Extensive platform connector library</li>
+                        <li>Robust high availability and disaster recovery</li>
+                        <li>Strong compliance reporting capabilities</li>
+                        <li>Large partner ecosystem and professional services</li>
+                    </ul>
+                    
+                    <h4>Considerations</h4>
+                    <ul>
+                        <li>Higher cost than competitors</li>
+                        <li>Complex architecture requires dedicated expertise</li>
+                        <li>Longer implementation timelines</li>
+                        <li>Legacy on-premises architecture (though cloud options exist)</li>
+                    </ul>
+                    
+                    <p><strong>Best For:</strong> Large enterprises with complex environments, strict compliance requirements, and dedicated security teams.</p>
+                </div>
+
+                <h3>BeyondTrust</h3>
+                <div class="card">
+                    <p><strong>Market Position:</strong> Strong enterprise player, known for endpoint privilege management and unified platform.</p>
+                    
+                    <h4>Key Products</h4>
+                    <ul>
+                        <li><strong>Password Safe:</strong> Credential vaulting and session management</li>
+                        <li><strong>Privilege Management:</strong> Endpoint privilege elevation and control</li>
+                        <li><strong>Remote Support:</strong> Secure remote access for support teams</li>
+                        <li><strong>Privileged Remote Access:</strong> Vendor and remote workforce access</li>
+                    </ul>
+                    
+                    <h4>Strengths</h4>
+                    <ul>
+                        <li>Strong endpoint privilege management (Windows/Mac)</li>
+                        <li>Unified platform for PAM and remote access</li>
+                        <li>Good balance of features and usability</li>
+                        <li>Strong vendor/remote access capabilities</li>
+                        <li>Competitive pricing vs CyberArk</li>
+                    </ul>
+                    
+                    <h4>Considerations</h4>
+                    <ul>
+                        <li>Session management less mature than CyberArk</li>
+                        <li>Cloud-native capabilities still developing</li>
+                        <li>Smaller connector library than CyberArk</li>
+                    </ul>
+                    
+                    <p><strong>Best For:</strong> Organizations needing strong endpoint privilege management alongside PAM, those with significant remote access requirements.</p>
+                </div>
+
+                <h3>Delinea (formerly Thycotic + Centrify)</h3>
+                <div class="card">
+                    <p><strong>Market Position:</strong> Mid-market leader, known for ease of use and rapid deployment.</p>
+                    
+                    <h4>Key Products</h4>
+                    <ul>
+                        <li><strong>Secret Server:</strong> Password vaulting (on-prem and cloud)</li>
+                        <li><strong>Privilege Manager:</strong> Endpoint privilege management</li>
+                        <li><strong>Server PAM:</strong> Just-in-time privilege elevation on servers</li>
+                        <li><strong>DevOps Secrets Vault:</strong> Cloud-native secrets management</li>
+                        <li><strong>Connection Manager:</strong> Session management and recording</li>
+                    </ul>
+                    
+                    <h4>Strengths</h4>
+                    <ul>
+                        <li>Easiest to deploy and use among enterprise PAM</li>
+                        <li>Strong cloud/SaaS options</li>
+                        <li>Competitive pricing</li>
+                        <li>Good Active Directory integration (Centrify heritage)</li>
+                        <li>Modern architecture, faster innovation</li>
+                    </ul>
+                    
+                    <h4>Considerations</h4>
+                    <ul>
+                        <li>Session management added later, less mature</li>
+                        <li>Product portfolio still consolidating post-merger</li>
+                        <li>Less extensive enterprise features than CyberArk</li>
+                    </ul>
+                    
+                    <p><strong>Best For:</strong> Mid-market organizations, those prioritizing speed of deployment, organizations wanting SaaS-first approach.</p>
+                </div>
+
+                <h3>HashiCorp Vault</h3>
+                <div class="card">
+                    <p><strong>Market Position:</strong> Leader in DevOps secrets management, expanding into traditional PAM use cases.</p>
+                    
+                    <h4>Key Capabilities</h4>
+                    <ul>
+                        <li><strong>Secrets Engine:</strong> Store and manage secrets of any type</li>
+                        <li><strong>Dynamic Secrets:</strong> Generate short-lived credentials on demand</li>
+                        <li><strong>Transit Engine:</strong> Encryption as a service (KMS functionality)</li>
+                        <li><strong>SSH Certificate Authority:</strong> Issue short-lived SSH certificates</li>
+                        <li><strong>PKI Engine:</strong> Issue X.509 certificates</li>
+                    </ul>
+                    
+                    <h4>Strengths</h4>
+                    <ul>
+                        <li>Best-in-class for DevOps and cloud-native environments</li>
+                        <li>Open source option (Vault OSS)</li>
+                        <li>Dynamic secrets eliminate standing credentials</li>
+                        <li>Excellent API and automation capabilities</li>
+                        <li>Multi-cloud and Kubernetes native</li>
+                        <li>Combines PAM, KMS, and secrets management</li>
+                    </ul>
+                    
+                    <h4>Considerations</h4>
+                    <ul>
+                        <li>No native session recording</li>
+                        <li>Requires engineering expertise to deploy and operate</li>
+                        <li>Less suited for traditional IT admin use cases</li>
+                        <li>Enterprise features require paid version</li>
+                    </ul>
+                    
+                    <p><strong>Best For:</strong> Cloud-native organizations, DevOps-heavy environments, those wanting unified secrets/PAM/KMS platform.</p>
+                </div>
+
+                <h3>Other PAM Vendors</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Vendor</th>
+                                <th>Focus</th>
+                                <th>Notable For</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Wallix</strong></td>
+                                <td>European market, SMB</td>
+                                <td>Strong session management, OT/ICS capabilities</td>
+                            </tr>
+                            <tr>
+                                <td><strong>One Identity</strong></td>
+                                <td>Identity governance + PAM</td>
+                                <td>Unified IAM and PAM, strong AD integration</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Saviynt</strong></td>
+                                <td>Cloud-native IGA + PAM</td>
+                                <td>Converged identity governance and PAM</td>
+                            </tr>
+                            <tr>
+                                <td><strong>ARCON</strong></td>
+                                <td>Asia-Pacific, emerging markets</td>
+                                <td>Cost-effective, good regional presence</td>
+                            </tr>
+                            <tr>
+                                <td><strong>ManageEngine PAM360</strong></td>
+                                <td>SMB, cost-conscious</td>
+                                <td>Affordable, integrates with ManageEngine suite</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Teleport</strong></td>
+                                <td>DevOps, modern infrastructure</td>
+                                <td>Zero-trust access, certificate-based, open source option</td>
+                            </tr>
+                            <tr>
+                                <td><strong>StrongDM</strong></td>
+                                <td>Database access</td>
+                                <td>Simple deployment, strong database protocol support</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="kms-vendors">
+                <h2>KMS Vendors</h2>
+
+                <h3>Enterprise KMS</h3>
+
+                <div class="card">
+                    <h4>Thales CipherTrust</h4>
+                    <ul>
+                        <li><strong>CipherTrust Manager:</strong> Central key management platform</li>
+                        <li><strong>Luna HSMs:</strong> Industry-leading hardware security modules</li>
+                        <li><strong>Key Management:</strong> KMIP-compliant, multi-cloud key management</li>
+                    </ul>
+                    <p><strong>Best For:</strong> Large enterprises requiring HSM-backed key management, FIPS 140-2/3 compliance, extensive platform integration.</p>
+                </div>
+
+                <div class="card">
+                    <h4>Entrust</h4>
+                    <ul>
+                        <li><strong>nShield HSMs:</strong> High-security hardware modules</li>
+                        <li><strong>KeyControl:</strong> Virtual key management appliance</li>
+                        <li><strong>PKI Services:</strong> Certificate lifecycle management</li>
+                    </ul>
+                    <p><strong>Best For:</strong> Organizations with PKI requirements, government/defense sectors, high-security environments.</p>
+                </div>
+
+                <div class="card">
+                    <h4>Utimaco</h4>
+                    <ul>
+                        <li><strong>SecurityServer:</strong> General-purpose HSM</li>
+                        <li><strong>CryptoServer:</strong> High-performance HSM</li>
+                        <li><strong>u.trust:</strong> Key management platform</li>
+                    </ul>
+                    <p><strong>Best For:</strong> Financial services, payment processing, high-volume cryptographic operations.</p>
+                </div>
+
+                <h3>Cloud KMS Services</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Service</th>
+                                <th>Key Features</th>
+                                <th>Best For</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>AWS KMS</strong></td>
+                                <td>Integrated with AWS services, CloudHSM option, multi-region keys</td>
+                                <td>AWS-centric organizations</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Azure Key Vault</strong></td>
+                                <td>Keys, secrets, certificates in one service; Managed HSM option</td>
+                                <td>Microsoft/Azure environments</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Google Cloud KMS</strong></td>
+                                <td>Cloud HSM, External Key Manager, tight GCP integration</td>
+                                <td>GCP-centric organizations</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Multi-Cloud Key Management</h4>
+                        <p>For multi-cloud environments, consider solutions that can manage keys across clouds: Thales CipherTrust Cloud Key Manager, Fortanix SDKMS, or HashiCorp Vault's Transit engine. These provide a single control plane for keys across AWS, Azure, and GCP.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="comparison">
+                <h2>Feature Comparison</h2>
+
+                <h3>PAM Vendor Comparison Matrix</h3>
+
+                <div class="table-container">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Capability</th>
+                                <th>CyberArk</th>
+                                <th>BeyondTrust</th>
+                                <th>Delinea</th>
+                                <th>HashiCorp</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Credential Vaulting</strong></td>
+                                <td class="check">●●●</td>
+                                <td class="check">●●●</td>
+                                <td class="check">●●●</td>
+                                <td class="check">●●●</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Session Recording</strong></td>
+                                <td class="check">●●●</td>
+                                <td class="check">●●○</td>
+                                <td class="check">●●○</td>
+                                <td class="cross">○○○</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Password Rotation</strong></td>
+                                <td class="check">●●●</td>
+                                <td class="check">●●●</td>
+                                <td class="check">●●●</td>
+                                <td class="check">●●●</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Endpoint Privilege Mgmt</strong></td>
+                                <td class="check">●●○</td>
+                                <td class="check">●●●</td>
+                                <td class="check">●●●</td>
+                                <td class="cross">○○○</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Cloud IAM Integration</strong></td>
+                                <td class="check">●●●</td>
+                                <td class="check">●●○</td>
+                                <td class="check">●●○</td>
+                                <td class="check">●●●</td>
+                            </tr>
+                            <tr>
+                                <td><strong>DevOps/CI-CD</strong></td>
+                                <td class="check">●●○</td>
+                                <td class="partial">●○○</td>
+                                <td class="check">●●○</td>
+                                <td class="check">●●●</td>
+                            </tr>
+                            <tr>
+                                <td><strong>SaaS Deployment</strong></td>
+                                <td class="check">●●○</td>
+                                <td class="check">●●○</td>
+                                <td class="check">●●●</td>
+                                <td class="check">●●●</td>
+                            </tr>
+                            <tr>
+                                <td><strong>OT/ICS Support</strong></td>
+                                <td class="check">●●○</td>
+                                <td class="partial">●○○</td>
+                                <td class="partial">●○○</td>
+                                <td class="cross">○○○</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Ease of Deployment</strong></td>
+                                <td class="partial">●○○</td>
+                                <td class="check">●●○</td>
+                                <td class="check">●●●</td>
+                                <td class="check">●●○</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Total Cost of Ownership</strong></td>
+                                <td class="cross">$$$</td>
+                                <td class="partial">$$</td>
+                                <td class="check">$$</td>
+                                <td class="check">$-$$</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p style="font-size: 0.875rem; color: var(--text-tertiary); margin-top: var(--space-4);">
+                    Legend: ●●● = Excellent | ●●○ = Good | ●○○ = Adequate | ○○○ = Limited/None
+                </p>
+            </section>
+
+            <section id="selection-criteria">
+                <h2>Selection Criteria</h2>
+
+                <p>
+                    When evaluating PAM and KMS vendors, consider these key criteria:
+                </p>
+
+                <h3>1. Environment Fit</h3>
+                <div class="key-points">
+                    <div class="key-points-title">Questions to Ask</div>
+                    <ul>
+                        <li>What platforms do you need to manage? (Windows, Linux, databases, network devices, cloud)</li>
+                        <li>Do you have OT/ICS environments with special requirements?</li>
+                        <li>What's your cloud strategy? (on-prem only, hybrid, cloud-first, multi-cloud)</li>
+                        <li>How important is DevOps/CI-CD integration?</li>
+                        <li>Do you need endpoint privilege management?</li>
+                    </ul>
+                </div>
+
+                <h3>2. Deployment Model</h3>
+                <div class="key-points">
+                    <div class="key-points-title">Options to Consider</div>
+                    <ul>
+                        <li><strong>On-Premises:</strong> Full control, but requires infrastructure and maintenance</li>
+                        <li><strong>SaaS:</strong> Fastest deployment, vendor handles operations, but less customization</li>
+                        <li><strong>Hybrid:</strong> Vault on-prem with cloud connectors, balances control and flexibility</li>
+                        <li><strong>Private Cloud:</strong> Your cloud tenant, managed by vendor</li>
+                    </ul>
+                </div>
+
+                <h3>3. Operational Considerations</h3>
+                <div class="key-points">
+                    <div class="key-points-title">Evaluate</div>
+                    <ul>
+                        <li>Required expertise to deploy and operate</li>
+                        <li>High availability and disaster recovery capabilities</li>
+                        <li>Scalability to meet growth projections</li>
+                        <li>Integration with existing tools (SIEM, ITSM, IdP)</li>
+                        <li>Vendor support quality and availability</li>
+                        <li>Training and certification programs</li>
+                    </ul>
+                </div>
+
+                <h3>4. Total Cost of Ownership</h3>
+                <div class="key-points">
+                    <div class="key-points-title">Cost Components</div>
+                    <ul>
+                        <li><strong>License Costs:</strong> Per-user, per-account, per-system, or platform-based</li>
+                        <li><strong>Infrastructure:</strong> Servers, storage, network, HSMs</li>
+                        <li><strong>Implementation:</strong> Professional services, internal effort</li>
+                        <li><strong>Operations:</strong> Staff to manage, training, upgrades</li>
+                        <li><strong>Support:</strong> Annual maintenance and support contracts</li>
+                    </ul>
+                </div>
+
+                <div class="info-box warning">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Common Selection Mistakes</h4>
+                        <p>Avoid these pitfalls: Choosing based solely on Gartner/Forrester position, underestimating implementation complexity, not involving end users in evaluation, ignoring total cost of ownership (focusing only on license), selecting features you'll never use.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="analyst-reports">
+                <h2>Analyst Reports</h2>
+
+                <p>
+                    Industry analysts provide useful perspectives on the PAM and KMS markets. The major reports include:
+                </p>
+
+                <h3>PAM Market Reports</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Report</th>
+                                <th>Publisher</th>
+                                <th>Focus</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Magic Quadrant for PAM</strong></td>
+                                <td>Gartner</td>
+                                <td>Enterprise PAM market leaders, challengers, visionaries, niche players</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Forrester Wave: PAM</strong></td>
+                                <td>Forrester</td>
+                                <td>Detailed feature analysis, vendor strategy evaluation</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Leadership Compass: PAM</strong></td>
+                                <td>KuppingerCole</td>
+                                <td>European perspective, detailed technical analysis</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>KMS/HSM Market Reports</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Report</th>
+                                <th>Publisher</th>
+                                <th>Focus</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Market Guide for Cloud KMS</strong></td>
+                                <td>Gartner</td>
+                                <td>Cloud-native key management services</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Forrester Wave: Data Security</strong></td>
+                                <td>Forrester</td>
+                                <td>Includes encryption and key management</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Leadership Compass: KMS</strong></td>
+                                <td>KuppingerCole</td>
+                                <td>Enterprise key management platforms</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="info-box info">
+                    <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div class="info-box-content">
+                        <h4>Using Analyst Reports Wisely</h4>
+                        <p>Analyst reports are useful starting points but shouldn't be the sole basis for decisions. They often favor vendors who participate in evaluations, may not reflect your specific requirements, and are point-in-time snapshots. Always conduct your own proof-of-concept with shortlisted vendors.</p>
+                    </div>
+                </div>
+            </section>
+
+            <div class="info-box success">
+                <svg class="info-box-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <div class="info-box-content">
+                    <h4>Key Takeaways</h4>
+                    <p>The PAM and KMS markets offer multiple strong options. CyberArk leads enterprise PAM but comes with complexity and cost. BeyondTrust and Delinea offer good alternatives with different strengths. HashiCorp Vault dominates DevOps secrets management. For KMS, cloud-native services work well for single-cloud environments; Thales and Entrust lead enterprise/multi-cloud scenarios. Always evaluate against your specific requirements.</p>
+                </div>
+            </div>
+
+            <nav class="page-nav">
+                <a href="kms-fundamentals.html" class="page-nav-link prev">
+                    <span class="page-nav-label">Previous</span>
+                    <span class="page-nav-title">← KMS Fundamentals</span>
+                </a>
+                <a href="implementation.html" class="page-nav-link next">
+                    <span class="page-nav-label">Next</span>
+                    <span class="page-nav-title">Implementation Guide →</span>
+                </a>
+            </nav>
+        </div>
+
+        <footer class="footer">
+            <p>PAM & KMS Ultimate Guide — A comprehensive enterprise security documentation resource</p>
+        </footer>
+    </main>
+
+    <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+    </button>
+
+    <script src="../js/main.js"></script>
+</body>
+</html>
